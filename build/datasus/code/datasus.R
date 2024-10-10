@@ -57,21 +57,29 @@ sim_do = sim_do %>%
   relocate(ano, sigla_uf, sigla_uf_code_residencia, id_municipio_residencia,
            sigla_uf_code_ocorrencia, id_municipio_ocorrencia, homicidio)
 
-# Creating Gender and Race columns
+# Creating Gender, Race and Young Individuals columns
 sim_do[, `:=`(
   negro = ifelse(raca_cor %in% c(2, 4, 5), 1, 0),
+  negro_jovem = ifelse(raca_cor %in% c(2, 4, 5) & idade <= 25, 1, 0),
   branco = ifelse(raca_cor %in% c(1, 3), 1, 0),
+  branco_jovem = ifelse(raca_cor %in% c(1, 3) & idade <= 25, 1, 0),
   mulher = ifelse(sexo == 2, 1, 0),
-  homem = ifelse(sexo == 1, 1, 0)
+  mulher_jovem = ifelse(sexo == 2 & idade <= 25, 1, 0),
+  homem = ifelse(sexo == 1, 1, 0),
+  homem_jovem = ifelse(sexo == 1 & idade<= 25, 1, 0)
 )]
 
 # Create Panel
 painel_homicidios = sim_do[, .(
   homicidios_total = sum(homicidio, na.rm = TRUE),
   homicidios_negro = sum(homicidio * negro, na.rm = TRUE),
+  homicidios_negro_jovem = sum(homicidio * negro_jovem, na.rm = TRUE),
   homicidios_branco = sum(homicidio * branco, na.rm = TRUE),
+  homicidios_branco_jovem = sum(homicidio * branco_jovem, na.rm = TRUE),
   homicidios_mulher = sum(homicidio * mulher, na.rm = TRUE),
-  homicidios_homem = sum(homicidio * homem, na.rm = TRUE)
+  homicidios_mulher_jovem  = sum(homicidio * mulher_jovem, na.rm = TRUE),
+  homicidios_homem = sum(homicidio * homem, na.rm = TRUE),
+  homicidios_homem_jovem  = sum(homicidio * homem_jovem, na.rm = TRUE)
 ), by = .(ano, sigla_uf_code_ocorrencia, id_municipio_ocorrencia)]
 
 # Changing names
@@ -87,6 +95,9 @@ painel_homicidios = painel_homicidios %>%
 # Excluding NAs in state
 painel_homicidios = painel_homicidios %>%
   filter(!is.na(state))
+
+# Excluding "MA" state from 2016 onwards (MA started similar program in 2016)
+painel_homicidios = painel_homicidios[!(state == "MA" & year >= 2016)]
 
 # Saving Clean Dataset
 save(painel_homicidios, file = paste0(DROPBOX_PATH, "build/datasus/output/clean_datasus.RData"))
