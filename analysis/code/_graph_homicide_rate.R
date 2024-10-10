@@ -20,8 +20,7 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                        labels = c("Bahia", "Other Northeast States")) +
     geom_vline(xintercept = 2011, linetype = "dashed", color = "black", size = 0.8) +
     labs(x = "Year",
-         y = "Homicide rate per 100,000 inhabitants",
-         color = "State") +
+         y = "Homicide rate per 100,000 inhabitants") +
     theme_minimal() +
     theme(
       plot.title = element_text(face = "bold", size = 16),
