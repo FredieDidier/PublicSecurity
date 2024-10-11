@@ -21,6 +21,15 @@ sim_do = fread(paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"))
 # Selecting Northeastern States that will compose the analysis (PB and PE had similar programs going on simultaneously)
 sim_do = sim_do[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE")]
 
+# Ensure the 'data_obito' column is in date format
+sim_do$data_obito <- as.Date(sim_do$data_obito, format = "%Y-%m-%d")
+
+# Define the cutoff date for Ceará (similar program started in August 2015)
+data_corte_ceara <- as.Date("2015-08-01")
+
+# Define the cutoff date for Maranhão (similar program started in 2016)
+data_corte_maranhao <- as.Date("2016-01-01")
+
 # Selecting Years that will compose the analysis
 sim_do = sim_do[ano %in% c(2007:2019)]
 
@@ -56,6 +65,12 @@ sim_do <- sim_do %>%
 sim_do = sim_do %>%
   relocate(ano, sigla_uf, sigla_uf_code_residencia, id_municipio_residencia,
            sigla_uf_code_ocorrencia, id_municipio_ocorrencia, homicidio)
+
+# Remove observations from Ceará after August 2015
+sim_do = sim_do[!(sigla_uf_code_ocorrencia == "CE" & sim_do$data_obito >= data_corte_ceara),]
+
+# Remove observations from Maranhão after 2016
+sim_do = sim_do[!(sigla_uf_code_ocorrencia == "MA" & sim_do$data_obito >= data_corte_maranhao),]
 
 # Creating Gender, Race and Young Individuals columns
 sim_do[, `:=`(
@@ -95,9 +110,6 @@ painel_homicidios = painel_homicidios %>%
 # Excluding NAs in state
 painel_homicidios = painel_homicidios %>%
   filter(!is.na(state))
-
-# Excluding "MA" state from 2016 onwards (MA started similar program in 2016)
-painel_homicidios = painel_homicidios[!(state == "MA" & year >= 2016)]
 
 # Saving Clean Dataset
 save(painel_homicidios, file = paste0(DROPBOX_PATH, "build/datasus/output/clean_datasus.RData"))
