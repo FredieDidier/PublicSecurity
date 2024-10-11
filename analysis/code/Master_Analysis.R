@@ -26,6 +26,9 @@ DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurityBahia/
 codedir <- file.path(GITHUB_PATH, "analysis",  "code")
 outdir <- file.path(GITHUB_PATH, "analysis",  "output")
 
+# Loading Main Data
+load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
+
 ###########################################
 #                                         #
 # 1) Gerar Graficos de taxa de homicidio
