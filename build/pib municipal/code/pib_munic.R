@@ -30,12 +30,12 @@ pib_munic_2007_2012 = pib_munic_2007_2012 %>%
 pib_munic_2010_2021 = read.xlsx(paste0(DROPBOX_PATH, "build/pib municipal/input/pib_munic_2010_2021.xlsx"))
 
 # Filtering data to appropriate years
-pib_munic_2013_2019 = pib_munic_2010_2021 %>%
+pib_munic_2013_2015 = pib_munic_2010_2021 %>%
   clean_names() %>%
-  filter(ano %in% c(2013:2019))
+  filter(ano %in% c(2013:2015))
 
 # Selecting important columns
-pib_munic_2013_2019 = pib_munic_2013_2019 %>%
+pib_munic_2013_2019 = pib_munic_2013_2015 %>%
   select(ano, codigo_do_municipio, produto_interno_bruto_a_precos_correntes_r_1_000,
          produto_interno_bruto_per_capita_a_precos_correntes_r_1_00) %>%
   rename(year = ano, municipality_code = codigo_do_municipio,
@@ -43,7 +43,7 @@ pib_munic_2013_2019 = pib_munic_2013_2019 %>%
          pib_municipal_per_capita = produto_interno_bruto_per_capita_a_precos_correntes_r_1_00)
 
 # Joining datasets
-pib_munic = bind_rows(pib_munic_2007_2012, pib_munic_2013_2019)
+pib_munic = bind_rows(pib_munic_2007_2012, pib_munic_2013_2015)
 
 # Creating Balanced Panel
 painel_balanceado = as.data.table(expand.grid(

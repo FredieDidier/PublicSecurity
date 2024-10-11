@@ -50,19 +50,6 @@ combined_data = combined_data %>%
 setDT(combined_data)
 population = combined_data
 
-# Now download year 2000 population using ribge package
-pop_2000 = populacao_municipios(2000, dir = paste0(DROPBOX_PATH, "build/population/input"))
-
-# Harmonizing names
-pop_2000 = pop_2000 %>%
-  select(cod_municipio, populacao) %>%
-  rename(municipality_code = cod_municipio,
-         population = populacao) %>%
-  mutate(year = 2000)
-
-# Joining dataframes
-population = bind_rows(population, pop_2000)
-
 population = population %>%
   mutate(municipality_code = as.numeric(municipality_code))
 
@@ -79,7 +66,7 @@ population = merge(population, state, by = "municipality_code", all.x = T)
 
 population = population %>%
   arrange(year) %>%
-  filter(year %in% c(2000, 2007:2019))
+  filter(year %in% c(2007:2015))
 
 # Saving Clean Data
 save(population, file = paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
