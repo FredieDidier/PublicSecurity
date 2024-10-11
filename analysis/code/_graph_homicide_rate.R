@@ -1,5 +1,5 @@
 # Function to create homicide rate graph
-create_homicide_graph <- function(data, category, GITHUB_PATH) {
+create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
   
   # Defining column names based on the category
   col_ba <- paste0("taxa_homicidios_por_100mil_", category, "_BA")
@@ -12,15 +12,35 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                  names_to = "state",
                  values_to = "rate")
   
+  # Calculate mean rate and log rate
+  graph_data <- graph_data %>%
+    group_by(state, year) %>%
+    mutate(
+      mean_rate = mean(rate, na.rm = TRUE),
+      log_rate = log(rate)
+    ) %>%
+    ungroup()
+  
+  # Determine y-axis variable and label based on graph_type
+  y_var <- switch(graph_type,
+                  "rate" = "rate",
+                  "mean" = "mean_rate",
+                  "log" = "log_rate")
+  
+  y_label <- switch(graph_type,
+                    "rate" = "Homicide rate per 100,000 inhabitants",
+                    "mean" = "Mean homicide rate per 100,000 inhabitants",
+                    "log" = "Log of homicide rate per 100,000 inhabitants")
+  
   # Creating the graph
-  graph <- ggplot(graph_data, aes(x = year, y = rate, color = state)) +
+  graph <- ggplot(graph_data, aes(x = year, y = !!sym(y_var), color = state)) +
     geom_line(size = 1.2) +
     geom_point(size = 3) +
     scale_color_manual(values = c("#FF3030", "#FFA07A"),
                        labels = c("Bahia", "Other Northeast States")) +
     geom_vline(xintercept = 2011, linetype = "dashed", color = "black", size = 0.8) +
     labs(x = "Year",
-         y = "Homicide rate per 100,000 inhabitants",
+         y = y_label,
          color = "") +
     theme_minimal() +
     theme(
@@ -31,7 +51,7 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
       panel.grid.minor = element_blank(),
       panel.border = element_rect(colour = "black", fill=NA, size=0.5)
     ) +
-    scale_x_continuous(breaks = seq(2007, 2019, by = 1))
+    scale_x_continuous(breaks = seq(2007, 2015, by = 1))
   
   # Saving the graph
   category_english <- switch(category,
@@ -45,15 +65,19 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                              "negro_jovem" = "young_non_white",
                              "branco_jovem" = "young_white")
   
-  ggsave(paste0(GITHUB_PATH, "analysis/output/graphs/homicide_rate_northeast_", category_english, ".pdf"), 
-         graph, width = 12, height = 8, dpi = 300)
+  filename <- paste0(GITHUB_PATH, "analysis/output/graphs/homicide_", graph_type, "_northeast_", category_english, ".pdf")
+  ggsave(filename, graph, width = 12, height = 8, dpi = 300)
   
   return(graph)
 }
 
-# Example of using the function for all categories
+# Example of using the function for all categories and graph types
 categories <- c("total", "homem", "mulher", "negro", "branco", "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
+graph_types <- c("rate", "mean", "log")
 
 for (category in categories) {
-  graph <- create_homicide_graph(main_data, category, GITHUB_PATH)
+  for (graph_type in graph_types) {
+    graph <- create_homicide_graph(main_data, category, GITHUB_PATH, graph_type)
+    print(paste("Created", graph_type, "graph for category:", category))
+  }
 }
