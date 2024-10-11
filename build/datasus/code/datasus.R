@@ -33,7 +33,7 @@ codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9))
 # Create column to identify homicides
 sim_do[, homicidio := as.integer(substr(causa_basica, 1, 3) %in% codigos_homicidio)]
 
-# Create a new column 'sigla_uf_code' that contains the first two digits of 'id_municipio_ocorrencia'
+# Create a new column 'sigla_uf_code_residencia' that contains the first two digits of 'id_municipio_residencia'
 sim_do$sigla_uf_code_residencia <- as.numeric(substr(sim_do$id_municipio_residencia, 1, 2))
 
 sim_do = sim_do %>%
