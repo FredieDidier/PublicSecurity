@@ -74,5 +74,8 @@ setnames(full_states, names(full_states)[-1], sub("homicidios_", "taxa_homicidio
 # Merge with main data
 main_data <- merge(main_data, full_states, by = "year", all.x = TRUE)
 
+# Calculating PIB per capita
+main_data[, `:=`(pib_municipal_per_capita = pib_municipal/population)]
+
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
