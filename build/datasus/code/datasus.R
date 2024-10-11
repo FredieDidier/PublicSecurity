@@ -7,14 +7,8 @@ library(tidyverse)
 library(janitor)
 
 query <- "SELECT * FROM `basedosdados.br_ms_sim.microdados`"
-sim_do <- download(query, path = "/Users/Fredie/Downloads/SIM DO/sim.do.csv",
+sim_do <- download(query, path = paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"),
                  billing_project_id = "sodium-surf-307721")
-
-# Saving Input Data
-sim_do = write.csv(paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"))
-
-rm(sim_do)
-
 # Loading Data
 sim_do = fread(paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"))
 

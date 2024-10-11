@@ -11,6 +11,7 @@ library(dplyr)
 load(paste0(DROPBOX_PATH, "build/datasus/output/clean_datasus.RData"))
 load(paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
 load(paste0(DROPBOX_PATH, "build/pib municipal/output/clean_pib_munic.RData"))
+load(paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
 
 # Adjusting dataset name
 datasus = painel_homicidios
@@ -76,6 +77,26 @@ main_data <- merge(main_data, full_states, by = "year", all.x = TRUE)
 
 # Calculating PIB per capita
 main_data[, `:=`(pib_municipal_per_capita = pib_municipal/population)]
+
+# Merging Main Data with IDH data
+main_data <- merge(main_data, idh, by = c("year", "municipality_code"), all.x = TRUE)
+
+main_data <- main_data %>%
+  group_by(municipality_code) %>%
+  arrange(year, .by_group = TRUE) %>%
+  mutate(across(expectativa_vida:idhm_r, ~ {
+    non_na_values <- .[!is.na(.)]
+    if (length(non_na_values) > 0) {
+      first_non_na <- first(non_na_values)
+      ifelse(is.na(.), first_non_na, .)
+    } else {
+      .
+    }
+  })) %>%
+  ungroup()
+
+# Excluding unecessary column
+main_data$populacao = NULL
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))

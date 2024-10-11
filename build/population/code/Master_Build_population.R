@@ -22,7 +22,7 @@ DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurityBahia/
 inpdir <- file.path(DROPBOX_PATH, "build", "population", "input")
 outdir <- file.path(DROPBOX_PATH, "build", "population", "output")
 codedir <- file.path(GITHUB_PATH, "build",  "population", "code")
-workfile_dir <- file.path(GITHUB_PATH, "build",  "workfile", "merge_data")
+workfile_dir <- file.path(GITHUB_PATH, "build",  "workfile")
 workfile_dir_out <- file.path(DROPBOX_PATH, "build",  "workfile", "output")
 
 ##################################
