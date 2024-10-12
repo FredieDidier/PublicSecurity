@@ -27,12 +27,13 @@ mun_codes = mun_codes %>%
 datasus = painel_mortalidade
 rm(painel_mortalidade)
 
+# Calculating population 2010 by state
+population[, population_2010_state :=sum(population[year == 2010]), by = state]
+
 # Prepare population and GDP data
-setDT(population)
-setDT(pib_munic)
 pop_pib <- merge(population, pib_munic, by = c("year", "municipality_code"), all.x = TRUE)
 pop_pib[, `:=`(
-  population_2010 = population[year == 2010]
+  population_2010_muni = population[year == 2010]
 ), by = municipality_code]
 
 # Filter relevant states
