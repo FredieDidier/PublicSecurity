@@ -13,6 +13,7 @@ load(paste0(DROPBOX_PATH, "build/datasus/output/clean_datasus.RData"))
 load(paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
 load(paste0(DROPBOX_PATH, "build/pib municipal/output/clean_pib_munic.RData"))
 load(paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
+load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -149,6 +150,35 @@ main_data$populacao = NULL
 
 # Merging Main Data with mun_codes
 main_data = merge(main_data, mun_codes, by = c("municipality_code", "state"), all.x = T)
+
+# Merging Main Data with area data
+main_data = merge(main_data, area, by = c("municipality_code"), all.x = T)
+
+# Calculating population density by state and year
+density_by_state <- main_data %>%
+  group_by(state, year) %>%
+  summarise(
+    population = sum(population, na.rm = TRUE),
+    area_km2 = sum(area_km2, na.rm = TRUE),
+    pop_density_state = population / area_km2,
+    .groups = "drop"
+  )
+
+# Calculating population density by municipality and year
+density_by_municipality <- main_data %>%
+  group_by(municipality_code, year) %>%
+  summarise(
+    population = sum(population, na.rm = TRUE),
+    area_km2 = sum(area_km2, na.rm = TRUE),
+    pop_density_municipality = population / area_km2,
+    .groups = "drop"
+  )
+
+# Merge
+main_data = merge(main_data, density_by_state, by = c( "year", "state", "population", "area_km2"), all.x = T)
+
+# Merge
+main_data = merge(main_data, density_by_municipality, by = c( "year", "municipality_code", "population", "area_km2"), all.x = T)
 
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_por_100mil_total_states,
