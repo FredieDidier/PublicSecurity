@@ -75,6 +75,10 @@ main_data <- merge(main_data, homicide_rate_state[, .(state, year, taxa_homicidi
                                                 taxa_homicidios_negro_jovem_por_100mil_total_states,
                                                 taxa_homicidios_branco_jovem_por_100mil_total_states)], by = c("year", "state"), all.x = TRUE)
 
+#############################################################################
+# Falta calcular taxa de mortalidade para outras categorias por estado e ano
+#############################################################################
+
 # Calculate homicide rates per 100,000 inhabitants for different categories by municipality and year
 homicide_rate_municipality = main_data[, .(
   homicidios_total = sum(homicidios_total, na.rm = TRUE),
@@ -109,6 +113,9 @@ main_data <- merge(main_data, homicide_rate_municipality[, .(municipality_code, 
                                                       taxa_homicidios_negro_jovem_por_100mil_total_munic,
                                                       taxa_homicidios_branco_jovem_por_100mil_total_munic)], by = c("year", "municipality_code"), all.x = TRUE)
 
+################################################################################
+# Falta calcular taxa de mortalidade para outras categorias por municipio e ano
+################################################################################
 
 # Function to calculate homicide rate
 calcular_taxa <- function(homicidios, populacao) {

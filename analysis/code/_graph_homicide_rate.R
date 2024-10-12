@@ -21,6 +21,10 @@ create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
     ) %>%
     ungroup()
   
+  # Filter years
+  graph_data = graph_data %>%
+    filter(year %in% (2007:2015))
+  
   # Determine y-axis variable and label based on graph_type
   y_var <- switch(graph_type,
                   "rate" = "rate",

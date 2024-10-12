@@ -66,7 +66,7 @@ population = merge(population, state, by = "municipality_code", all.x = T)
 
 population = population %>%
   arrange(year) %>%
-  filter(year %in% c(2007:2015))
+  filter(year %in% c(2007:2019))
 
 # Saving Clean Data
 save(population, file = paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
