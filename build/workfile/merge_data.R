@@ -111,6 +111,9 @@ setnames(rate_municipality,
          vars_to_calculate, 
          paste0("taxa_", vars_to_calculate, "_por_100mil_munic"))
 
+rate_municipality$population = NULL
+rate_state$population = NULL
+
 # Merge with main_data
 main_data <- merge(main_data, rate_municipality, by = c("year", "municipality_code"), all.x = TRUE)
 
@@ -120,7 +123,7 @@ main_data <- merge(main_data, rate_state, by = c("year", "state"), all.x = TRUE)
 # Calculate rates for Bahia and other states
 bahia <- main_data[state == "BA", 
                    lapply(.SD, calcular_taxa, population = population), 
-                   by = year, 
+                  by = year, 
                    .SDcols = vars_to_calculate
 ]
 setnames(bahia, names(bahia)[-1], paste0("taxa_", names(bahia)[-1], "_por_100mil_BA"))
@@ -182,7 +185,8 @@ main_data = merge(main_data, density_by_municipality, by = c( "year", "municipal
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
-           taxa_homicidios_total_por_100mil_munic, pop_density_state, pop_density_municipality)
+           taxa_homicidios_total_por_100mil_munic, taxa_homicidios_total_por_100mil_BA,
+           taxa_homicidios_total_por_100mil_other_states, pop_density_state, pop_density_municipality)
 
 # Excluding unecessary column
 main_data$area_km2 = NULL
