@@ -154,35 +154,36 @@ main_data = merge(main_data, mun_codes, by = c("municipality_code", "state"), al
 # Merging Main Data with area data
 main_data = merge(main_data, area, by = c("municipality_code"), all.x = T)
 
-# Calculating population density by state and year
+# Calculando a densidade populacional por estado e ano
 density_by_state <- main_data %>%
   group_by(state, year) %>%
   summarise(
-    population = sum(population, na.rm = TRUE),
-    area_km2 = sum(area_km2, na.rm = TRUE),
-    pop_density_state = population / area_km2,
+    population_state = sum(population, na.rm = TRUE),
+    area_km2_state = first(area_km2),
+    pop_density_state = population_state / area_km2_state,
     .groups = "drop"
   )
 
-# Calculating population density by municipality and year
+# Calculando a densidade populacional por município e ano
 density_by_municipality <- main_data %>%
   group_by(municipality_code, year) %>%
   summarise(
-    population = sum(population, na.rm = TRUE),
-    area_km2 = sum(area_km2, na.rm = TRUE),
-    pop_density_municipality = population / area_km2,
+    population_muni = sum(population, na.rm = TRUE),
+    area_km2_muni = first(area_km2),
+    pop_density_municipality = population_muni / area_km2_muni,
     .groups = "drop"
   )
 
 # Merge
-main_data = merge(main_data, density_by_state, by = c( "year", "state", "population", "area_km2"), all.x = T)
+main_data = merge(main_data, density_by_state, by = c( "year", "state"), all.x = T)
 
 # Merge
-main_data = merge(main_data, density_by_municipality, by = c( "year", "municipality_code", "population", "area_km2"), all.x = T)
+main_data = merge(main_data, density_by_municipality, by = c( "year", "municipality_code"), all.x = T)
 
+# Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_por_100mil_total_states,
-           taxa_homicidios_homem_por_100mil_total_munic)
+           taxa_homicidios_homem_por_100mil_total_munic, pop_density_state, pop_density_municipality)
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
