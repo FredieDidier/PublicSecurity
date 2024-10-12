@@ -2,8 +2,8 @@
 create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
   
   # Defining column names based on the category
-  col_ba <- paste0("taxa_homicidios_por_100mil_", category, "_BA")
-  col_others <- paste0("taxa_homicidios_por_100mil_", category, "_other_states")
+  col_ba <- paste0("taxa_homicidios_", category, "_por_100mil", "_BA")
+  col_others <- paste0("taxa_homicidios_", category, "_por_100mil", "_other_states")
   
   # Preparing data for the graph
   graph_data <- data %>%

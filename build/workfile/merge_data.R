@@ -42,99 +42,98 @@ pop_pib <- pop_pib[state %in% state_list]
 # Merge main data
 main_data <- merge(datasus, pop_pib, by = c("year", "municipality_code", "state"), all.x = TRUE)
 
-# Calculating homicide rate for  per 100,000 inhabitants for different categories by state and year
-homicide_rate_state <- main_data[, .(
-  homicidios_total = sum(homicidios_total, na.rm = TRUE),
-  population = sum(population, na.rm = TRUE),
-  homicidios_homem = sum(homicidios_homem, na.rm = TRUE),
-  homicidios_mulher = sum(homicidios_mulher, na.rm = TRUE),
-  homicidios_homem_jovem = sum(homicidios_homem_jovem, na.rm = TRUE),
-  homicidios_mulher_jovem = sum(homicidios_mulher_jovem, na.rm = TRUE),
-  homicidios_negro = sum(homicidios_negro, na.rm = TRUE),
-  homicidios_branco = sum(homicidios_branco, na.rm = TRUE),
-  homicidios_negro_jovem = sum(homicidios_negro_jovem, na.rm = TRUE),
-  homicidios_branco_jovem = sum(homicidios_branco_jovem, na.rm = TRUE)
-), by = .(state, year)][, `:=` (
-  taxa_homicidios_por_100mil_total_states = (homicidios_total / population) * 1e5,
-  taxa_homicidios_homem_por_100mil_total_states = (homicidios_homem / population) * 1e5,
-  taxa_homicidios_mulher_por_100mil_total_states = (homicidios_mulher / population) * 1e5,
-  taxa_homicidios_homem_jovem_por_100mil_total_states = (homicidios_homem_jovem / population) * 1e5,
-  taxa_homicidios_mulher_jovem_por_100mil_total_states = (homicidios_mulher_jovem / population) * 1e5,
-  taxa_homicidios_negro_por_100mil_total_states = (homicidios_negro / population) * 1e5,
-  taxa_homicidios_branco_por_100mil_total_states = (homicidios_branco / population) * 1e5,
-  taxa_homicidios_negro_jovem_por_100mil_total_states = (homicidios_negro_jovem / population) * 1e5,
-  taxa_homicidios_branco_jovem_por_100mil_total_states = (homicidios_branco_jovem / population) * 1e5
-)]
-
-main_data <- merge(main_data, homicide_rate_state[, .(state, year, taxa_homicidios_por_100mil_total_states,
-                                                taxa_homicidios_homem_por_100mil_total_states,
-                                                taxa_homicidios_mulher_por_100mil_total_states,
-                                                taxa_homicidios_homem_jovem_por_100mil_total_states,
-                                                taxa_homicidios_mulher_jovem_por_100mil_total_states,
-                                                taxa_homicidios_negro_por_100mil_total_states,
-                                                taxa_homicidios_branco_por_100mil_total_states,
-                                                taxa_homicidios_negro_jovem_por_100mil_total_states,
-                                                taxa_homicidios_branco_jovem_por_100mil_total_states)], by = c("year", "state"), all.x = TRUE)
-
-#############################################################################
-# Falta calcular taxa de mortalidade para outras categorias por estado e ano
-#############################################################################
-
-# Calculate homicide rates per 100,000 inhabitants for different categories by municipality and year
-homicide_rate_municipality = main_data[, .(
-  homicidios_total = sum(homicidios_total, na.rm = TRUE),
-  population = sum(population, na.rm = TRUE),
-  homicidios_homem = sum(homicidios_homem, na.rm = TRUE),
-  homicidios_mulher = sum(homicidios_mulher, na.rm = TRUE),
-  homicidios_homem_jovem = sum(homicidios_homem_jovem, na.rm = TRUE),
-  homicidios_mulher_jovem = sum(homicidios_mulher_jovem, na.rm = TRUE),
-  homicidios_negro = sum(homicidios_negro, na.rm = TRUE),
-  homicidios_branco = sum(homicidios_branco, na.rm = TRUE),
-  homicidios_negro_jovem = sum(homicidios_negro_jovem, na.rm = TRUE),
-  homicidios_branco_jovem = sum(homicidios_branco_jovem, na.rm = TRUE)
-), by = .(municipality_code, year)] [, `:=` (
-  taxa_homicidios_por_100mil_total_munic = (homicidios_total / population) * 1e5,
-  taxa_homicidios_homem_por_100mil_total_munic = (homicidios_homem / population) * 1e5,
-  taxa_homicidios_mulher_por_100mil_total_munic = (homicidios_mulher / population) * 1e5,
-  taxa_homicidios_homem_jovem_por_100mil_total_munic = (homicidios_homem_jovem / population) * 1e5,
-  taxa_homicidios_mulher_jovem_por_100mil_total_munic = (homicidios_mulher_jovem / population) * 1e5,
-  taxa_homicidios_negro_por_100mil_total_munic = (homicidios_negro / population) * 1e5,
-  taxa_homicidios_branco_por_100mil_total_munic = (homicidios_branco / population) * 1e5,
-  taxa_homicidios_negro_jovem_por_100mil_total_munic = (homicidios_negro_jovem / population) * 1e5,
-  taxa_homicidios_branco_jovem_por_100mil_total_munic = (homicidios_branco_jovem / population) * 1e5
-)]
-
-main_data <- merge(main_data, homicide_rate_municipality[, .(municipality_code, year, taxa_homicidios_por_100mil_total_munic,
-                                                      taxa_homicidios_homem_por_100mil_total_munic,
-                                                      taxa_homicidios_mulher_por_100mil_total_munic,
-                                                      taxa_homicidios_homem_jovem_por_100mil_total_munic,
-                                                      taxa_homicidios_mulher_jovem_por_100mil_total_munic,
-                                                      taxa_homicidios_negro_por_100mil_total_munic,
-                                                      taxa_homicidios_branco_por_100mil_total_munic,
-                                                      taxa_homicidios_negro_jovem_por_100mil_total_munic,
-                                                      taxa_homicidios_branco_jovem_por_100mil_total_munic)], by = c("year", "municipality_code"), all.x = TRUE)
-
-################################################################################
-# Falta calcular taxa de mortalidade para outras categorias por municipio e ano
-################################################################################
-
-# Function to calculate homicide rate
-calcular_taxa <- function(homicidios, populacao) {
-  (sum(homicidios, na.rm = TRUE) / sum(populacao, na.rm = TRUE)) * 1e5
+# Function to calculate rate per 100,000 inhabitants
+calcular_taxa <- function(x, population) {
+  (sum(x, na.rm = TRUE) / sum(population, na.rm = TRUE)) * 1e5
 }
 
+# List of variables to calculate rates for
+vars_to_calculate <- c(
+  # Homicídios totais e suas categorias
+  "homicidios_total", "homicidios_homem", "homicidios_mulher", 
+  "homicidios_homem_jovem", "homicidios_mulher_jovem", 
+  "homicidios_negro", "homicidios_branco", 
+  "homicidios_negro_jovem", "homicidios_branco_jovem",
+  
+  # Homicídios por arma de fogo e suas categorias
+  "homicidios_arma_fogo_total", "homicidios_arma_fogo_homem", "homicidios_arma_fogo_mulher",
+  "homicidios_arma_fogo_homem_jovem", "homicidios_arma_fogo_mulher_jovem",
+  "homicidios_arma_fogo_negro", "homicidios_arma_fogo_branco",
+  "homicidios_arma_fogo_negro_jovem", "homicidios_arma_fogo_branco_jovem",
+  
+  # Homicídios não determinados e suas categorias
+  "homicidios_nao_determinado_total", "homicidios_nao_determinado_homem", "homicidios_nao_determinado_mulher",
+  "homicidios_nao_determinado_homem_jovem", "homicidios_nao_determinado_mulher_jovem",
+  "homicidios_nao_determinado_negro", "homicidios_nao_determinado_branco",
+  "homicidios_nao_determinado_negro_jovem", "homicidios_nao_determinado_branco_jovem",
+  
+  # Suicídios e suas categorias
+  "suicidios_total", "suicidios_homem", "suicidios_mulher",
+  "suicidios_homem_jovem", "suicidios_mulher_jovem",
+  "suicidios_negro", "suicidios_branco",
+  "suicidios_negro_jovem", "suicidios_branco_jovem",
+  
+  # Intervenções legais e suas categorias
+  "intervencoes_legais_total", "intervencoes_legais_homem", "intervencoes_legais_mulher",
+  "intervencoes_legais_homem_jovem", "intervencoes_legais_mulher_jovem",
+  "intervencoes_legais_negro", "intervencoes_legais_branco",
+  "intervencoes_legais_negro_jovem", "intervencoes_legais_branco_jovem",
+  
+  # Acidentes de trânsito e suas categorias
+  "acidentes_transito_total", "acidentes_transito_homem", "acidentes_transito_mulher",
+  "acidentes_transito_homem_jovem", "acidentes_transito_mulher_jovem",
+  "acidentes_transito_negro", "acidentes_transito_branco",
+  "acidentes_transito_negro_jovem", "acidentes_transito_branco_jovem"
+)
+
+# Calculate rates by state and year
+rate_state <- main_data[, c(lapply(.SD, calcular_taxa, population = population),
+                            .(population = sum(population, na.rm = TRUE))),
+                        by = .(state, year), 
+                        .SDcols = vars_to_calculate
+]
+
+# Rename columns to indicate they are rates
+setnames(rate_state, 
+         vars_to_calculate, 
+         paste0("taxa_", vars_to_calculate, "_por_100mil_state"))
+
+# Calculate rates by municipality and year
+rate_municipality <- main_data[, 
+                               c(lapply(.SD, calcular_taxa, population = population),
+                                 .(population = sum(population, na.rm = TRUE))),
+                               by = .(municipality_code, year), 
+                               .SDcols = vars_to_calculate
+]
+
+# Rename columns to indicate they are rates
+setnames(rate_municipality, 
+         vars_to_calculate, 
+         paste0("taxa_", vars_to_calculate, "_por_100mil_munic"))
+
+# Merge with main_data
+main_data <- merge(main_data, rate_municipality, by = c("year", "municipality_code"), all.x = TRUE)
+
+# Merge with main_data
+main_data <- merge(main_data, rate_state, by = c("year", "state"), all.x = TRUE)
+
 # Calculate rates for Bahia and other states
-bahia <- main_data[state == "BA", lapply(.SD, calcular_taxa, populacao = population), 
-                   by = year, .SDcols = patterns("^homicidios_")]
-setnames(bahia, names(bahia)[-1], paste0(names(bahia)[-1], "_BA"))
+bahia <- main_data[state == "BA", 
+                   lapply(.SD, calcular_taxa, population = population), 
+                   by = year, 
+                   .SDcols = vars_to_calculate
+]
+setnames(bahia, names(bahia)[-1], paste0("taxa_", names(bahia)[-1], "_por_100mil_BA"))
 
-other_states <- main_data[state != "BA", lapply(.SD, calcular_taxa, populacao = population), 
-                          by = year, .SDcols = patterns("^homicidios_")]
-setnames(other_states, names(other_states)[-1], paste0(names(other_states)[-1], "_other_states"))
+other_states <- main_data[state != "BA", 
+                          lapply(.SD, calcular_taxa, population = population), 
+                          by = year, 
+                          .SDcols = vars_to_calculate
+]
+setnames(other_states, names(other_states)[-1], paste0("taxa_", names(other_states)[-1], "_por_100mil_other_states"))
 
-# Merge results
+# Merge results for Bahia and other states
 full_states <- merge(bahia, other_states, by = "year", all = TRUE)
-setnames(full_states, names(full_states)[-1], sub("homicidios_", "taxa_homicidios_por_100mil_", names(full_states)[-1]))
 
 # Merge with main data
 main_data <- merge(main_data, full_states, by = "year", all.x = TRUE)
@@ -182,8 +181,11 @@ main_data = merge(main_data, density_by_municipality, by = c( "year", "municipal
 
 # Relocating columns
 main_data = main_data %>%
-  relocate(year, municipality_code, municipality, state, taxa_homicidios_por_100mil_total_states,
-           taxa_homicidios_homem_por_100mil_total_munic, pop_density_state, pop_density_municipality)
+  relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
+           taxa_homicidios_total_por_100mil_munic, pop_density_state, pop_density_municipality)
+
+# Excluding unecessary column
+main_data$area_km2 = NULL
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
