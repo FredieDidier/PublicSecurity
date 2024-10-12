@@ -159,7 +159,7 @@ density_by_state <- main_data %>%
   group_by(state, year) %>%
   summarise(
     population_state = sum(population, na.rm = TRUE),
-    area_km2_state = first(area_km2),
+    area_km2_state = sum(area_km2, na.rm = TRUE),
     pop_density_state = population_state / area_km2_state,
     .groups = "drop"
   )
@@ -169,7 +169,7 @@ density_by_municipality <- main_data %>%
   group_by(municipality_code, year) %>%
   summarise(
     population_muni = sum(population, na.rm = TRUE),
-    area_km2_muni = first(area_km2),
+    area_km2_muni = sum(area_km2, na.rm = T),
     pop_density_municipality = population_muni / area_km2_muni,
     .groups = "drop"
   )
