@@ -32,5 +32,8 @@ idh <- idh %>%
            startsWith(as.character(municipality_code), "28") |
            startsWith(as.character(municipality_code), "29"))
 
+idh = idh %>%
+  filter(!is.nan(idhm))
+
 # Saving Clean Dataset
 save(idh, file = paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
