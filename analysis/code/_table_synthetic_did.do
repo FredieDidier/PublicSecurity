@@ -34,13 +34,13 @@ eststo sdid_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year trea
 graph export "synthetic_did_result.png", replace
 
 *create a table
-esttab sdid_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
+esttab sdid_1, starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
 
 * Executar a análise Synthetic Control com covariáveis
 eststo sc_1 sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality, projected) method(sc) vce(bootstrap) reps(100) graph
 
 *create a table
-esttab sdsc_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
+esttab sdsc_1, starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
 
 
 ssc install sdid_event, replace
