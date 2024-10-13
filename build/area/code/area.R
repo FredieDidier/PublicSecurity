@@ -44,6 +44,17 @@ area = area %>%
 
 area$municipality_code = as.integer(area$municipality_code)
 
+# Extraindo o centroide do polígono
+centroides <- st_centroid(area)
+
+# Extraindo as coordenadas de latitude e longitude do centroide
+coords_centroides <- st_coordinates(centroides)
+
+# Adicionando as colunas de latitude e longitude à base
+area <- area %>%
+  mutate(longitude = coords_centroides[, 1],  # Longitude é a 1ª coluna
+         latitude = coords_centroides[, 2])   # Latitude é a 2ª coluna
+
 # Removing geometry column
 area = st_drop_geometry(area)
 
