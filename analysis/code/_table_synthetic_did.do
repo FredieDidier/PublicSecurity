@@ -28,7 +28,7 @@ if r(N) == 0 {
 xtset municipality_code year
 
 * Executar a análise Synthetic DiD com covariáveis
-eststo sdid_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sdid) vce(bootstrap) reps(100) graph
+eststo sdid_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality, projected) method(sdid) vce(bootstrap) reps(100) graph
 
 * Salvar o gráfico
 graph export "synthetic_did_result.png", replace
@@ -37,7 +37,7 @@ graph export "synthetic_did_result.png", replace
 esttab sdid_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
 
 * Executar a análise Synthetic Control com covariáveis
-eststo sc_1 sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sc) vce(bootstrap) reps(100) graph
+eststo sc_1 sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality, projected) method(sc) vce(bootstrap) reps(100) graph
 
 *create a table
 esttab sdsc_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
@@ -45,4 +45,4 @@ esttab sdsc_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
 
 ssc install sdid_event, replace
 
-sdid_event taxa_homicidios_total_por_100m_1 municipality_code year treated, effects(5) placebo(4) covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed) vce(bootstrap) brep(50)
+sdid_event taxa_homicidios_total_por_100m_1 municipality_code year treated, effects(5) placebo(4) covariates(log_pib_municipal_per_capita pop_density_municipality) vce(bootstrap) brep(50)

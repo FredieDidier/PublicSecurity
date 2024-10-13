@@ -195,15 +195,6 @@ main_data$area_km2 = NULL
 # Criar a variável log(pib_municipal)
 main_data$log_pib_municipal_per_capita <- log(main_data$pib_municipal_per_capita)
 
-# Primeiro, vamos garantir que temos um único valor de IDHM para cada município (importante pra controle sintético)
-idhm_values <- main_data %>%
-  group_by(municipality_code) %>%
-  summarise(idhm_fixed = first(idhm[!is.na(idhm)]))
-
-# Agora, vamos juntar esse valor fixo de volta ao dataframe principal
-main_data <- main_data %>%
-  left_join(idhm_values, by = "municipality_code")
-
 main_data$state_code <- as.numeric(substr(main_data$municipality_code, 1, 2))
 
 # Definir first_treat como o ano do primeiro tratamento
