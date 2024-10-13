@@ -27,28 +27,20 @@ if r(N) == 0 {
 * Configurar os dados para o formato panel
 xtset municipality_code year
 
-ssc install estout, replace
-
-* Executar a análise DiD com covariáveis
-eststo did_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(did) vce(bootstrap) reps(100) g2_opt(ylabel(35(10)100) xlabel(2007(1)2015) ytitle("Homicide rate per 100000 inhabitants")) graph
-
-*create a table
-esttab did_1, starlevels(* 0.10 ** 0.05 *** 0.01) b(%-9.3f) se(%-9.3f)
-
-* Executar a análise Synthetic Control com covariáveis
-eststo sc_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sc) vce(bootstrap) reps(100) g2_opt(ylabel(35(10)100) xlabel(2007(1)2015) ytitle("Homicide rate per 100000 inhabitants")) graph
-
-*create a table
-esttab sc_1, starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
-
 * Executar a análise Synthetic DiD com covariáveis
-eststo sdid_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sdid) vce(bootstrap) reps(100)g2_opt(ylabel(35(10)100) xlabel(2007(1)2015) ytitle("Homicide rate per 100000 inhabitants"))  graph
+eststo sdid_1: sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sdid) vce(bootstrap) reps(100) graph
 
 * Salvar o gráfico
 graph export "synthetic_did_result.png", replace
 
 *create a table
-esttab sdid_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f
+esttab sdid_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
+
+* Executar a análise Synthetic Control com covariáveis
+eststo sc_1 sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, covariates(log_pib_municipal_per_capita pop_density_municipality idhm_fixed, projected) method(sc) vce(bootstrap) reps(100) graph
+
+*create a table
+esttab sdsc_1 starlevel ("*" 0.10 "**" 0.05 "***" 0.01) b(%-9.3f) se(%-9.3f)
 
 
 ssc install sdid_event, replace
