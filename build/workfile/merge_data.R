@@ -206,5 +206,10 @@ main_data <- main_data %>%
 
 main_data$state_code <- as.numeric(substr(main_data$municipality_code, 1, 2))
 
+# Definir first_treat como o ano do primeiro tratamento
+main_data <- main_data %>%
+  mutate(first_treat = ifelse(state_code == 29, 2011, 0))  # Estado BA (29) foi tratado em 2011, outros nunca tratados (0)
+
+
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
