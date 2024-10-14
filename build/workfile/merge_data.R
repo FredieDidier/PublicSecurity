@@ -14,6 +14,7 @@ load(paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
 load(paste0(DROPBOX_PATH, "build/pib municipal/output/clean_pib_munic.RData"))
 load(paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
 load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
+load(paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -28,10 +29,10 @@ datasus = painel_mortalidade
 rm(painel_mortalidade)
 
 # Calculating population 2010 by state
-population[, population_2010_state :=sum(population[year == 2010]), by = state]
+clean_population[, population_2010_state := sum(population[year == 2010]), by = state]
 
 # Prepare population and GDP data
-pop_pib <- merge(population, pib_munic, by = c("year", "municipality_code"), all.x = TRUE)
+pop_pib <- merge(clean_population, pib_munic, by = c("year", "municipality_code"), all.x = TRUE)
 pop_pib[, `:=`(
   population_2010_muni = population[year == 2010]
 ), by = municipality_code]
@@ -183,12 +184,6 @@ main_data = merge(main_data, density_by_state, by = c( "year", "state"), all.x =
 # Merge
 main_data = merge(main_data, density_by_municipality, by = c( "year", "municipality_code"), all.x = T)
 
-# Relocating columns
-main_data = main_data %>%
-  relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
-           taxa_homicidios_total_por_100mil_munic, taxa_homicidios_total_por_100mil_BA,
-           taxa_homicidios_total_por_100mil_other_states, pop_density_state, pop_density_municipality)
-
 # Excluding unecessary column
 main_data$area_km2 = NULL
 
@@ -197,10 +192,16 @@ main_data$log_pib_municipal_per_capita <- log(main_data$pib_municipal_per_capita
 
 main_data$state_code <- as.numeric(substr(main_data$municipality_code, 1, 2))
 
-# Definir first_treat como o ano do primeiro tratamento
-main_data <- main_data %>%
-  mutate(first_treat = ifelse(state_code == 29, 2011, 0))  # Estado BA (29) foi tratado em 2011, outros nunca tratados (0)
+# Merging Main Data with RAIS
+main_data = merge(main_data, clean_rais, by = c("year", "municipality_code", "state"), all.x = T)
 
+# Relocating columns
+main_data = main_data %>%
+  relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
+           taxa_homicidios_total_por_100mil_munic, taxa_homicidios_total_por_100mil_BA,
+           taxa_homicidios_total_por_100mil_other_states, pop_density_state, pop_density_municipality,
+           total_vinculos_state, total_vinculos_munic, total_estabelecimentos_state, total_estabelecimentos_munic,
+           log_pib_municipal_per_capita)
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))

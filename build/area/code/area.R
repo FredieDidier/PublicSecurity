@@ -8,7 +8,7 @@ library(units)
 
 # Define the dictionary for UF codes and abbreviations
 uf_dict <- c("21" = "MA", "22" = "PI", "23" = "CE", 
-             "24" = "RN", "27" = "AL", "28" = "SE", 
+             "24" = "RN", "25" = "PB", "26" = "PE", "27" = "AL", "28" = "SE", 
              "29" = "BA")
 
 # Function to read a single shapefile

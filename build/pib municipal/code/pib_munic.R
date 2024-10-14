@@ -9,19 +9,19 @@ library(janitor)
 pib_munic_1999_2012 = read.xlsx(paste0(DROPBOX_PATH, "build/pib municipal/input/pib_munic_1999_2012.xlsx"))
 
 # Filtering data to appropriate years
-pib_munic_2007_2012 = pib_munic_1999_2012 %>%
+pib_munic_2000_2012 = pib_munic_1999_2012 %>%
   clean_names() %>%
-  filter(ano_de_referencia %in% c(2007:2012))
+  filter(ano_de_referencia %in% c(2000:2012))
 
 # Selecting important columns
-pib_munic_2007_2012 =  pib_munic_2007_2012 %>%
+pib_munic_2000_2012 =  pib_munic_2000_2012 %>%
   select(ano_de_referencia, codigo_do_municipio, produto_interno_bruto_a_precos_correntes_r_1_000,
          produto_interno_bruto_per_capita_dado_disponivel_somente_para_o_ultimo_ano_da_serie_r_1_00) %>%
   rename(year = ano_de_referencia, municipality_code = codigo_do_municipio,
          pib_municipal = produto_interno_bruto_a_precos_correntes_r_1_000,
          pib_municipal_per_capita = produto_interno_bruto_per_capita_dado_disponivel_somente_para_o_ultimo_ano_da_serie_r_1_00)
 
-pib_munic_2007_2012 = pib_munic_2007_2012 %>%
+pib_munic_2000_2012 = pib_munic_2000_2012 %>%
   mutate(year = as.numeric(year),
          municipality_code = as.numeric(municipality_code))
 
@@ -43,7 +43,7 @@ pib_munic_2013_2019 = pib_munic_2013_2019 %>%
          pib_municipal_per_capita = produto_interno_bruto_per_capita_a_precos_correntes_r_1_00)
 
 # Joining datasets
-pib_munic = bind_rows(pib_munic_2007_2012, pib_munic_2013_2019)
+pib_munic = bind_rows(pib_munic_2000_2012, pib_munic_2013_2019)
 
 # Creating Balanced Panel
 painel_balanceado = as.data.table(expand.grid(

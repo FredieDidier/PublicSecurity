@@ -8,14 +8,14 @@ use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurityBahia/build/workfi
 * Extrair o código do estado a partir do código do município
 
 * Filtrar os dados para o período de interesse
-keep if year >= 2007 & year <= 2015
+* keep if year >= 2007 & year <= 2015
 
 * Criar variável de tratamento (Bahia a partir de 2011)
-gen treated = (state_code == 29 & year >= 2011)
+* gen treated = (state_code == 29 & year >= 2011)
 
 * Identificar municípios com dados para todos os anos
 bysort municipality_code: gen n_years = _N
-keep if n_years == 9  // 9 anos de 2007 a 2015
+keep if n_years == 9  // 9 anos de 2000 a 2020
 
 * Verificar se ainda há municípios tratados após o balanceamento
 count if state_code == 29

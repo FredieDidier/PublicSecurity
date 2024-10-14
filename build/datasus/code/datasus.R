@@ -12,11 +12,11 @@ sim_do <- download(query, path = paste0(DROPBOX_PATH, "build/datasus/input/sim.d
 # Loading Data
 sim_do = fread(paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"))
 
-# Selecting Northeastern States that will compose the analysis (PB and PE had similar programs going on simultaneously)
-sim_do = sim_do[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE")]
+# Selecting Northeastern States that will compose the analysis
+sim_do = sim_do[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE", "PB", "PE")]
 
 # Selecting years
-sim_do = sim_do[ano %in% c(2007:2019)]
+sim_do = sim_do[ano %in% c(2000:2019)]
 
 # Create sequences of codes for different categories
 codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9))

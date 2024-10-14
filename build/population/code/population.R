@@ -66,7 +66,21 @@ population = merge(population, state, by = "municipality_code", all.x = T)
 
 population = population %>%
   arrange(year) %>%
-  filter(year %in% c(2007:2019))
+  filter(year %in% c(2001:2019))
+
+# Loading Population 2000
+pop2000 = populacao_municipios(2000)
+pop2000 = pop2000 %>%
+  rename(municipality_code = cod_municipio,
+         state = uf,
+         population = populacao) %>%
+  select(municipality_code, state, population) %>%
+  mutate(year = 2000)
+
+pop2000$municipality_code = as.numeric(pop2000$municipality_code)
+
+# Binding
+clean_population = bind_rows(population, pop2000)
 
 # Saving Clean Data
-save(population, file = paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
+save(clean_population, file = paste0(DROPBOX_PATH, "build/population/output/clean_population.RData"))
