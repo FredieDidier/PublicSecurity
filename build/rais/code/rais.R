@@ -7,6 +7,13 @@ library(tidyverse)
 
 query = "SELECT *
 FROM basedosdados.br_me_rais.microdados_estabelecimentos
+WHERE ano BETWEEN 1996 AND 2002"
+
+rais = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"),
+                billing_project_id = "teste-320002")
+
+query = "SELECT *
+FROM basedosdados.br_me_rais.microdados_estabelecimentos
 WHERE ano BETWEEN 2003 AND 2022"
 
 rais = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais.csv"),
@@ -14,12 +21,18 @@ rais = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais.csv"),
 
 # Loading Data
 rais = fread(paste0(DROPBOX_PATH, "build/rais/input/rais.csv"))
+rais_1996_2002 = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"))
 
-# Selecting Northeastern States that will compose the analysis (PB and PE had similar programs going on simultaneously)
-rais = rais[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE")]
+# Binding
+rais_list = list(rais, rais_1996_2002)
+rais = rbindlist(rais_list, fill = T)
+rm(rais_list, rais_1996_2002)
+
+# Selecting Northeastern States that will compose the analysis
+rais = rais[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE", "PE", "PB")]
 
 # Selecting years
-rais = rais[ano %in% c(2007:2015)]
+rais = rais[ano %in% c(2000:2019)]
 
 # 1. Quantidade de vínculos por município e ano
 vinculos_municipio_ano = rais[, .(total_vinculos = sum(quantidade_vinculos_ativos)), 
