@@ -122,23 +122,37 @@ main_data <- merge(main_data, rate_municipality, by = c("year", "municipality_co
 # Merge with main_data
 main_data <- merge(main_data, rate_state, by = c("year", "state"), all.x = TRUE)
 
-# Calculate rates for Bahia and other states
-bahia <- main_data[state == "BA", 
-                   lapply(.SD, calcular_taxa, population = population), 
-                  by = year, 
-                   .SDcols = vars_to_calculate
-]
-setnames(bahia, names(bahia)[-1], paste0("taxa_", names(bahia)[-1], "_por_100mil_BA"))
+# List of states to calculate individual rates
+target_states <- c("BA", "PE", "PB", "MA", "CE")
 
-other_states <- main_data[state != "BA", 
+# Function to calculate rates for a specific state
+calculate_state_rate <- function(state_code) {
+  state_data <- main_data[state == state_code, 
+                          lapply(.SD, calcular_taxa, population = population), 
+                          by = year, 
+                          .SDcols = vars_to_calculate
+  ]
+  setnames(state_data, names(state_data)[-1], paste0("taxa_", names(state_data)[-1], "_por_100mil_", state_code))
+  return(state_data)
+}
+
+# Calculate rates for each target state
+state_rates <- lapply(target_states, calculate_state_rate)
+
+# Combine all state rates
+all_state_rates <- Reduce(function(x, y) merge(x, y, by = "year", all = TRUE), state_rates)
+
+# Calculate rates for other states
+other_states <- main_data[!state %in% target_states, 
                           lapply(.SD, calcular_taxa, population = population), 
                           by = year, 
                           .SDcols = vars_to_calculate
 ]
 setnames(other_states, names(other_states)[-1], paste0("taxa_", names(other_states)[-1], "_por_100mil_other_states"))
 
+
 # Merge results for Bahia and other states
-full_states <- merge(bahia, other_states, by = "year", all = TRUE)
+full_states <- merge(all_state_rates, other_states, by = "year", all = TRUE)
 
 # Merge with main data
 main_data <- merge(main_data, full_states, by = "year", all.x = TRUE)

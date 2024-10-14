@@ -28,6 +28,8 @@ idh <- idh %>%
            startsWith(as.character(municipality_code), "22") |
            startsWith(as.character(municipality_code), "23") |
            startsWith(as.character(municipality_code), "24") |
+           startsWith(as.character(municipality_code), "25") |
+           startsWith(as.character(municipality_code), "26") |
            startsWith(as.character(municipality_code), "27") |
            startsWith(as.character(municipality_code), "28") |
            startsWith(as.character(municipality_code), "29"))
