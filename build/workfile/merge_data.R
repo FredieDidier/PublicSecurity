@@ -1,7 +1,7 @@
 # Clear environment and set paths
 rm(list = ls())
-GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurityBahia/"
-DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurityBahia/"
+GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurity/"
+DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
 # Load necessary libraries
 library(data.table)
