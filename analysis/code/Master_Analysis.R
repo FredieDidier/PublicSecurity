@@ -19,8 +19,8 @@ library(ggplot2)
 # Folder Path
 ####################
 
-GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurityBahia/"
-DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurityBahia/"
+GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurity/"
+DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
 # Make sure to set all macro globals
 codedir <- file.path(GITHUB_PATH, "analysis",  "code")
