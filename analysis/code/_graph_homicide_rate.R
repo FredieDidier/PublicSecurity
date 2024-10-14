@@ -67,11 +67,11 @@ create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
   # Ajustar posições das anotações pra melhor visibilidade
   annotations <- data.frame(
     x = c(2007, 2011, 2011, 2015, 2016),
-    y = c(max(graph_data[[y_var]], na.rm = TRUE) * 0.95,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.9,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.85,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.8,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.5),  # Movido MA para 50% do máximo
+    y = c(max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
+          max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
+          max(graph_data[[y_var]], na.rm = TRUE) * 0.15,
+          max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
+          max(graph_data[[y_var]], na.rm = TRUE) * 0.2),
     label = c("PE", "BA", "PB", "CE", "MA"),
     color = c("#0074D9", "#FF4136", "#FF851B", "#FFDC00", "#2ECC40")
   )
