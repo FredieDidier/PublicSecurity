@@ -91,6 +91,10 @@ delegacias$distancia_delegacia_km <- as.numeric(delegacias$distancia_delegacia_k
 # Arredondar a distância para 2 casas decimais
 delegacias$distancia_delegacia_km <- round(delegacias$distancia_delegacia_km, 2)
 
+# Save map version of the data
+delegacias$delegacia_mais_proxima = NULL
+st_write(delegacias, paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp"), append = F)
+
 delegacias = delegacias %>%
   rename(municipality_code = CD_GEOCODM,
          state = UF) %>%

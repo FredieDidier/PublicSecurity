@@ -2,6 +2,7 @@
 # Estrutura:
 #
 # 1. Gerar gráficos de taxa de homicidio.
+# 2. Gerar mapa de proximidade a delegacias.
 
 ###########
 #  Setup  #
@@ -10,10 +11,13 @@
 # Limpeza do environnment
 
 rm(list = ls())
-
-# Pacotes utilizados
+# Carregar pacotes
+library(dplyr)     # Para manipulação de dados
+library(stringr)   # Para manipulação de strings
+library(haven)     # Para salvar o dataframe no formato .dta (Stata)
 library(tidyverse)
 library(ggplot2)
+library(sf)
 
 ####################
 # Folder Path
@@ -28,11 +32,6 @@ outdir <- file.path(GITHUB_PATH, "analysis",  "output")
 
 # Loading Main Data
 load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
-
-# Carregar pacotes
-library(dplyr)     # Para manipulação de dados
-library(stringr)   # Para manipulação de strings
-library(haven)     # Para salvar o dataframe no formato .dta (Stata)
 
 # Função para encurtar os nomes das variáveis
 encurtar_nome <- function(nome, sufixo = "") {
@@ -124,4 +123,12 @@ write_dta(main_data_stata, paste0(DROPBOX_PATH, "build/workfile/output/main_data
 ###########################################
 
 source(paste0(GITHUB_PATH, "analysis/code/_graph_homicide_rate.R"))
+
+###########################################
+#                                         #
+# 1) Gerar mapa de proximidade a delegacias
+#                                         #
+###########################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_map_police_station_proximity.R"))
 
