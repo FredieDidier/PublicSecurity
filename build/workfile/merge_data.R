@@ -216,7 +216,7 @@ main_data = main_data %>%
            taxa_homicidios_total_por_100mil_munic, taxa_homicidios_total_por_100mil_BA,
            taxa_homicidios_total_por_100mil_other_states, pop_density_state, pop_density_municipality,
            total_vinculos_state, total_vinculos_munic, total_estabelecimentos_state, total_estabelecimentos_munic,
-           log_pib_municipal_per_capita, population_2000_muni, population_2000_muni)
+           log_pib_municipal_per_capita, population_2000_muni, population_2010_muni)
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
