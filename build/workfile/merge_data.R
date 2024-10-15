@@ -15,6 +15,7 @@ load(paste0(DROPBOX_PATH, "build/pib municipal/output/clean_pib_munic.RData"))
 load(paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
 load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
 load(paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
+load(paste0(DROPBOX_PATH, "build/delegacias/output/delegacias.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -210,13 +211,19 @@ main_data$state_code <- as.numeric(substr(main_data$municipality_code, 1, 2))
 # Merging Main Data with RAIS
 main_data = merge(main_data, clean_rais, by = c("year", "municipality_code", "state"), all.x = T)
 
+# Merging Main Data with Delegacias
+delegacias$state = NULL
+delegacias$municipality_code = as.integer(delegacias$municipality_code)
+main_data = merge(main_data, delegacias, by = c("municipality_code"), all.x = T)
+
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
            taxa_homicidios_total_por_100mil_munic, taxa_homicidios_total_por_100mil_BA,
            taxa_homicidios_total_por_100mil_other_states, pop_density_state, pop_density_municipality,
            total_vinculos_state, total_vinculos_munic, total_estabelecimentos_state, total_estabelecimentos_munic,
-           log_pib_municipal_per_capita, population_2000_muni, population_2010_muni)
+           log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
+           id_delegacia, distancia_delegacia_km)
 
 # Save result
 save(main_data, file = paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
