@@ -14,6 +14,9 @@
 * sdid: This Stata package implements the synthetic difference-in-differences estimation procedure, along with a range of inference and graphing procedures, following Arkhangelsky et al., (2021). Arkhangelsky et al. provide a code implementation in R, with accompanying materials here: synthdid. Here we provide a native Stata implementation, principally written in Mata. This package extends the funcionality of the original R package, allowing very simply for estimation in contexts with staggered adoption over multiple treatment periods (as well as in a single adoption period as in the original code). We can also estimate SC and DID
 
 * sdid_event: If you wish to implement Event Study analysis with SDiD, please check out
-*twowayfeweights
+
+* twowayfeweights
+
+* staggered: The staggered package computes the efficient estimator for settings with randomized treatment timing, based on the theoretical results in Roth and Sant'Anna (2023). If units are randomly (or quasi-randomly) assigned to begin treatment at different dates, the efficient estimator can potentially offer substantial gains over methods that only impose parallel trends.
 
 
