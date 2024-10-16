@@ -1,12 +1,12 @@
 
-map = st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp"))
-map = map %>%
+delegacias = st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp"))
+delegacias = delegacias %>%
   rename(distancia_delegacia_km = dstnc__)
 
 # Criar o mapa
 map = ggplot() +
   geom_sf(data = delegacias, aes(fill = distancia_delegacia_km), color = "white", size = 0.1) +
-  scale_fill_viridis_c(option = "plasma", name = "Distance to \nPolice Station (km)", 
+  scale_fill_viridis_c(option = "plasma", name = "Distance to Police Station \nin Straight Line (km)", 
                        direction = -1, 
                        breaks = seq(0, max(delegacias$distancia_delegacia_km, na.rm = TRUE), length.out = 5),
                        labels = function(x) sprintf("%.0f", x)) +
@@ -17,9 +17,6 @@ map = ggplot() +
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank()
-  ) +
-  labs(
-    title = "Proximity of Northeast Municipalities to Police Stations"
   )
 
 # Salvar o mapa como um arquivo PDF

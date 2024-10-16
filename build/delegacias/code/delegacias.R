@@ -3,7 +3,7 @@
 # Carregar as bibliotecas necessárias
 library(sf)
 library(osmdata)
-library(dplyr)
+library(tidyverse)
 library(units)
 library(janitor)
 
