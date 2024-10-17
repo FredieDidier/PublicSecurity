@@ -49,7 +49,8 @@ replace treatment_year = 2016 if state == "MA"
 gen rel_year = year - treatment_year
 
 * Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
-csdid taxa_homicidios_total_por_100m_1 treated, ivar(municipality_code) time(year) weight(popultion_2000_muni) ///
-    gvar(treatment_year) method(dripw) cluster(state_code)
-
-
+csdid taxa_homicidios_total_por_100m_1 treated, ivar(municipality_code) time(year) weight(population_2000_muni) ///
+ gvar(treatment_year) method(dripw) cluster(state_code)
+ 
+estat event
+csdid_plot, title("Event Study")
