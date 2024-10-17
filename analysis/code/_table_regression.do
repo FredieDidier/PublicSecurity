@@ -30,7 +30,7 @@ ssc install sdid
 net install staggered, from(https://raw.githubusercontent.com/jonathandroth/staggered/main/stata)
 
 * Load data
-use /Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta, clear
+use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
 
 * Criar a variável de tratamento
 gen treated = 0
