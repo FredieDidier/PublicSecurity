@@ -19,4 +19,37 @@
 
 * staggered: The staggered package computes the efficient estimator for settings with randomized treatment timing, based on the theoretical results in Roth and Sant'Anna (2023). If units are randomly (or quasi-randomly) assigned to begin treatment at different dates, the efficient estimator can potentially offer substantial gains over methods that only impose parallel trends.
 
+* Instalação dos pacotes necessários
+ssc install did_imputation
+ssc install event_plot
+ssc install did_multiplegt
+ssc install csdid
+ssc install drdid
+ssc install eventstudyinteract
+ssc install sdid
+net install staggered, from(https://raw.githubusercontent.com/jonathandroth/staggered/main/stata)
+
+* Load data
+use /Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta, clear
+
+* Criar a variável de tratamento
+gen treated = 0
+replace treated = 1 if (state == "PE" & year >= 2007) | (state == "BA" & year >= 2011) | ///
+                      (state == "PB" & year >= 2011) | (state == "CE" & year >= 2015) | ///
+                      (state == "MA" & year >= 2016)
+
+* Criar a variável de ano de adoção (staggered treatment)
+gen treatment_year = 0 // Inicializa todos os estados como não tratados
+replace treatment_year = 2007 if state == "PE"
+replace treatment_year = 2011 if state == "BA" | state == "PB"
+replace treatment_year = 2015 if state == "CE"
+replace treatment_year = 2016 if state == "MA"
+
+* Criar a variável de tempo relativo ao tratamento
+gen rel_year = year - treatment_year
+
+* Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
+csdid taxa_homicidios_total_por_100m_1 treated, ivar(municipality_code) time(year) weight(popultion_2000_muni) ///
+    gvar(treatment_year) method(dripw) cluster(state_code)
+
 
