@@ -32,18 +32,20 @@ net install staggered, from(https://raw.githubusercontent.com/jonathandroth/stag
 * Load data
 use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
 
+* fillin municipality_code year
+
 * Criar a variável de tratamento
 gen treated = 0
-replace treated = 1 if (state == "PE" & year >= 2007) | (state == "BA" & year >= 2011) | ///
+replace treated = 1 if (state == "PE" & year >= 2007) |(state == "BA" & year >= 2011) | ///
                       (state == "PB" & year >= 2011) | (state == "CE" & year >= 2015) | ///
                       (state == "MA" & year >= 2016)
 
 * Criar a variável de ano de adoção (staggered treatment)
 gen treatment_year = 0 // Inicializa todos os estados como não tratados
-replace treatment_year = 2007 if state == "PE"
 replace treatment_year = 2011 if state == "BA" | state == "PB"
 replace treatment_year = 2015 if state == "CE"
 replace treatment_year = 2016 if state == "MA"
+replace treatment_year = 2007 if state == "PE"
 
 * Criar a variável de tempo relativo ao tratamento
 gen rel_year = year - treatment_year
@@ -54,3 +56,61 @@ csdid taxa_homicidios_total_por_100m_1 treated, ivar(municipality_code) time(yea
  
 estat event
 csdid_plot, title("Event Study")
+
+gen pib_temp = pib_municipal_per_capita if year == 2006
+egen pibpc2006 = max(pib_temp), by(municipality_code)
+
+* Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
+csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality total_estabelecimentos_munic total_vinculos_munic, ivar(municipality_code) time(year) weight(population_2000_muni) ///
+ gvar(treatment_year) method(dripw) cluster(state_code)
+ 
+estat event
+csdid_plot, title("Event Study")
+
+
+* event study simples
+
+forvalues l = 0/12 {
+	gen L`l'event = rel_year==`l'
+}
+forvalues l = 1/16 {
+	gen F`l'event = rel_year==-`l'
+}
+drop F1event // normalize K=-1 (and also K=-15) to zero
+
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-16(1)12) ///
+	title("OLS"))
+	
+	
+* event study simples com controles
+
+forvalues l = 0/12 {
+	gen L`l'event = rel_year==`l'
+}
+forvalues l = 1/16 {
+	gen F`l'event = rel_year==-`l'
+}
+drop F1event // normalize K=-1 (and also K=-15) to zero
+
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality total_vinculos_munic total_estabelecimentos_munic log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-16(1)12) ///
+	title("OLS"))
+	
+* estimar
+did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality total_vinculos_munic total_estabelecimentos_munic) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
+
+gen lastunit = treatment_year == .
+
+* estimar sun
+eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit)
+
+event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the event") ytitle("Average causal effect") xlabel(-16(1)12) ///
+	title("Sun and Abraham (2020)")) stub_lag(L#event) stub_lead(F#event) together
+	
+
+	* estimar sun
+eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit) covariates(pop_density_municipality log_pib_municipal_per_capita total_vinculos_munic total_estabelecimentos_munic)
+
+event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the event") ytitle("Average causal effect") xlabel(-16(1)12) ///
+	title("Sun and Abraham (2020)")) stub_lag(L#event) stub_lead(F#event) together
