@@ -69,7 +69,7 @@ gen pib_temp = pib_municipal_per_capita if year == 2006
 egen pibpc2006 = max(pib_temp), by(municipality_code)
 
 * Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
-csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp, ivar(municipality_code) time(year) weight(population_2000_muni) ///
+csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp log_families_bf, ivar(municipality_code) time(year) weight(population_2000_muni) ///
 gvar(treatment_year) method(dripw) cluster(state_code)
  
 estat event
@@ -106,7 +106,7 @@ event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt
 	title("OLS"))
 	
 * estimar
-did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est log_bf_value_families log_families_bf log_average_value_bf) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
+did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est log_families_bf) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
 
 gen lastunit = treatment_year == .
 
