@@ -32,6 +32,8 @@ net install staggered, from(https://raw.githubusercontent.com/jonathandroth/stag
 * Load data
 use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
 
+gen pop_den_mun = pop_density_municipality
+gen log_pib_mun_p_capita = log_pib_municipal_per_capita
 gen log_formal_emp = log(total_vinculos_munic)
 gen log_formal_est = log(total_estabelecimentos_munic)
 gen log_families_bf = log(families_bf +1)
@@ -67,7 +69,7 @@ gen pib_temp = pib_municipal_per_capita if year == 2006
 egen pibpc2006 = max(pib_temp), by(municipality_code)
 
 * Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
-csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_est, ivar(municipality_code) time(year) weight(population_2000_muni) ///
+csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp, ivar(municipality_code) time(year) weight(population_2000_muni) ///
 gvar(treatment_year) method(dripw) cluster(state_code)
  
 estat event
