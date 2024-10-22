@@ -34,6 +34,9 @@ use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/ou
 
 gen log_formal_emp = log(total_vinculos_munic)
 gen log_formal_est = log(total_estabelecimentos_munic)
+gen log_families_bf = log(families_bf +1)
+gen log_bf_value_families = log(bf_value_families + 1)
+gen log_average_value_bf = log(average_value_bf + 1)
 
 * fillin municipality_code year
 
@@ -65,7 +68,7 @@ egen pibpc2006 = max(pib_temp), by(municipality_code)
 
 * Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
 csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_est, ivar(municipality_code) time(year) weight(population_2000_muni) ///
- gvar(treatment_year) method(dripw) cluster(state_code)
+gvar(treatment_year) method(dripw) cluster(state_code)
  
 estat event
 csdid_plot, title("Event Study")
@@ -101,7 +104,7 @@ event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt
 	title("OLS"))
 	
 * estimar
-did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
+did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est log_bf_value_families log_families_bf log_average_value_bf) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
 
 gen lastunit = treatment_year == .
 
@@ -113,7 +116,7 @@ event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the eve
 	
 
 	* estimar sun
-eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit) covariates(pop_density_municipality log_pib_municipal_per_capita total_vinculos_munic total_estabelecimentos_munic)
+eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit) covariates(pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est log_bf_value_families log_families_bf)
 
 event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the event") ytitle("Average causal effect") xlabel(-16(1)12) ///
 	title("Sun and Abraham (2020)")) stub_lag(L#event) stub_lead(F#event) together
