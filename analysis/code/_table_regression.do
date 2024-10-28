@@ -31,14 +31,21 @@ net install staggered, from(https://raw.githubusercontent.com/jonathandroth/stag
 
 * Load data
 use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
+drop if municipality_code == 2300000 | municipality_code == 2600000
 
 gen pop_den_mun = pop_density_municipality
 gen log_pib_mun_p_capita = log_pib_municipal_per_capita
-gen log_formal_emp = log(total_vinculos_munic)
-gen log_formal_est = log(total_estabelecimentos_munic)
-gen log_families_bf = log(families_bf +1)
-gen log_bf_value_families = log(bf_value_families + 1)
-gen log_average_value_bf = log(average_value_bf + 1)
+gen log_formal_emp = log(total_vinculos_munic + 1)
+gen log_formal_est = log(total_estabelecimentos_munic + 1)
+
+
+* foreach var of varlist log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp {
+	*bysort municipality_code (year): replace `var' = `var'[_n-1] if missing(`var')
+	*}
+
+*gen log_families_bf = log(families_bf +1)
+*gen log_bf_value_families = log(bf_value_families + 1)
+*gen log_average_value_bf = log(average_value_bf + 1)
 
 * fillin municipality_code year
 
@@ -69,7 +76,7 @@ gen pib_temp = pib_municipal_per_capita if year == 2006
 egen pibpc2006 = max(pib_temp), by(municipality_code)
 
 * Estimar o modelo de DiD com múltiplos grupos e períodos usando csdid
-csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp log_families_bf, ivar(municipality_code) time(year) weight(population_2000_muni) ///
+csdid taxa_homicidios_total_por_100m_1 treated log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp, ivar(municipality_code) time(year) weight(population_2000_muni) ///
 gvar(treatment_year) method(dripw) cluster(state_code)
  
 estat event
@@ -106,7 +113,7 @@ event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt
 	title("OLS"))
 	
 * estimar
-did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est log_families_bf) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
+did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
 
 gen lastunit = treatment_year == .
 
@@ -118,7 +125,61 @@ event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the eve
 	
 
 	* estimar sun
-eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit) covariates(pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est log_bf_value_families log_families_bf)
+eventstudyinteract taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], vce(cluster state_code) absorb(municipality_code year) cohort(treatment_year) control_cohort(lastunit) covariates(pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est)
 
 event_plot e(b_iw)#e(V_iw), default_look graph_opt(xtitle("Periods since the event") ytitle("Average causal effect") xlabel(-16(1)12) ///
 	title("Sun and Abraham (2020)")) stub_lag(L#event) stub_lead(F#event) together
+	
+	****
+	reg taxa_homicidios_total_por_100m_1 log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est [aw = population_2000_muni]
+	_predict res, res
+	
+	****
+	
+	
+	* did_imputation
+	did_imputation res municipality_code year treatment_year [aw = population_2000_muni], allhorizons pretrends(16) cluster(state_code)
+	
+	event_plot, default_look graph_opt(xtitle("Periods since the event") ytitle("Average causal effect") ///
+	title("Borusyak et al. (2021) imputation estimator") xlabel(-16(1)12))
+	
+	* sdid *
+	
+	* Primeiro, vamos garantir que temos apenas os anos desejados
+keep if inrange(year, 2000, 2019)
+
+* Verificar número de observações por município
+bysort municipality_code: gen n_years = _N
+tab n_years
+
+* Manter apenas municípios com dados para todos os 20 anos
+keep if n_years == 20
+
+* Verificar missing values em cada covariável
+misstable summarize log_pib_mun_p_capita pop_den_mun log_formal_emp log_formal_est
+
+* Criar indicadores para missing values
+foreach var of varlist log_pib_mun_p_capita pop_den_mun log_formal_emp log_formal_est {
+    gen miss_`var' = missing(`var')
+    bysort municipality_code: egen total_miss_`var' = sum(miss_`var')
+}
+
+* Identificar municípios com missing values
+egen total_missing = rowtotal(miss_*)
+tab total_missing
+
+* Identificar quais municípios têm missing values e em quais anos
+list municipality_code year log_pib_mun_p_capita pop_den_mun log_formal_emp log_formal_est if total_missing > 0, sepby(municipality_code)
+
+* Remover municípios que têm qualquer missing value
+bysort municipality_code: egen mun_has_missing = max(total_missing)
+drop if mun_has_missing > 0
+
+* Verificar se o painel está balanceado
+xtset municipality_code year
+
+sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, vce(bootstrap) reps(100) seed(123) covariates(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est, projected) ///
+  method(sdid) graph
+  
+  ****
+  
