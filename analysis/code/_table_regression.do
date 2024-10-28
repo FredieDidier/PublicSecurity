@@ -36,7 +36,7 @@ drop if municipality_code == 2300000 | municipality_code == 2600000
 gen pop_den_mun = pop_density_municipality
 gen log_pib_mun_p_capita = log_pib_municipal_per_capita
 gen log_formal_emp = log(total_vinculos_munic + 1)
-gen log_formal_est = log(total_estabelecimentos_munic + 1)
+gen log_formal_est = log(total_estabelecimentos_munic)
 
 
 * foreach var of varlist log_pib_municipal_per_capita pop_density_municipality log_formal_est log_formal_emp {
