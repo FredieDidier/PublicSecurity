@@ -9,7 +9,7 @@ query = "SELECT *
 FROM basedosdados.br_me_rais.microdados_estabelecimentos
 WHERE ano BETWEEN 1996 AND 2002"
 
-rais = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"),
+rais_1996_2002 = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"),
                 billing_project_id = "teste-320002")
 
 query = "SELECT *
