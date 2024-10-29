@@ -56,7 +56,7 @@ replace treated = 1 if (state == "PE" & year >= 2007) |(state == "BA" & year >= 
                       (state == "MA" & year >= 2016)
 
 * Criar a variável de ano de adoção (staggered treatment)
-gen treatment_year = 0 // Inicializa todos os estados como não tratados
+gen treatment_year = . 
 replace treatment_year = 2011 if state == "BA" | state == "PB"
 replace treatment_year = 2015 if state == "CE"
 replace treatment_year = 2016 if state == "MA"
@@ -182,5 +182,5 @@ xtset municipality_code year
 sdid taxa_homicidios_total_por_100m_1 municipality_code year treated, vce(bootstrap) reps(100) seed(123) covariates(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est, projected) ///
   method(sdid) graph
   
-  ****
-  
+  **** sdid_event
+ sdid_event taxa_homicidios_total_por_100m_1 municipality_code year treated, effects(12) placebo(16) covariates(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est) disag vce(bootstrap) brep(50)
