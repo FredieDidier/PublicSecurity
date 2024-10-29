@@ -108,7 +108,8 @@ forvalues l = 1/16 {
 }
 drop F1event // normalize K=-1 (and also K=-15) to zero
 
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality total_vinculos_munic total_estabelecimentos_munic log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality log_formal_emp log_formal_est log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+
 event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-16(1)12) ///
 	title("OLS"))
 	
