@@ -29,6 +29,11 @@ reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year [weight=
 
 outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/twfe_results.tex", tex replace ctitle("Homicide Rate - TWFE") keep(treated) addtext(Municipality FE, Yes, Year FE, Yes) nocons
 
+* 1.1 Manual TWFE with controls
+reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est [weight=population_2000_muni], cluster(state_code)
+
+outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/twfe_results_controls.tex", tex replace ctitle("Homicide Rate - TWFE") keep(treated) addtext(Municipality FE, Yes, Year FE, Yes) nocons
+
 * 2. Pooled DID
 * Generate treatment variables for each state
 gen pe_treat = (state == "PE")
@@ -55,6 +60,17 @@ scalar f_stat = r(F)
 scalar p_value = r(p)
 
 outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/pooled_did.tex", tex replace ctitle("Homicide Rate - Pooled DID") keep(pe_did ba_pb_did ce_did ma_did) nocons addtext(Municipality FE, Yes, Year FE, Yes) addstat("F-statistic", f_stat, "p-value", p_value)
+
+
+* Pooled DiD with controls outreg output
+eststo: reg taxa_homicidios_total_por_100m_1 pe_post ba_pb_post ce_post ma_post pe_did ba_pb_did ce_did ma_did pe_treat ba_pb_treat ce_treat ma_treat i.municipality_code i.year pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est [weight=population_2000_muni], cluster(state_code)
+
+test pe_did ba_pb_did ce_did ma_did
+scalar f_stat = r(F)
+scalar p_value = r(p)
+
+outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/pooled_did_controls.tex", tex replace ctitle("Homicide Rate - Pooled DID") keep(pe_did ba_pb_did ce_did ma_did) nocons addtext(Municipality FE, Yes, Year FE, Yes) addstat("F-statistic", f_stat, "p-value", p_value)
+
 
 * 3. Event study
 
