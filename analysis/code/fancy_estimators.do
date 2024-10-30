@@ -81,37 +81,6 @@ gvar(treatment_year) method(dripw) cluster(state_code)
  
 estat event
 csdid_plot, title("Event Study")
-
-
-* event study simples
-
-forvalues l = 0/12 {
-	gen L`l'event = rel_year==`l'
-}
-forvalues l = 1/16 {
-	gen F`l'event = rel_year==-`l'
-}
-drop F1event // normalize K=-1 (and also K=-15) to zero
-
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
-event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-16(1)12) ///
-	title("OLS"))
-	
-	
-* event study simples com controles
-
-forvalues l = 0/12 {
-	gen L`l'event = rel_year==`l'
-}
-forvalues l = 1/16 {
-	gen F`l'event = rel_year==-`l'
-}
-drop F1event // normalize K=-1 (and also K=-15) to zero
-
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality log_formal_emp log_formal_est log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
-
-event_plot, default_look stub_lag(L#event) stub_lead(F#event) together graph_opt(xtitle("Days since the event") ytitle("OLS coefficients") xlabel(-16(1)12) ///
-	title("OLS"))
 	
 * estimar
 did_multiplegt_dyn taxa_homicidios_total_por_100m_1 municipality_code year treated, controls(log_pib_municipal_per_capita pop_density_municipality log_formal_emp log_formal_est) effects(12) placebo(7) weight(population_2000_muni) cluster(state_code)
