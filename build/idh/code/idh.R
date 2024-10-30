@@ -14,9 +14,9 @@ idh <- download(query, path = paste0(DROPBOX_PATH, "build/idh/input/idh.csv"),
 # Loading Data
 idh = fread(paste0(DROPBOX_PATH, "build/idh/input/idh.csv"))
 
-# Filtering to only have 2000 and 2010
+# Filtering to only have 2010
 idh = idh %>%
-  filter(ano %in% c(2000, 2010))
+  filter(ano == 2010)
 
 # Renaming columns
 idh = idh %>%
