@@ -4,6 +4,9 @@
 # 1. Gerar gráficos de taxa de homicidio.
 # 2. Gerar mapa de proximidade a delegacias.
 # 3. Gerar Main Data em .dta
+# 4. Gerar gráficos de residuos de taxa de homicidio
+# 5. Gerar mapa de todos os municipios da amostra
+# 6. Gerar tabela descritiva
 
 ###########
 #  Setup  #
@@ -57,3 +60,28 @@ source(paste0(GITHUB_PATH, "analysis/code/_map_police_station_proximity.R"))
 ###########################################
 
 source(paste0(GITHUB_PATH, "analysis/code/_main_data_dta.R"))
+
+######################################################
+#                                         
+# 4) Gerar gráficos de residuos de taxa de homicidio #
+#                                         
+######################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_graph_residuals_homicide_rate.R"))
+
+######################################################
+#                                         
+# 5) Gerar mapa de todos os municipios da amostra    #
+#                                         
+######################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_map_all_municipalities.R"))
+
+######################################################
+#                                         
+# 6) Gerar tabela descritiva                         #
+#                                         
+######################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_map_all_municipalities.R"))
+
