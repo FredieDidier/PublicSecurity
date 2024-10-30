@@ -56,7 +56,7 @@ replace treated = 1 if (state == "PE" & year >= 2007) |(state == "BA" & year >= 
                       (state == "MA" & year >= 2016)
 
 * Criar a variável de ano de adoção (staggered treatment)
-gen treatment_year = . 
+gen treatment_year = 0
 replace treatment_year = 2011 if state == "BA" | state == "PB"
 replace treatment_year = 2015 if state == "CE"
 replace treatment_year = 2016 if state == "MA"
