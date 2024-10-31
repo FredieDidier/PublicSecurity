@@ -127,7 +127,7 @@ forval i = 0/12 {
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
@@ -185,7 +185,7 @@ forval i = 0/12 {
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
