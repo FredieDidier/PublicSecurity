@@ -1,6 +1,11 @@
 library(dplyr)
 library(stargazer)
 
+# Filtrar códigos específicos
+main_data <- main_data %>%
+  filter(municipality_code != 2300000) %>%
+  filter(municipality_code != 2600000)
+
 # Create expanded grid with all possible combinations
 expand_grid <- expand.grid(
   municipality_code = unique(main_data$municipality_code),
