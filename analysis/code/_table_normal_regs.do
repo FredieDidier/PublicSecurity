@@ -109,11 +109,6 @@ forval i = 1/7 {
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == -`i'
 }
 
-* Reference period (0) remains at 0
-replace coef = 0 if period == 0
-replace ci_low = 0 if period == 0
-replace ci_high = 0 if period == 0
-
 * Fill lags (L's)
 forval i = 0/12 {
     local pos = `i' + 7
@@ -128,6 +123,12 @@ local ref = r(mean)  // Captura o valor do coeficiente em t = 0
 replace coef = coef - `ref'
 replace ci_low = ci_low - `ref'
 replace ci_high = ci_high - `ref'
+
+* Reference period (0) remains at 0
+replace coef = 0 if period == 0
+replace ci_low = 0 if period == 0
+replace ci_high = 0 if period == 0
+
 
 * Create event study plot
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
@@ -176,11 +177,6 @@ forval i = 1/7 {
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == -`i'
 }
 
-* Reference period (0) remains at 0
-replace coef = 0 if period == 0
-replace ci_low = 0 if period == 0
-replace ci_high = 0 if period == 0
-
 * Fill lags (L's)
 forval i = 0/12 {
     local pos = `i' + 7
@@ -195,6 +191,11 @@ local ref = r(mean)  // Captura o valor do coeficiente em t = 0
 replace coef = coef - `ref'
 replace ci_low = ci_low - `ref'
 replace ci_high = ci_high - `ref'
+
+* Reference period (0) remains at 0
+replace coef = 0 if period == 0
+replace ci_low = 0 if period == 0
+replace ci_high = 0 if period == 0
 
 * Create event study plot
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
