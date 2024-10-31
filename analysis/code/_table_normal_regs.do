@@ -123,6 +123,13 @@ forval i = 0/12 {
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
 
+* Normalizar para t = -1
+sum coef if period == -1
+local ref = r(mean)  // Captura o valor do coeficiente em t = -1
+replace coef = coef - `ref'
+replace ci_low = ci_low - `ref'
+replace ci_high = ci_high - `ref'
+
 * Create event study plot
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
@@ -180,6 +187,13 @@ forval i = 0/12 {
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == `i'
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
+
+* Normalizar para t = -1
+sum coef if period == -1
+local ref = r(mean)  // Captura o valor do coeficiente em t = -1
+replace coef = coef - `ref'
+replace ci_low = ci_low - `ref'
+replace ci_high = ci_high - `ref'
 
 * Create event study plot
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
