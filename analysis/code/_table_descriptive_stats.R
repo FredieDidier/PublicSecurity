@@ -3,12 +3,22 @@ library(stargazer)
 library(tidyr)
 library(dplyr)
 
+main_data = main_data %>%
+  filter(municipality_code != 2300000) %>%
+  filter(municipality_code != 2600000) 
+
 # Criar estatísticas básicas
 total_stats <- main_data %>%
   summarise(
     n_estados = n_distinct(state),
     n_municipios = n_distinct(municipality_code)
   )
+
+# Criar dataframe com informações do tratamento
+treatment_info <- data.frame(
+  treatment_year = c(2007, 2011, 2011, 2015, 2016),
+  state = c("PE", "BA", "PB", "CE", "MA")
+)
 
 # Estatísticas por ano de tratamento
 yearly_stats <- main_data %>%
@@ -31,7 +41,7 @@ total_treat_stats <- main_data %>%
     nontreated_munic = n_distinct(municipality_code[is.na(treatment_year)])
   )
 
-# Criar dataframe para a tabela final
+# Criar dataframe para a tabela final com o número correto de linhas e valores alinhados
 table_data <- data.frame(
   Category = c(
     "Total",
@@ -44,23 +54,19 @@ table_data <- data.frame(
   ),
   States = c(
     total_stats$n_estados,
-    NA,
-    yearly_stats$treated_states[1],
-    yearly_stats$treated_states[2],
-    yearly_stats$treated_states[3],
-    yearly_stats$treated_states[4],
-    NA,
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2007],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2011],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2015],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2016],
     total_treat_stats$treated_states,
     total_treat_stats$nontreated_states
   ),
   Municipalities = c(
     total_stats$n_municipios,
-    NA,
-    yearly_stats$treated_munic[1],
-    yearly_stats$treated_munic[2],
-    yearly_stats$treated_munic[3],
-    yearly_stats$treated_munic[4],
-    NA,
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2007],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2011],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2015],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2016],
     total_treat_stats$treated_munic,
     total_treat_stats$nontreated_munic
   )
