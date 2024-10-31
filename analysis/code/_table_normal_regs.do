@@ -71,17 +71,16 @@ scalar p_value = r(p)
 
 outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/pooled_did_controls.tex", tex replace ctitle("Homicide Rate - Pooled DID") keep(pe_did ba_pb_did ce_did ma_did) nocons addtext(Municipality FE, Yes, Year FE, Yes) addstat("F-statistic", f_stat, "p-value", p_value)
 
-
 * 3. Event study
 
 * Create dummies for each relative time period
 * Using -7/+12 window given your time span (2000-2019) and first treatment (2007)
 
 forvalues l = 0/12 {
-	gen L`l'event = rel_year==`l'
+    gen L`l'event = rel_year==`l'
 }
 forvalues l = 1/7 {
-	gen F`l'event = rel_year==-`l'
+    gen F`l'event = rel_year==-`l'
 }
 drop F1event
 
@@ -94,7 +93,7 @@ matrix V = e(V)
 
 * Generate plotting data
 clear
-set obs 21  // Total periods: 7 leads + 1 reference + 13 lags
+set obs 20  // Total periods: 7 leads + 1 reference + 12 lags
 gen period = _n - 8  // Centers at 0, ranging from -7 to 12
 
 * Initialize variables
@@ -103,17 +102,17 @@ gen ci_low = .
 gen ci_high = .
 
 * Fill leads (F's)
-forval i = 2/7 {
+forval i = 1/7 {
     local pos = 8 - `i'
     replace coef = b[1,`pos'] if period == -`i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == -`i'
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == -`i'
 }
 
-* Reference period (-1) remains at 0
-replace coef = 0 if period == -1
-replace ci_low = 0 if period == -1
-replace ci_high = 0 if period == -1
+* Reference period (0) remains at 0
+replace coef = 0 if period == 0
+replace ci_low = 0 if period == 0
+replace ci_high = 0 if period == 0
 
 * Fill lags (L's)
 forval i = 0/12 {
@@ -123,9 +122,9 @@ forval i = 0/12 {
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
 
-* Normalizar para t = -1
-sum coef if period == -1
-local ref = r(mean)  // Captura o valor do coeficiente em t = -1
+* Normalizar para t = 0
+sum coef if period == 0
+local ref = r(mean)  // Captura o valor do coeficiente em t = 0
 replace coef = coef - `ref'
 replace ci_low = ci_low - `ref'
 replace ci_high = ci_high - `ref'
@@ -134,7 +133,7 @@ replace ci_high = ci_high - `ref'
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
@@ -145,7 +144,9 @@ twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança c
        bgcolor(white) /// Área do gráfico branca
        legend(off) /// Sem legenda
        scheme(s2color)  
-	graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_event_study_homicide_rate.pdf", as(pdf) replace
+
+* Export the graph
+graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_event_study_homicide_rate.pdf", as(pdf) replace
 	
 *************
 **************
@@ -159,7 +160,7 @@ matrix V = e(V)
 
 * Generate plotting data
 clear
-set obs 21  // Total periods: 7 leads + 1 reference + 13 lags
+set obs 20  // Total periods: 7 leads + 1 reference + 13 lags
 gen period = _n - 8  // Centers at 0, ranging from -7 to 12
 
 * Initialize variables
@@ -168,17 +169,17 @@ gen ci_low = .
 gen ci_high = .
 
 * Fill leads (F's)
-forval i = 2/7 {
+forval i = 1/7 {
     local pos = 8 - `i'
     replace coef = b[1,`pos'] if period == -`i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == -`i'
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == -`i'
 }
 
-* Reference period (-1) remains at 0
-replace coef = 0 if period == -1
-replace ci_low = 0 if period == -1
-replace ci_high = 0 if period == -1
+* Reference period (0) remains at 0
+replace coef = 0 if period == 0
+replace ci_low = 0 if period == 0
+replace ci_high = 0 if period == 0
 
 * Fill lags (L's)
 forval i = 0/12 {
@@ -188,9 +189,9 @@ forval i = 0/12 {
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
 
-* Normalizar para t = -1
-sum coef if period == -1
-local ref = r(mean)  // Captura o valor do coeficiente em t = -1
+* Normalizar para t = 0
+sum coef if period == 0
+local ref = r(mean)  // Captura o valor do coeficiente em t = 0
 replace coef = coef - `ref'
 replace ci_low = ci_low - `ref'
 replace ci_high = ci_high - `ref'
@@ -199,7 +200,7 @@ replace ci_high = ci_high - `ref'
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
