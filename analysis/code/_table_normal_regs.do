@@ -22,7 +22,6 @@ replace treatment_year = 2007 if state == "PE"
 gen rel_year = year - treatment_year
 
 gen log_formal_emp = log(total_vinculos_munic + 1)
-gen log_formal_est = log(total_estabelecimentos_munic)
 
 * 1. Manual TWFE
 reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year [weight=population_2000_muni], cluster(state_code)
@@ -82,7 +81,7 @@ forvalues l = 0/12 {
 forvalues l = 1/7 {
     gen F`l'event = rel_year==-`l'
 }
-drop F1event
+drop L0event // normalize rel_year = 0 to zero
 
 * Regressão com efeitos fixos usando reghdfe
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
@@ -110,24 +109,12 @@ forval i = 1/7 {
 }
 
 * Fill lags (L's)
-forval i = 0/12 {
+forval i = 1/12 {
     local pos = `i' + 7
     replace coef = b[1,`pos'] if period == `i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == `i'
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
-
-* Normalizar para t = 0
-sum coef if period == 0
-local ref = r(mean)  // Captura o valor do coeficiente em t = 0
-replace coef = coef - `ref'
-replace ci_low = ci_low - `ref'
-replace ci_high = ci_high - `ref'
-
-* Reference period (0) remains at 0
-replace coef = 0 if period == 0
-replace ci_low = 0 if period == 0
-replace ci_high = 0 if period == 0
 
 
 * Create event study plot
@@ -153,7 +140,7 @@ graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/grap
 **************
 	
 * Regressão com efeitos fixos e controles usando reghdfe
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality log_formal_emp log_formal_est log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality log_formal_emp log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
 
 * Store coefficients and CIs
 matrix b = e(b)
@@ -178,24 +165,13 @@ forval i = 1/7 {
 }
 
 * Fill lags (L's)
-forval i = 0/12 {
+forval i = 1/12 {
     local pos = `i' + 7
     replace coef = b[1,`pos'] if period == `i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == `i'
     replace ci_high = b[1,`pos'] + 1.96*sqrt(V[`pos',`pos']) if period == `i'
 }
 
-* Normalizar para t = 0
-sum coef if period == 0
-local ref = r(mean)  // Captura o valor do coeficiente em t = 0
-replace coef = coef - `ref'
-replace ci_low = ci_low - `ref'
-replace ci_high = ci_high - `ref'
-
-* Reference period (0) remains at 0
-replace coef = 0 if period == 0
-replace ci_low = 0 if period == 0
-replace ci_high = 0 if period == 0
 
 * Create event study plot
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
