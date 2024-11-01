@@ -70,9 +70,6 @@ map = ggplot() +
     name = "Treatment Status"
   ) +
   theme_minimal() +
-  labs(
-    title = "Treated and Not Treated Municipalities in the Northeast"
-  ) +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     legend.position = "bottom",
