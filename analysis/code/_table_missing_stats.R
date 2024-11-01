@@ -77,3 +77,59 @@ stargazer(
 # Close LaTeX document
 cat("\\end{document}")
 sink()
+
+###
+
+# Calculate missing statistics for population_2000_muni
+missing_stats <- data.frame(
+  "Category" = c(
+    "Total",
+    "Treated",
+    "Not Treated"
+  ),
+  "Observations" = c(
+    sum(is.na(result$population_2000_muni)),
+    sum(is.na(result$population_2000_muni) & result$is_treated),
+    sum(is.na(result$population_2000_muni) & !result$is_treated)
+  ),
+  "States" = c(
+    n_distinct(substr(result$municipality_code[is.na(result$population_2000_muni)], 1, 2)),
+    n_distinct(substr(result$municipality_code[is.na(result$population_2000_muni) & result$is_treated], 1, 2)),
+    n_distinct(substr(result$municipality_code[is.na(result$population_2000_muni) & !result$is_treated], 1, 2))
+  ),
+  "Municipalities" = c(
+    n_distinct(result$municipality_code[is.na(result$population_2000_muni)]),
+    n_distinct(result$municipality_code[is.na(result$population_2000_muni) & result$is_treated]),
+    n_distinct(result$municipality_code[is.na(result$population_2000_muni) & !result$is_treated])
+  )
+)
+
+# Generate LaTeX file
+sink(paste0(GITHUB_PATH, "analysis/output/tables/missing_stats_population_2000_muni.tex"))
+
+# LaTeX document header
+cat("\\documentclass{article}
+\\usepackage[utf8]{inputenc}
+\\usepackage{booktabs}
+\\usepackage{dcolumn}
+\\usepackage{float}
+\\usepackage[margin=1in]{geometry}
+\\begin{document}
+")
+
+# Generate table with stargazer
+stargazer(
+  missing_stats,
+  title = "Missing Data Statistics for Population 2000",
+  summary = FALSE,
+  rownames = FALSE,
+  header = FALSE,
+  digits = 0,
+  float = TRUE,
+  font.size = "normalsize",
+  column.labels = c("Category", "Observations", "States", "Municipalities")
+)
+
+# Close LaTeX document
+cat("\\end{document}")
+sink()

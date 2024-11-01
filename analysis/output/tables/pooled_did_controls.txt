@@ -1,20 +1,20 @@
 	(1)
 VARIABLES	Homicide Rate - Pooled DID
 	
-pe_did	-29.40***
-	(2.531)
-ba_pb_did	1.316
-	(3.459)
-ce_did	5.073
-	(4.101)
-ma_did	-0.750
-	(3.132)
+pe_did	-29.33***
+	(2.322)
+ba_pb_did	2.005
+	(3.758)
+ce_did	5.214
+	(3.220)
+ma_did	-0.992
+	(3.234)
 	
 Observations	35,660
-R-squared	0.697
+R-squared	0.698
 Municipality FE	Yes
 Year FE	Yes
-F-statistic	153.1
-p-value	1.37e-07
+F-statistic	218.7
+p-value	3.35e-08
 Robust standard errors in parentheses	
 *** p<0.01, ** p<0.05, * p<0.1	

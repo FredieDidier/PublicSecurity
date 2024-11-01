@@ -20,7 +20,7 @@ create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
     group_by(state, year) %>%
     mutate(
       mean_rate = mean(rate, na.rm = TRUE),
-      log_rate = log(rate)
+      log_rate = log(rate + 1)
     ) %>%
     ungroup()
   

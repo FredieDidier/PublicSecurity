@@ -25,7 +25,7 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH, graph_type) {
                   "log" = "log_rate")
   
   if(graph_type == "log") {
-    graph_data$log_rate <- log(graph_data$rate)
+    graph_data$log_rate <- log(graph_data$rate + 1)
   }
   
   # Estimar modelo com efeitos fixos
@@ -54,9 +54,9 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH, graph_type) {
     mutate(total_effect = effect + effect_year)
   
   y_label <- switch(graph_type,
-                    "rate" = "Homicide rate (Fixed Effects)",
-                    "mean" = "Mean homicide rate (Fixed Effects)",
-                    "log" = "Log homicide rate (Fixed effects)")
+                    "rate" = "Homicide rate per 100,000 inhabitants (Fixed Effects)",
+                    "mean" = "Mean homicide rate per 100,000 inhabitants (Fixed Effects)",
+                    "log" = "Log homicide rate per 100,000 inhabitants (Fixed effects)")
   
   color_palette <- c(
     "PE" = "#0074D9",

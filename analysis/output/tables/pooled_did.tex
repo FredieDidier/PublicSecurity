@@ -1,26 +1,42 @@
-\documentclass[]{article}
-\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
+\documentclass{article}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{array}
+
 \begin{document}
-\begin{tabular}{lc} \hline
- & (1) \\
-VARIABLES & Homicide Rate - Pooled DID \\ \hline
- &  \\
-pe\_did & -29.17*** \\
- & (2.324) \\
-ba\_pb\_did & 1.308 \\
- & (3.759) \\
-ce\_did & 5.145 \\
- & (3.234) \\
-ma\_did & -1.313 \\
- & (3.265) \\
- &  \\
-Observations & 35,662 \\
-R-squared & 0.696 \\
-Municipality FE & Yes \\
-Year FE & Yes \\
-F-statistic & 209.1 \\
- p-value & 3.99e-08 \\ \hline
-\multicolumn{2}{c}{ Robust standard errors in parentheses} \\
-\multicolumn{2}{c}{ *** p$<$0.01, ** p$<$0.05, * p$<$0.1} \\
-\end{tabular}
+\begin{table}[H]
+   \caption{Regression Results}
+   \centering
+   \begin{tabular}{lc}
+      \toprule \toprule
+      Dependent Variable: & \multicolumn{1}{c}{Homicide Rate }\\
+      Model:              & (1)\\  
+      \midrule
+      \emph{Variables}\\\\
+      Pernambuco            & -29.17$^{***}$\\
+                          & (2.324)\\\\
+      Bahia and Paraíba        & 1.308\\
+                          & (3.759)\\\\
+      Ceará            & 5.145\\
+                          & (3.234)\\\\
+      Maranhão            & -1.313\\
+                          & (3.265)\\\\
+      \midrule
+      \emph{Fixed-effects}\\
+      Municipality        & Yes\\
+      Year                & Yes\\
+      \midrule
+      \emph{Fit statistics}\\
+      Observations        & 35,662\\
+      R$^2$               & 0.696\\
+      F-statistic         & 209.1\\
+      p-value             & 3.99e-08\\
+      \midrule \midrule
+      \multicolumn{2}{l}{\emph{Robust standard errors in parentheses}}\\
+      \multicolumn{2}{l}{\emph{Significance Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+\end{table}
 \end{document}

@@ -22,6 +22,7 @@ replace treatment_year = 2007 if state == "PE"
 gen rel_year = year - treatment_year
 
 gen log_formal_emp = log(total_vinculos_munic + 1)
+gen log_pop_density_municipality = log(pop_density_municipality)
 
 * 1. Manual TWFE
 reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year [weight=population_2000_muni], cluster(state_code)
@@ -29,7 +30,7 @@ reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year [weight=
 outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/twfe_results.tex", tex replace ctitle("Homicide Rate - TWFE") keep(treated) addtext(Municipality FE, Yes, Year FE, Yes) nocons
 
 * 1.1 Manual TWFE with controls
-reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est [weight=population_2000_muni], cluster(state_code)
+reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year log_pop_density_municipality log_pib_municipal_per_capita log_formal_emp [weight=population_2000_muni], cluster(state_code)
 
 outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/twfe_results_controls.tex", tex replace ctitle("Homicide Rate - TWFE") keep(treated) addtext(Municipality FE, Yes, Year FE, Yes) nocons
 
@@ -39,8 +40,8 @@ gen pe_treat = (state == "PE")
 gen pe_post = (year >= 2007)
 gen pe_did = pe_treat * pe_post
 
-gen ba_pb_post = (year >= 2011)
 gen ba_pb_treat = (state == "BA" | state == "PB")
+gen ba_pb_post = (year >= 2011)
 gen ba_pb_did = ba_pb_treat * ba_pb_post
 
 gen ce_treat = (state == "CE")
@@ -62,7 +63,7 @@ outreg2 using "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/tab
 
 
 * Pooled DiD with controls outreg output
-eststo: reg taxa_homicidios_total_por_100m_1 pe_post ba_pb_post ce_post ma_post pe_did ba_pb_did ce_did ma_did pe_treat ba_pb_treat ce_treat ma_treat i.municipality_code i.year pop_density_municipality log_pib_municipal_per_capita log_formal_emp log_formal_est [weight=population_2000_muni], cluster(state_code)
+eststo: reg taxa_homicidios_total_por_100m_1 pe_post ba_pb_post ce_post ma_post pe_did ba_pb_did ce_did ma_did pe_treat ba_pb_treat ce_treat ma_treat i.municipality_code i.year log_pop_density_municipality log_pib_municipal_per_capita log_formal_emp [weight=population_2000_muni], cluster(state_code)
 
 test pe_did ba_pb_did ce_did ma_did
 scalar f_stat = r(F)
@@ -81,7 +82,7 @@ forvalues l = 0/12 {
 forvalues l = 1/7 {
     gen F`l'event = rel_year==-`l'
 }
-drop L0event // normalize rel_year = 0 to zero
+drop F1event // normalize rel_year = -1 to zero
 
 * Regressão com efeitos fixos usando reghdfe
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
@@ -101,7 +102,7 @@ gen ci_low = .
 gen ci_high = .
 
 * Fill leads (F's)
-forval i = 1/7 {
+forval i = 2/7 {
     local pos = 8 - `i'
     replace coef = b[1,`pos'] if period == -`i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == -`i'
@@ -109,7 +110,7 @@ forval i = 1/7 {
 }
 
 * Fill lags (L's)
-forval i = 1/12 {
+forval i = 0/12 {
     local pos = `i' + 7
     replace coef = b[1,`pos'] if period == `i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == `i'
@@ -121,7 +122,7 @@ forval i = 1/12 {
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
@@ -140,7 +141,7 @@ graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/grap
 **************
 	
 * Regressão com efeitos fixos e controles usando reghdfe
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event pop_density_municipality log_formal_emp log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event log_pop_density_municipality log_formal_emp log_pib_municipal_per_capita [aw = population_2000_muni], a(municipality_code year) cluster(state_code)
 
 * Store coefficients and CIs
 matrix b = e(b)
@@ -157,7 +158,7 @@ gen ci_low = .
 gen ci_high = .
 
 * Fill leads (F's)
-forval i = 1/7 {
+forval i = 2/7 {
     local pos = 8 - `i'
     replace coef = b[1,`pos'] if period == -`i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == -`i'
@@ -165,7 +166,7 @@ forval i = 1/7 {
 }
 
 * Fill lags (L's)
-forval i = 1/12 {
+forval i = 0/12 {
     local pos = `i' + 7
     replace coef = b[1,`pos'] if period == `i'
     replace ci_low = b[1,`pos'] - 1.96*sqrt(V[`pos',`pos']) if period == `i'
@@ -177,7 +178,7 @@ forval i = 1/12 {
 twoway (rcap ci_high ci_low period, lcolor(navy)) /// Intervalos de confiança como linhas
        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) /// Pontos dos coeficientes
        (connect coef period, lcolor(navy) lpattern(dash) lstyle(line)), /// Linha conectando pontos
-       xline(0, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
+       xline(-1, lpattern(dash) lcolor(red)) /// Linha vertical no período do tratamento
        yline(0, lcolor(black) lpattern(solid)) /// Linha horizontal no zero
        xlabel(-7(1)12, grid) /// Grid nas marcações do eixo x
        ylabel(, grid) /// Grid nas marcações do eixo y
