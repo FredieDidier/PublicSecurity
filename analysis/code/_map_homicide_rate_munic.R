@@ -52,6 +52,7 @@ for (estado in names(mapas_por_estado)) {
     scale_fill_viridis_c(
       option = "plasma",  # Paleta de intensidade para dados de homicídio
       name = "Homicide Rate per 100,000 inhabitants",
+      direction = -1,
       na.value = "grey80"
     ) +
     theme_minimal() +
