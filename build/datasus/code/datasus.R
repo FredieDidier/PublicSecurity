@@ -19,9 +19,9 @@ sim_do = sim_do[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE", "PB", 
 sim_do = sim_do[ano %in% c(2000:2019)]
 
 # Create sequences of codes for different categories
-codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9))
+codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9), "Y35", "Y36")
 codigos_homicidio_arma_fogo <- c(paste0("X", 93:95))
-codigos_homicidio_nao_determinado <- c(paste0("Y1", 0:9), paste0("Y2", 0:9), paste0("Y3", 0:4))
+codigos_homicidio_nao_determinado <- c("Y22", "Y23", "Y24")
 codigos_acidente_transito <- c(paste0("V0", 1:9), paste0("V1", 1:9), paste0("V2", 1:9),
                                paste0("V3", 1:9), paste0("V4", 1:9), paste0("V5", 1:9),
                                paste0("V6", 1:9), paste0("V7", 1:9), paste0("V8", 1:9),
