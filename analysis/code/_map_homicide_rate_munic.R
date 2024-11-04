@@ -118,3 +118,24 @@ for (estado in names(mapas_estados)) {
   )
 }
 
+# Criar os mapas individuais
+map2006 <- criar_mapa(map_data_ne, 2006)
+map2010 <- criar_mapa(map_data_ne, 2010)
+map2014 <- criar_mapa(map_data_ne, 2014)
+map2015 <- criar_mapa(map_data_ne, 2015)
+
+# Combinar os quatro mapas em uma única figura
+combined_plot <- gridExtra::grid.arrange(
+  map2006, map2010, map2014, map2015,
+  ncol = 2,
+  nrow = 2)
+
+# Salvar o plot combinado
+ggsave(
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_NE.pdf"),
+  plot = combined_plot,
+  width = 12,
+  height = 10,
+  dpi = 300
+)
+
