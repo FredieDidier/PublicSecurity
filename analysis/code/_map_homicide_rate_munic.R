@@ -139,3 +139,29 @@ ggsave(
   dpi = 300
 )
 
+
+# Criar os mapas individuais dos estados
+mapPE <- criar_mapa(map_data %>% filter(state == "PE"), 2006)
+mapBA <- criar_mapa(map_data %>% filter(state == "BA"), 2010)
+mapPB <- criar_mapa(map_data %>% filter(state == "PB"), 2010)
+mapCE <- criar_mapa(map_data %>% filter(state == "CE"), 2014)
+mapMA <- criar_mapa(map_data %>% filter(state == "MA"), 2015)
+
+# Combinar os cinco mapas em uma única figura (3 em cima, 2 embaixo)
+combined_states_plot <- gridExtra::grid.arrange(
+  mapPE, mapBA, mapPB,
+  mapCE, mapMA,
+  layout_matrix = rbind(c(1,2,3), c(4,5,5)),
+  top = "Homicide rate per 100,000 inhabitants of each treated state in pre-treatment year",
+  widths = c(1,1,1),
+  heights = c(1,1)
+)
+
+# Salvar o plot combinado
+ggsave(
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_states.pdf"),
+  plot = combined_states_plot,
+  width = 15,
+  height = 10,
+  dpi = 300
+)
