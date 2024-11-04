@@ -2,10 +2,10 @@
 library(dplyr)
 library(sf)
 library(ggplot2)
-library(viridis)
+library(RColorBrewer)
 library(janitor)
 
-# Filtrar códigos específicos e preparar dados de tratamento
+# Carregar e preparar dados principais
 main_data <- main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000)
@@ -28,41 +28,93 @@ map_data <- delegacias %>%
   left_join(main_data, by = "municipality_code") %>%
   left_join(treatment_info, by = "state")
 
-# Configuração dos anos de interesse: um ano antes de cada tratamento
-mapas_por_estado <- list(
+# Definir a paleta de cores específica do mapa
+cores_homicidios <- c(
+  "#FFFFFF",  # Sem Informações (branco)
+  "#FFE5E5",  # ≤ 20 (rosa claro)
+  "#FF9999",  # ≤ 30 (salmon)
+  "#FF4D4D",  # ≤ 40 (vermelho médio)
+  "#CC0000",  # ≤ 50 (vermelho escuro)
+  "#800000"   # ≥ 60 (vinho)
+)
+
+# Definir os breaks e labels
+breaks_homicidios <- c(-Inf, 20, 30, 40, 50, Inf)
+labels_homicidios <- c("≤ 20", "≤ 30", "≤ 40", "≤ 50", "≥ 60")
+
+# Anos para mapas do Nordeste inteiro
+anos_nordeste <- c(2006, 2010, 2014, 2015)
+
+# Configuração dos mapas por estado
+mapas_estados <- list(
   "PE" = 2006,
   "BA" = 2010,
   "PB" = 2010,
   "CE" = 2014,
-  "MA" = 2015
+  "MA" = 2015 
 )
 
-# Loop para criar e salvar o mapa para cada estado no ano específico
-for (estado in names(mapas_por_estado)) {
-  
-  ano <- mapas_por_estado[[estado]]
-  
-  # Filtrar dados para o estado e ano específicos
-  map_data_estado <- map_data %>%
-    filter(state == estado, year == ano)
-  
-  # Criar o mapa com a paleta de intensidade para o estado e ano especificados
-  mapa <- ggplot() +
-    geom_sf(data = map_data_estado, aes(fill = taxa_homicidios_total_por_100mil_munic), color = "white", size = 0.1) +
-    scale_fill_viridis_c(
-      option = "plasma",  # Paleta de intensidade para dados de homicídio
-      name = "Homicide Rate per 100,000 inhabitants",
-      direction = -1,
-      na.value = "grey80"
+# Função para criar mapa
+criar_mapa <- function(dados, ano) {
+  ggplot() +
+    geom_sf(data = dados %>% filter(year == ano),
+            aes(fill = cut(taxa_homicidios_total_por_100mil_munic, 
+                           breaks = breaks_homicidios,
+                           labels = labels_homicidios,
+                           include.lowest = TRUE)),
+            color = "white",
+            size = 0.1) +
+    scale_fill_manual(
+      values = cores_homicidios[-1],
+      name = NULL,
+      na.value = cores_homicidios[1],
+      drop = FALSE
     ) +
     theme_minimal() +
     theme(
-      plot.title = element_text(size = 14, face = "bold"),
-      legend.position = "bottom",
+      legend.position = "right",
+      legend.text = element_text(size = 8),
       axis.text = element_blank(),
-      axis.ticks = element_blank()
-    )
-  
-  # Salvar o mapa como PDF
-  ggsave(paste0(GITHUB_PATH, "analysis/output/maps/map_homicide_rate_", estado, "_munic", "_", ano, ".pdf"), mapa, width = 10, height = 8, dpi = 300)
+      axis.ticks = element_blank(),
+      panel.grid = element_blank()
+    ) +
+    coord_sf()
 }
+
+# Filtrar estados do Nordeste
+estados_ne <- c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA")
+map_data_ne <- map_data %>%
+  filter(state %in% estados_ne)
+
+# 1. Criar e salvar mapas do Nordeste inteiro
+for (ano in anos_nordeste) {
+  mapa <- criar_mapa(map_data_ne, ano)
+  
+  ggsave(
+    filename = paste0(GITHUB_PATH, "analysis/output/maps/map_homicide_rate_NE_", ano, ".pdf"),
+    plot = mapa,
+    width = 12,
+    height = 10,
+    dpi = 300
+  )
+}
+
+# 2. Criar e salvar mapas individuais dos estados
+for (estado in names(mapas_estados)) {
+  ano <- mapas_estados[[estado]]
+  
+  # Filtrar dados para o estado específico
+  map_data_estado <- map_data %>%
+    filter(state == estado)
+  
+  mapa <- criar_mapa(map_data_estado, ano)
+  
+  ggsave(
+    filename = paste0(GITHUB_PATH, "analysis/output/maps/map_homicide_rate_", estado, "_", ano, ".pdf"),
+    plot = mapa,
+    width = 10,
+    height = 8,
+    dpi = 300
+  )
+}
+
