@@ -152,7 +152,6 @@ combined_states_plot <- gridExtra::grid.arrange(
   mapPE, mapBA, mapPB,
   mapCE, mapMA,
   layout_matrix = rbind(c(1,2,3), c(4,5,5)),
-  top = "Homicide rate per 100,000 inhabitants of each treated state in pre-treatment year",
   widths = c(1,1,1),
   heights = c(1,1)
 )
