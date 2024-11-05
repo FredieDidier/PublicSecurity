@@ -21,7 +21,7 @@ sim_do = sim_do[ano %in% c(2000:2019)]
 # Create sequences of codes for different categories
 codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9), "Y35", "Y36")
 codigos_homicidio_arma_fogo <- c(paste0("X", 93:95))
-codigos_homicidio_nao_determinado <- c("Y22", "Y23", "Y24")
+codigos_morte_nao_determinado <- c("Y22", "Y23", "Y24")
 codigos_acidente_transito <- c(paste0("V0", 1:9), paste0("V1", 1:9), paste0("V2", 1:9),
                                paste0("V3", 1:9), paste0("V4", 1:9), paste0("V5", 1:9),
                                paste0("V6", 1:9), paste0("V7", 1:9), paste0("V8", 1:9),
@@ -38,7 +38,7 @@ codigos_intervencoes_legais <- c("Y35", "Y36")
 sim_do[, `:=`(
   homicidio = as.integer(substr(causa_basica, 1, 3) %in% codigos_homicidio),
   homicidio_arma_fogo = as.integer(substr(causa_basica, 1, 3) %in% codigos_homicidio_arma_fogo),
-  homicidio_nao_determinado = as.integer(substr(causa_basica, 1, 3) %in% codigos_homicidio_nao_determinado),
+  morte_nao_determinado = as.integer(substr(causa_basica, 1, 3) %in% codigos_morte_nao_determinado),
   acidente_transito = as.integer(substr(causa_basica, 1, 3) %in% codigos_acidente_transito),
   quedas = as.integer(substr(causa_basica, 1, 3) %in% codigos_quedas),
   afogamento = as.integer(substr(causa_basica, 1, 3) %in% codigos_afogamento),
@@ -110,15 +110,15 @@ painel_mortalidade = sim_do[, .(
   homicidios_arma_fogo_homem = sum(homicidio_arma_fogo * homem, na.rm = TRUE),
   homicidios_arma_fogo_homem_jovem = sum(homicidio_arma_fogo * homem_jovem, na.rm = TRUE),
   
-  homicidios_nao_determinado_total = sum(homicidio_nao_determinado, na.rm = TRUE),
-  homicidios_nao_determinado_negro = sum(homicidio_nao_determinado * negro, na.rm = TRUE),
-  homicidios_nao_determinado_negro_jovem = sum(homicidio_nao_determinado * negro_jovem, na.rm = TRUE),
-  homicidios_nao_determinado_branco = sum(homicidio_nao_determinado * branco, na.rm = TRUE),
-  homicidios_nao_determinado_branco_jovem = sum(homicidio_nao_determinado * branco_jovem, na.rm = TRUE),
-  homicidios_nao_determinado_mulher = sum(homicidio_nao_determinado * mulher, na.rm = TRUE),
-  homicidios_nao_determinado_mulher_jovem = sum(homicidio_nao_determinado * mulher_jovem, na.rm = TRUE),
-  homicidios_nao_determinado_homem = sum(homicidio_nao_determinado * homem, na.rm = TRUE),
-  homicidios_nao_determinado_homem_jovem = sum(homicidio_nao_determinado * homem_jovem, na.rm = TRUE),
+  morte_nao_determinado_total = sum(morte_nao_determinado, na.rm = TRUE),
+  morte_nao_determinado_negro = sum(morte_nao_determinado * negro, na.rm = TRUE),
+  morte_nao_determinado_negro_jovem = sum(morte_nao_determinado * negro_jovem, na.rm = TRUE),
+  morte_nao_determinado_branco = sum(morte_nao_determinado * branco, na.rm = TRUE),
+  morte_nao_determinado_branco_jovem = sum(morte_nao_determinado * branco_jovem, na.rm = TRUE),
+  morte_nao_determinado_mulher = sum(morte_nao_determinado * mulher, na.rm = TRUE),
+  morte_nao_determinado_mulher_jovem = sum(morte_nao_determinado * mulher_jovem, na.rm = TRUE),
+  morte_nao_determinado_homem = sum(morte_nao_determinado * homem, na.rm = TRUE),
+  morte_nao_determinado_homem_jovem = sum(morte_nao_determinado * homem_jovem, na.rm = TRUE),
   
   acidentes_transito_total = sum(acidente_transito, na.rm = TRUE),
   acidentes_transito_negro = sum(acidente_transito * negro, na.rm = TRUE),
