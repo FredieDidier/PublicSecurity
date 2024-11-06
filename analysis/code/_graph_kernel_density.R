@@ -50,3 +50,9 @@ plot_density(main_data,
              "log_pop_density_municipality",
              "",
              "Log (Population Density)")
+
+plot_density(main_data,
+             "pib_municipal_per_capita",
+             "",
+             "GDP per capita")
+
