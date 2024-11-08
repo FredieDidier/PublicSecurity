@@ -19,9 +19,28 @@ WHERE ano BETWEEN 2003 AND 2022"
 rais = download(query, path = paste0(DROPBOX_PATH, "build/rais/input/rais.csv"),
                    billing_project_id = "teste-320002")
 
+query = "SELECT 
+    ano,
+    id_municipio,
+    vinculo_ativo_3112,
+    CASE 
+        WHEN ano <= 2005 THEN grau_instrucao_1985_2005
+        ELSE grau_instrucao_apos_2005
+    END as grau_instrucao
+FROM `basedosdados.br_me_rais.microdados_vinculos`
+WHERE ano BETWEEN 2000 AND 2019
+    AND sigla_uf IN ('PE', 'BA', 'CE', 'MA', 'RN', 'PI', 'AL', 'SE', 'PB')
+    AND cnae_1 = '75116'
+    AND CAST(vinculo_ativo_3112 AS STRING) = '1'"
+
+rais = download(query, 
+                path = paste0(DROPBOX_PATH, "build/rais/input/rais_worker.csv"),
+                billing_project_id = "teste-320002")
+
 # Loading Data
 rais = fread(paste0(DROPBOX_PATH, "build/rais/input/rais.csv"))
 rais_1996_2002 = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"))
+rais_worker = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_worker.csv"))
 
 # Binding
 rais_list = list(rais, rais_1996_2002)
@@ -84,6 +103,35 @@ clean_rais = clean_rais %>%
          municipality_code = id_municipio,
          total_vinculos_munic = total_vinculos,
          total_estabelecimentos_munic = total_estabelecimentos)
+
+#
+estabelecimento_admin_pub = rais[tipo_estabelecimento %in% c(1, 3) & cnae_1 == "75116", 
+                                 .(total_estabelecimentos_admin_pub = .N), 
+                                 by = .(ano, id_municipio)]
+
+estabelecimento_admin_pub = estabelecimento_admin_pub %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+#
+rais_worker <- rais_worker %>%
+  group_by(ano, id_municipio) %>%
+  summarise(
+    quantidade_vinculos_admin_pub = n(),
+    percentual_superior_admin_pub = mean(grau_instrucao == 9) * 100
+  )
+
+rais_worker = rais_worker %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+
+# Merge
+clean_rais = clean_rais %>%
+  # Merge com estabelecimentos da administração pública
+  left_join(estabelecimento_admin_pub, 
+            by = c("year", "municipality_code")) %>%
+  # Merge com dados dos trabalhadores (vínculos e % superior)
+  left_join(rais_worker,
+            by = c("year", "municipality_code"))
 
 # Saving Clean Dataset
 save(clean_rais, file = paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))

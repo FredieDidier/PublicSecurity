@@ -17,7 +17,7 @@ load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
 load(paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
 load(paste0(DROPBOX_PATH, "build/delegacias/output/delegacias.RData"))
 load(paste0(DROPBOX_PATH, "build/bolsa familia/output/clean_bf.RData"))
-load(paste0(DROPBOX_PATH, "build/orçamento/output/clean_state_finances.RData"))
+load(paste0(DROPBOX_PATH, "build/vacina/output/clean_vacina.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -237,15 +237,15 @@ main_data = main_data %>%
 main_data[,7:9] <- lapply(main_data[,7:9], function(x) replace(x, is.na(x), 0))
 
 # Merge
-main_data = merge(main_data, fin_state_final, by = c("state", "year"), all.x = T)
-
+main_data = merge(main_data, vacina, by = c("year", "municipality_code", "state"), all.x = T)
 
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
-           taxa_homicidios_total_por_100mil_munic, families_bf, bf_value_families, average_value_bf, pop_density_state, pop_density_municipality,
-           total_vinculos_state, total_vinculos_munic, total_estabelecimentos_state, total_estabelecimentos_munic,
-           log_pib_municipal_per_capita, population_2000_muni, population_2010_muni, security_value_state,
+           taxa_homicidios_total_por_100mil_munic, families_bf, pop_density_municipality,
+           total_vinculos_munic, quantidade_vinculos_admin_pub, total_estabelecimentos_admin_pub,
+           percentual_superior_admin_pub, cobertura_total,
+           log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
            id_delegacia, distancia_delegacia_km)
 
 # Save result
