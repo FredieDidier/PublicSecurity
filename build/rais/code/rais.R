@@ -133,5 +133,51 @@ clean_rais = clean_rais %>%
   left_join(rais_worker,
             by = c("year", "municipality_code"))
 
+# Estabelecimentos Educação
+estabelecimentos_educ = rais[tipo_estabelecimento %in% c(1, 3) & 
+                               cnae_1 %in% c("80136", "80144", "80152", "80209"), 
+                             .(total_estabelecimentos_educ = .N), 
+                             by = .(ano, id_municipio)]
+
+# Estabelecimentos Saúde
+estabelecimentos_saude = rais[tipo_estabelecimento %in% c(1, 3) & 
+                                cnae_1 %in% c("85111", "85120", "85138", "85146"), 
+                              .(total_estabelecimentos_saude = .N), 
+                              by = .(ano, id_municipio)]
+
+# Vínculos Educação
+vinculos_educ = rais[cnae_1 %in% c("80136", "80144", "80152", "80209"), 
+                     .(total_vinculos_educ = sum(quantidade_vinculos_ativos)), 
+                     by = .(ano, id_municipio)]
+
+# Vínculos Saúde
+vinculos_saude = rais[cnae_1 %in% c("85111", "85120", "85138", "85146"), 
+                      .(total_vinculos_saude = sum(quantidade_vinculos_ativos)), 
+                      by = .(ano, id_municipio)]
+
+# Renomeando colunas
+estabelecimentos_educ = estabelecimentos_educ %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+
+estabelecimentos_saude = estabelecimentos_saude %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+
+vinculos_educ = vinculos_educ %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+
+vinculos_saude = vinculos_saude %>%
+  rename(year = ano,
+         municipality_code = id_municipio)
+
+# Merge final
+clean_rais = clean_rais %>%
+  left_join(estabelecimentos_educ, by = c("year", "municipality_code")) %>%
+  left_join(estabelecimentos_saude, by = c("year", "municipality_code")) %>%
+  left_join(vinculos_educ, by = c("year", "municipality_code")) %>%
+  left_join(vinculos_saude, by = c("year", "municipality_code"))
+
 # Saving Clean Dataset
 save(clean_rais, file = paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
