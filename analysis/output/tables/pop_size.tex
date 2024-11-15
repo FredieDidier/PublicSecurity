@@ -1,0 +1,46 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{adjustbox}
+
+\begin{document}
+
+\begin{table}[htbp]
+   \centering
+   \begin{adjustbox}{width=\textwidth,center}
+   \begin{tabular}{lcccccc}
+      \tabularnewline \midrule \midrule
+      & \multicolumn{3}{c}{Current Population} & \multicolumn{3}{c}{Population in 2000} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+      & Level & Median & Log & Level & Median & Log \\
+      \midrule
+      \emph{Panel A: Homicide Rate per 100,000 inhabitants} \\\\
+      Treated & -4.440 & -5.804$^{*}$ & 15.20 & -4.391 & -6.081$^{**}$ & 15.75 \\\\
+      & (4.407) & (2.540) & (19.33) & (4.330) & (2.592) & (19.18) \\\\
+      & (0.471) & (0.066) & (0.692) & (0.460) & (0.059) & (0.688) \\\\
+      Treated $\times$ Population & $-2.2\times 10^{-6}$ & 0.2936 & -1.803 & $-2.76\times 10^{-6}$ & 0.6013 & -1.873 \\\\
+      & ($1.98\times 10^{-6}$) & (5.699) & (2.042) & ($2.58\times 10^{-6}$) & (5.695) & (2.053) \\\\
+      & (0.125) & (0.956) & (0.753) & (0.131) & (0.907) & (0.738) \\\\
+      \midrule
+      \emph{Panel B: Log(Homicide Rate per 100,000 inhabitants + 1)} \\\\
+      Treated & 0.0287 & 0.1563 & 1.811$^{***}$ & 0.0304 & 0.1737 & 1.804$^{***}$ \\\\
+      & (0.1918) & (0.0981) & (0.2349) & (0.1907) & (0.0975) & (0.2321) \\\\
+      & (0.883) & (0.190) & (0.013) & (0.877) & (0.111) & (0.011) \\\\
+      Treated $\times$ Population & $-2.23\times 10^{-7}$$^{***}$ & -0.2684 & -0.1646$^{***}$ & $-2.71\times 10^{-7}$$^{***}$ & -0.2864$^{*}$ & -0.1660$^{***}$ \\\\
+      & ($3.74\times 10^{-8}$) & (0.1483) & (0.0262) & ($4.49\times 10^{-8}$) & (0.1466) & (0.0253) \\\\
+      & (0.024) & (0.064) & (0.026) & (0.028) & (0.033) & (0.023) \\\\
+      \midrule
+      Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+      Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+      Observations & 35,662 & 35,662 & 35,662 & 35,662 & 35,662 & 35,662 \\
+      R$^2$ & 0.661 & 0.660 & 0.663 & 0.661 & 0.660 & 0.663 \\
+      Within R$^2$ & 0.012 & 0.009 & 0.017 & 0.012 & 0.009 & 0.018 \\
+      \midrule \midrule
+   \end{tabular}
+   \end{adjustbox}
+\end{table}
+
+\end{document}
