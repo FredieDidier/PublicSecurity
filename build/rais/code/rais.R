@@ -47,7 +47,7 @@ rais_worker = download(query,
 # Loading Data
 rais = fread(paste0(DROPBOX_PATH, "build/rais/input/rais.csv"))
 rais_1996_2002 = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_1996_2002.csv"))
-rais_worker = rais_1996_2002 = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_worker.csv"))
+rais_worker = fread(paste0(DROPBOX_PATH, "build/rais/input/rais_worker.csv"))
 
 # Binding
 rais_list = list(rais, rais_1996_2002)
