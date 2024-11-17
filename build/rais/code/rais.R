@@ -168,8 +168,7 @@ funcionarios_publicos_municipais = rais_worker[
 
 funcionarios_publicos_municipais = funcionarios_publicos_municipais %>%
   rename(year = ano,
-         municipality_code = id_municipio) %>%
-  select(-funcionarios_superior)
+         municipality_code = id_municipio)
 
 # Estabelecimentos Educação
 estabelecimentos_educ = rais[tipo_estabelecimento %in% c(1, 3) & 

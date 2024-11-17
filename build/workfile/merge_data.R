@@ -243,7 +243,7 @@ main_data = merge(main_data, vacina, by = c("year", "municipality_code", "state"
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
            taxa_homicidios_total_por_100mil_munic, families_bf, pop_density_municipality,
-           total_vinculos_munic, total_estabelecimentos_locais, total_func_pub_munic,
+           total_vinculos_munic, total_estabelecimentos_locais, total_func_pub_munic, funcionarios_superior,
            perc_superior, cobertura_total,
            log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
            id_delegacia, distancia_delegacia_km)
