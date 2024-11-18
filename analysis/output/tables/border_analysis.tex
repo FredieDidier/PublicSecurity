@@ -1,0 +1,50 @@
+\documentclass[12pt]{article}
+
+% Pacotes necessários
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}     % Para linhas horizontais de melhor qualidade
+\usepackage{amsmath}      % Para símbolos matemáticos
+\usepackage{siunitx}      % Para formatação de números
+\usepackage[left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry} % Margens
+\usepackage{caption}      % Para personalizar legendas
+\usepackage{threeparttable} % Para notas de rodapé em tabelas
+\usepackage{lscape}       % Para modo paisagem se necessário
+\usepackage{dcolumn}      % Para alinhar colunas decimais
+\usepackage{adjustbox}    % Para ajustar o tamanho da tabela
+\usepackage{pdflscape}    % Para modo paisagem em PDF
+
+\begin{document}
+
+\begin{landscape}
+\begin{table}[htbp]
+\begin{adjustbox}{max width=\textwidth, max height=\textheight}
+\begin{tabular}{l@{\hspace{.5cm}}ccccccccc}
+\toprule
+& \multicolumn{9}{c}{Distance from Treated State Border} \\
+\cmidrule(lr){2-10}
+& \multicolumn{3}{c}{$<$100km} & \multicolumn{3}{c}{ $<$ 75km} & \multicolumn{3}{c}{$<$ 50km} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10}
+& Level & $>$ Median & Log & Level & $>$ Median & Log & Level & $>$ Median & Log \\
+\midrule
+\multicolumn{10}{l}{\textit{Panel A: Homicide Rate per 100,000 inhabitants}} \\[.25cm]
+Neighbor                     & -5.065          & -5.090          & 19.95          & -4.137          & -4.004          & 23.46          & -6.339          & -5.719*         & 21.88          \\
+                            & (5.562)         & (2.746)         & (17.56)        & (6.013)         & (2.578)         & (16.97)        & (5.894)         & (2.760)         & (16.27)        \\[.25cm]
+Neighbor × Population       & -2.11×10\textsuperscript{-6} & -1.397          & -2.243         & -2.27×10\textsuperscript{-6} & -1.830          & -2.455         & -1.76×10\textsuperscript{-6}* & -2.235          & -2.439         \\
+                            & (1.46×10\textsuperscript{-6}) & (6.590)         & (1.939)        & (1.24×10\textsuperscript{-6}) & (7.081)         & (1.908)        & (9.13×10\textsuperscript{-7}) & (7.840)         & (1.794)        \\[.25cm]
+\multicolumn{10}{l}{\textit{Panel B: Log(Homicide Rate per 100,000 inhabitants + 1)}} \\[.25cm]
+Neighbor                     & -0.0092         & 0.2025*         & 1.788***       & -0.0002         & 0.2473**        & 1.816***       & -0.0998         & 0.1969**        & 1.631***       \\
+                            & (0.2116)        & (0.0996)        & (0.2583)       & (0.2143)        & (0.1003)        & (0.2547)       & (0.1960)        & (0.0721)        & (0.2292)       \\[.25cm]
+Neighbor × Population       & -1.94×10\textsuperscript{-7}*** & -0.3643**       & -0.1633***     & -1.89×10\textsuperscript{-7}*** & -0.4114**       & -0.1638***     & -1.58×10\textsuperscript{-7}*** & -0.4605**       & -0.1530***     \\
+                            & (3.99×10\textsuperscript{-8}) & (0.1508)        & (0.0267)       & (4.06×10\textsuperscript{-8}) & (0.1505)        & (0.0261)       & (4.38×10\textsuperscript{-8}) & (0.1455)        & (0.0245)       \\
+\midrule
+Municipality FE             & Yes             & Yes             & Yes            & Yes             & Yes             & Yes            & Yes             & Yes             & Yes            \\
+Year FE                     & Yes             & Yes             & Yes            & Yes             & Yes             & Yes            & Yes             & Yes             & Yes            \\
+Observations               & 28,077          & 28,077          & 28,077         & 23,485          & 23,485          & 23,485         & 17,479          & 17,479          & 17,479         \\
+R\textsuperscript{2}       & 0.652           & 0.651           & 0.655          & 0.646           & 0.645           & 0.650          & 0.634           & 0.633           & 0.639          \\
+Within R\textsuperscript{2}& 0.015           & 0.012           & 0.024          & 0.012           & 0.009           & 0.023          & 0.019           & 0.017           & 0.032          \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+\end{landscape}
+\end{document}
