@@ -214,3 +214,139 @@ display as text _newline "Results for 75km:"
 matrix list results_75
 display as text _newline "Results for 50km:"
 matrix list results_50
+
+
+**************************************
+*** Spillover Analysis ***
+**************************************
+
+* Create Matrices
+matrix results_100 = J(24, 2, .)
+matrix results_75 = J(24, 2, .)
+matrix results_50 = J(24, 2, .)
+
+foreach dist in 100 75 50 {
+    preserve
+    
+    * Drop treated states
+    drop if inlist(state, "PE", "BA", "PB", "CE", "MA")
+    
+    * Keep only observations within distance threshold
+    gen min_dist = min(dist_PE, dist_BA, dist_PB, dist_CE, dist_MA)
+    keep if min_dist < `dist'
+    
+    * Generate spillover variable
+    gen spillover = 0
+    
+    * 2007-2010: Only PE spillovers
+    replace spillover = 1 if year >= 2007 & year <= 2010 & dist_PE <= `dist'
+    
+    * 2011-2014: PE, BA, PB spillovers
+    replace spillover = 1 if year >= 2011 & year <= 2014 & ///
+        min(dist_PE, dist_BA, dist_PB) <= `dist'
+    
+    * 2015: PE, BA, PB, CE spillovers
+    replace spillover = 1 if year == 2015 & ///
+        min(dist_PE, dist_BA, dist_PB, dist_CE) <= `dist'
+    
+    * 2016 onwards: All treated states spillovers
+    replace spillover = 1 if year >= 2016 & min_dist <= `dist'
+    
+    * Generate interaction terms
+    gen spillover_population = spillover * population_muni
+    gen spillover_population_median = spillover * population_median
+    gen spillover_log_population = spillover * log_population_muni
+    gen spillover_population_2000 = spillover * population_2000_muni
+    gen spillover_population_2000_median = spillover * population_2000_median
+    gen spillover_log_population_2000 = spillover * log_population_2000_muni
+    
+    * Initialize matrix for current distance
+    matrix p_values_`dist'km = J(24, 2, .)
+    matrix rownames p_values_`dist'km = ///
+        A_curr_level A_curr_median A_curr_log ///
+        A_2000_level A_2000_median A_2000_log ///
+        B_curr_level B_curr_median B_curr_log ///
+        B_2000_level B_2000_median B_2000_log
+    matrix colnames p_values_`dist'km = p_spillover p_int
+    
+    local row = 0
+    
+    * Run regressions for current population
+    foreach depvar in "taxa_homicidios_total_por_100m_1" "log_tx_homicidio" {
+        local panel = cond("`depvar'" == "taxa_homicidios_total_por_100m_1", "A", "B")
+        
+        * Level specification
+        reg `depvar' spillover spillover_population i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_population, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+        
+        * Median specification
+        reg `depvar' spillover spillover_population_median i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_population_median, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+        
+        * Log specification
+        reg `depvar' spillover spillover_log_population i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_log_population, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+    }
+    
+    * Run regressions for 2000 population
+    foreach depvar in "taxa_homicidios_total_por_100m_1" "log_tx_homicidio" {
+        local panel = cond("`depvar'" == "taxa_homicidios_total_por_100m_1", "A", "B")
+        
+        * Level specification
+        reg `depvar' spillover spillover_population_2000 i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_population_2000, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+        
+        * Median specification
+        reg `depvar' spillover spillover_population_2000_median i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_population_2000_median, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+        
+        * Log specification
+        reg `depvar' spillover spillover_log_population_2000 i.municipality_code i.year [aw=population_2000_muni], cluster(state_code)
+        boottest spillover, reps(10000) cluster(state_code) weighttype(webb)
+        local row = `row' + 1
+        matrix p_values_`dist'km[`row', 1] = r(p)
+        boottest spillover_log_population_2000, reps(10000) cluster(state_code) weighttype(webb)
+        matrix p_values_`dist'km[`row', 2] = r(p)
+    }
+    
+    * Store results for each distance
+    if `dist' == 100 {
+        matrix results_100 = p_values_`dist'km
+    }
+    if `dist' == 75 {
+        matrix results_75 = p_values_`dist'km
+    }
+    if `dist' == 50 {
+        matrix results_50 = p_values_`dist'km
+    }
+    
+    restore
+}
+
+* Display all results
+display as text _newline "Results for 100km:"
+matrix list results_100
+display as text _newline "Results for 75km:"
+matrix list results_75
+display as text _newline "Results for 50km:"
+matrix list results_50
