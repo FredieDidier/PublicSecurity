@@ -172,7 +172,7 @@ funcionarios_publicos_municipais = funcionarios_publicos_municipais %>%
 
 # Estabelecimentos Educação
 estabelecimentos_educ = rais[tipo_estabelecimento %in% c(1, 3) & 
-                               cnae_1 %in% c("80136", "80144", "80152", "80209"), 
+                               cnae_1 %in% c("80136", "80144", "80152", "80209", "80314"), 
                              .(total_estabelecimentos_educ = .N), 
                              by = .(ano, id_municipio)]
 
