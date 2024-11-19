@@ -107,7 +107,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) ring(1) size(small) symxsize(4) keygap(2) rowgap(1)) ///
     name(panel_a, replace) ///
@@ -128,7 +128,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) ring(1) size(small) symxsize(4) keygap(2) rowgap(1)) ///
     name(panel_b, replace) ///
@@ -215,7 +215,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) size(small) symxsize(4)) ///
     name(panel_a_50km, replace) ///
@@ -234,7 +234,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) size(small) symxsize(4)) ///
     name(panel_b_50km, replace) ///
@@ -334,7 +334,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) ring(1) size(small) symxsize(4) keygap(2) rowgap(1)) ///
     name(panel_a, replace) ///
@@ -354,7 +354,7 @@ coefplot ///
     coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
                L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
                L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-    yline(0, lcolor(gs12)) xline(6.5, lcolor(gs12)) ///
+    yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
     xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
     legend(position(6) rows(2) region(color(none)) cols(3) ring(1) size(small) symxsize(4) keygap(2) rowgap(1)) ///
     name(panel_b, replace) ///
