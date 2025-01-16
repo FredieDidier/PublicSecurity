@@ -161,3 +161,75 @@ graph combine event_log_abs event_high_abs event_log_pc event_high_pc, ///
     name(combined_event, replace)
 
 graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_capacity_event_study.pdf", replace
+
+***********************
+
+* Modificar o programa process_results para processar coeficientes treated
+capture program drop process_results_treated
+program define process_results_treated
+    preserve
+    clear
+    set obs 20
+    gen period = _n - 8
+    matrix b = e(b)
+    matrix V = e(V)
+    gen coef = .
+    gen se = .
+    
+    * Pegar coeficientes dos eventos (não das interações)
+    forval i = 2/7 {
+        local pos = `i'  // Posição para eventos treated
+        replace coef = b[1,`pos'] if period == -`i'
+        replace se = sqrt(V[`pos',`pos']) if period == -`i'
+    }
+    forval i = 0/12 {
+        local pos = `i' + 6  // Posição para eventos treated
+        replace coef = b[1,`pos'] if period == `i'
+        replace se = sqrt(V[`pos',`pos']) if period == `i'
+    }
+    
+    gen ci_lb = coef - 1.96*se
+    gen ci_ub = coef + 1.96*se
+    
+    twoway (rcap ci_ub ci_lb period, lcolor(navy)) ///
+        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) ///
+        (connect coef period, lcolor(navy) lpattern(dash)), ///
+        xline(-1, lpattern(dash) lcolor(red)) ///
+        yline(0, lcolor(black)) ///
+        xlabel(-7(1)12, angle(45) labsize(small)) ///
+        ylabel(, grid) ///
+        xtitle("Years Relative to Treatment") ///
+        ytitle("Coefficient") ///
+        graphregion(color(white)) ///
+        bgcolor(white) ///
+        legend(off) ///
+        title(`2', size(medium)) ///
+        name(`1', replace)
+    restore
+end
+
+* Rodar regressões e gerar gráficos para treated
+* 1. Log absoluto
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_abs L*event_log_func_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
+process_results_treated treated_log_abs ""
+
+* 2. Dummy log absoluto
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_abs L*event_high_cap_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
+process_results_treated treated_high_abs ""
+
+* 3. Log per capita
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_pc L*event_log_func_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
+process_results_treated treated_log_pc ""
+
+* 4. Dummy log per capita
+reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_pc L*event_high_cap_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
+process_results_treated treated_high_pc ""
+
+* Combinar gráficos treated
+graph combine treated_log_abs treated_high_abs treated_log_pc treated_high_pc, ///
+    cols(2) rows(2) xsize(11) ysize(10) ///
+    graphregion(color(white) margin(zero)) ///
+    name(combined_event_treated, replace)
+
+* Exportar gráfico treated
+graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_treated_no_int_event_study.pdf", replace
