@@ -1,0 +1,61 @@
+\documentclass[12pt]{article}
+% Pacotes essenciais
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+% Pacotes para tabelas
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{adjustbox}
+% Para melhor controle do espaçamento
+\usepackage{setspace}
+\usepackage{caption}
+% Para cores (caso necessário)
+\usepackage{xcolor}
+% Configurações da página
+\pagestyle{empty}
+% Ajustar espaçamento das notas de rodapé
+\usepackage[skip=0.5\baselineskip]{caption}
+% Configurações para tabelas mais profissionais
+\captionsetup[table]{
+  labelfont=bf,
+  font=bf,
+  skip=10pt
+}
+\begin{document}
+\begin{table}[!htbp]
+\centering
+\begin{adjustbox}{width=\textwidth}
+\begin{tabular}{l|ccc|ccc|ccc}
+\hline\hline
+& \multicolumn{3}{c|}{All} & \multicolumn{3}{c|}{Treated} & \multicolumn{3}{c}{Never Treated} \\
+\cline{2-10}
+& Mean & Median & SD & Mean & Median & SD & Mean & Median & SD \\
+\hline
+\\[-1.8ex]\\
+\multicolumn{10}{l}{\textit{Dependent Variable}} \\
+\hline
+Homicide Rate per 100,000 inhabitants & 17.69 & 11.16 & 21.77 & 18.22 & 11.94 & 21.41 & 16.55 & 8.84 & 22.49 \\
+\\[-1.8ex]
+\multicolumn{10}{l}{\textit{Local Capacity Variable}} \\
+\hline
+Number of Local-Level Municipality Employees (2006) & 727.6 & 439 & 1,397.03 & 812.73 & 510 & 1,502.57 & 544.21 & 285 & 1,116.2 \\
+\\[-1.8ex]
+\multicolumn{10}{l}{\textit{Time-Varying Variables}} \\
+\hline
+Population & 29,653.93 & 13,957.5 & 111,212.6 & 34,033.47 & 16,463.5 & 125,886.1 & 20,195.6 & 8,178.5 & 68,734.84 \\
+Log(GDP per capita) & 1.53 & 1.54 & 0.75 & 1.51 & 1.53 & 0.74 & 1.56 & 1.57 & 0.77 \\
+Number of Schools (2006) & 18.05 & 4 & 84.08 & 19.78 & 5 & 92.19 & 13.41 & 3 & 56.68 \\
+Number of Health Facilities (2006) & 23.77 & 2 & 153.36 & 25.18 & 3 & 167.6 & 19.86 & 2 & 104.28 \\
+\\[-1.8ex]
+\hline
+Number of Municipalities & \multicolumn{3}{c|}{1,794} & \multicolumn{3}{c|}{1,226} & \multicolumn{3}{c}{568} \\
+\hline\hline
+\end{tabular}
+\end{adjustbox}
+\label{tab:descriptive_stats}
+\end{table}
+\end{document}

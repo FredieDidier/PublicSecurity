@@ -1,0 +1,32 @@
+\documentclass[]{article}
+\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
+\usepackage{booktabs}  % Para linhas mais bonitas
+\usepackage{siunitx}   % Para alinhamento de números
+\begin{document}
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{lcc}
+\hline
+\multicolumn{3}{c}{Dependent Variable: Homicide Rate per 100,000 inhabitants} \\\\
+\hline
+ & (1) & (2) \\
+\hline
+ & & \\
+Treated & -5.543 & -5.420 \\
+ & (5.264) & (5.297) \\
+ & [0.457] & [0.473] \\\\
+Log(Population) &  & 7.132 \\
+ &  & (5.153) \\
+ &  & [0.147] \\
+ & & \\
+ \midrule
+ Municipality FE & Yes & Yes \\
+Year FE & Yes & Yes \\
+Observations & 35,662 & 35,662 \\
+R-squared & 0.660 & 0.661 \\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}
