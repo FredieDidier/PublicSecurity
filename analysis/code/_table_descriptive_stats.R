@@ -17,13 +17,11 @@ main_data <- main_data %>%
     # Log da taxa de homicídios
     log_homicide_rate = log(taxa_homicidios_total_por_100mil_munic + 1),
     
-    # Funcionários públicos em 2006
+    # Funcionários públicos em 2006 (absoluto e per capita)
     func_pub_2006 = ifelse(year == 2006, total_func_pub_munic, NA),
     log_func_pub_2006 = log(func_pub_2006),
-    
-    # Funcionários com ensino superior em 2006
-    func_sup_2006 = ifelse(year == 2006, funcionarios_superior, NA),
-    log_func_sup_2006 = log(func_sup_2006 + 1),
+    func_pub_per_1000_2006 = ifelse(year == 2006, (total_func_pub_munic/population_muni)*1000, NA),
+    log_func_pub_per_1000_2006 = log(func_pub_per_1000_2006),
     
     # Escolas e estabelecimentos de saúde em 2006
     schools_2006 = ifelse(year == 2006, total_estabelecimentos_educ, NA),
@@ -42,10 +40,10 @@ vars_list <- list(
   "Log(Homicide Rate per 100,000 inhabitants + 1)" = "log_homicide_rate",
   
   # Local Capacity
-  "Number of Local-level Municipality Employees (2006)" = "func_pub_2006",
-  "Log(Number of Local-level Municipality Employees)" = "log_func_pub_2006",
-  "Number of Local-Level College-Educated Municipality Employees (2006)" = "func_sup_2006",
-  "Log(Number of Local-Level College-Educated Municipality Employees + 1)" = "log_func_sup_2006",
+  "Number of Municipality Employees (2006)" = "func_pub_2006",
+  "Log(Municipality Employees 2006)" = "log_func_pub_2006",
+  "Municipality Employees per 1,000 inhabitants (2006)" = "func_pub_per_1000_2006",
+  "Log(Municipality Employees per 1,000 inhabitants 2006)" = "log_func_pub_per_1000_2006",
   
   # Time-Varying Controls
   "Population" = "population_muni",
@@ -106,15 +104,14 @@ latex_output <- "
 \\begin{table}[!htbp]
 \\centering
 \\caption{Descriptive Statistics by Treatment Status}
+\\begin{adjustbox}{max width=\\textwidth}
 \\begin{tabular}{lccccccccc}
-\\hline\\hline
+\\toprule
 & \\multicolumn{3}{c}{All} & \\multicolumn{3}{c}{Treated} & \\multicolumn{3}{c}{Never Treated} \\\\
-\\cline{2-4} \\cline{5-7} \\cline{8-10}
-Variable & Mean & Median & Std. Dev. & Mean & Median & Std. Dev. & Mean & Median & Std. Dev. \\\\
-\\hline
-\\\\[-1.8ex]
-\\multicolumn{10}{l}{\\textit{Panel A: Dependent Variables}} \\\\
-\\hline"
+\\cmidrule(lr){2-4} \\cmidrule(lr){5-7} \\cmidrule(lr){8-10}
+Variable & Mean & Median & SD & Mean & Median & SD & Mean & Median & SD \\\\
+\\midrule
+\\multicolumn{10}{l}{\\textit{Panel A: Dependent Variables}} \\\\"
 
 # Adicionar Dependent Variables (índices 1-2)
 for(i in 1:2) {
@@ -133,9 +130,8 @@ for(i in 1:2) {
 
 # Adicionar Local Capacity (índices 3-6)
 latex_output <- paste0(latex_output, "
-\\\\[-1.8ex]
-\\multicolumn{10}{l}{\\textit{Panel B: Local Capacity}} \\\\
-\\hline")
+\\midrule
+\\multicolumn{10}{l}{\\textit{Panel B: Local Capacity Variables}} \\\\")
 
 for(i in 3:6) {
   latex_output <- paste0(latex_output, "\n",
@@ -153,9 +149,8 @@ for(i in 3:6) {
 
 # Adicionar Time-Varying Controls (índices 7-10)
 latex_output <- paste0(latex_output, "
-\\\\[-1.8ex]
-\\multicolumn{10}{l}{\\textit{Panel C: Time-Varying Controls}} \\\\
-\\hline")
+\\midrule
+\\multicolumn{10}{l}{\\textit{Panel C: Time-Varying Variables}} \\\\")
 
 for(i in 7:10) {
   latex_output <- paste0(latex_output, "\n",
@@ -173,17 +168,116 @@ for(i in 7:10) {
 
 # Adicionar número de municípios
 latex_output <- paste0(latex_output, "
-\\\\[-1.8ex]
-\\hline
-Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolumn{3}{c}{", n_munic_treated, "} & \\multicolumn{3}{c}{", n_munic_never, "} \\\\")
-
-# Adicionar rodapé e fechamento
-latex_output <- paste0(latex_output, "
-\\hline\\hline
-\\multicolumn{10}{p{1.8\\textwidth}}{\\footnotesize \\textit{Notes:} This table presents descriptive statistics for the main variables used in the analysis, separated by treatment status. Treated municipalities are those located in the states of PE, BA, PB, CE, and MA. All variables are measured at the municipality level. The number of municipality employees, college-educated employees, schools, and health facilities are measured in 2006.} \\\\
+\\midrule
+Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolumn{3}{c}{", n_munic_treated, "} & \\multicolumn{3}{c}{", n_munic_never, "} \\\\
+\\bottomrule
 \\end{tabular}
-\\label{tab:descriptive_stats}
+\\end{adjustbox}
+\\begin{tablenotes}
+\\footnotesize
+\\item \\textit{Notes:} This table presents descriptive statistics for the main variables used in the analysis, separated by treatment status. Treated municipalities are those located in the states of PE, BA, PB, CE, and MA. All variables are measured at the municipality level in 2006. Municipality employees per 1,000 inhabitants is calculated as the total number of municipality employees divided by population and multiplied by 1,000.
+\\end{tablenotes}
 \\end{table}")
 
 # Salvar a tabela em um arquivo .tex
-writeLines(latex_output, "/Users/fredie/Downloads/descriptive_statistics_table.tex")
+writeLines(latex_output, "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/descriptive_statistics_table.tex")
+
+
+###
+library(stargazer)
+
+# Criar estatísticas básicas
+total_stats <- main_data %>%
+  summarise(
+    n_estados = n_distinct(state),
+    n_municipios = n_distinct(municipality_code)
+  )
+
+# Criar dataframe com informações do tratamento
+treatment_info <- data.frame(
+  treatment_year = c(2007, 2011, 2011, 2015, 2016),
+  state = c("PE", "BA", "PB", "CE", "MA")
+)
+
+# Estatísticas por ano de tratamento
+yearly_stats <- main_data %>%
+  left_join(treatment_info, by = "state") %>%
+  group_by(treatment_year) %>%
+  summarise(
+    treated_states = n_distinct(state),
+    treated_munic = n_distinct(municipality_code)
+  ) %>%
+  arrange(treatment_year) %>%
+  filter(!is.na(treatment_year))
+
+# Estatísticas totais de tratados vs não tratados
+total_treat_stats <- main_data %>%
+  left_join(treatment_info, by = "state") %>%
+  summarise(
+    treated_states = n_distinct(state[!is.na(treatment_year)]),
+    nontreated_states = n_distinct(state[is.na(treatment_year)]),
+    treated_munic = n_distinct(municipality_code[!is.na(treatment_year)]),
+    nontreated_munic = n_distinct(municipality_code[is.na(treatment_year)])
+  )
+
+# Criar dataframe para a tabela final
+table_data <- data.frame(
+  Category = c(
+    "Total",
+    "Treated since 2007",
+    "Treated since 2011",
+    "Treated since 2015",
+    "Treated since 2016",
+    "Total Treated",
+    "Total Not Treated"
+  ),
+  States = c(
+    total_stats$n_estados,
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2007],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2011],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2015],
+    yearly_stats$treated_states[yearly_stats$treatment_year == 2016],
+    total_treat_stats$treated_states,
+    total_treat_stats$nontreated_states
+  ),
+  Municipalities = c(
+    total_stats$n_municipios,
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2007],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2011],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2015],
+    yearly_stats$treated_munic[yearly_stats$treatment_year == 2016],
+    total_treat_stats$treated_munic,
+    total_treat_stats$nontreated_munic
+  )
+)
+
+sink("/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/summary_stats.tex")
+
+cat("\\documentclass{article}
+
+% Pacotes necessários
+\\usepackage[utf8]{inputenc}
+\\usepackage{booktabs}
+\\usepackage{dcolumn}
+\\usepackage{float}
+\\usepackage[margin=1in]{geometry}
+\\usepackage{caption}
+
+\\begin{document}
+")
+
+stargazer(table_data,
+          type = "latex",
+          title = "Distribution of Treatment",
+          summary = FALSE,
+          rownames = FALSE,
+          header = FALSE,
+          digits = 0,
+          float = TRUE,
+          font.size = "normalsize",
+          covariate.labels = c("Category", "States", "Municipalities"),
+          table.placement = "!htbp",
+          style = "aer")
+
+cat("\\end{document}")
+sink()
