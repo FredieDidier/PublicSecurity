@@ -1,0 +1,35 @@
+\documentclass[]{article}
+\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
+\begin{document}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcc} \hline\hline
+& \multicolumn{2}{c}{\textit{Dependent Variable: Homicide Rate per 100,000 inhabitants}} \\
+\cline{2-3} \\
+& (1) & (2) \\ \\ \hline
+ &  &  \\
+Pernambuco (2007 group) & -29.32** & -29.29** \\
+ & (2.371) & (2.336) \\
+ & [0.0230] & [0.0223] \\\\
+Bahia and Paraíba (2011 group) & 2.552 & 2.995 \\
+ & (3.904) & (3.857) \\
+ & [0.570] & [0.523] \\\\
+Ceará (2015 group) & 4.711 & 4.719 \\
+ & (3.363) & (3.314) \\
+ & [0.354] & [0.341] \\\\
+Maranhão (2016 group) & -1.956 & -2.152 \\
+ & (3.451) & (3.443) \\
+ & [0.623] & [0.599] \\\\
+ &  &  \\
+\hline
+Controls & No & Yes \\
+Municipality FE & Yes & Yes \\
+Year FE & Yes & Yes \\
+Observations & 35,662 & 35,662 \\
+R-squared & 0.699 & 0.700 \\
+F-statistic & 206.6 & 196.4 \\
+P-value & 4.19e-08 & 5.12e-08 \\
+\hline\hline
+\end{tabular}
+\end{table}
+\end{document}

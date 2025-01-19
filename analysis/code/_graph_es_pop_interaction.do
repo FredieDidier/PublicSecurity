@@ -4,7 +4,7 @@ program define run_analysis
     syntax, analysis_type(string)
     
     * Load data and basic setup
-    use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
+    use "/Users/fredie/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
     drop if municipality_code == 2300000 | municipality_code == 2600000 
     
     * Filter data based on analysis type
@@ -55,7 +55,6 @@ program define run_analysis
     }
     
     gen rel_year = year - treatment_year
-    gen log_tx_homicidio = log(taxa_homicidios_total_por_100m_1 + 1)
     
     * Generate event time dummies first
     forvalues l = 0/12 {
@@ -85,35 +84,34 @@ program define run_analysis
         }
     }
     
-    * Run regressions and create graphs for both panels
-    foreach panel in "level" "log" {
-        local depvar = cond("`panel'" == "level", "taxa_homicidios_total_por_100m_1", "log_tx_homicidio")
-        
-        foreach spec in "pop" "pop_med" "log_pop" {
-            foreach pop in "" "_2000" {
-                reghdfe `depvar' F*event_`spec'`pop' L*event_`spec'`pop' `treat_var' [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code municipality_code)
-                estimates store `spec'`pop'_`panel'
-            }
+    * Run regressions for each specification
+    foreach spec in "pop" "pop_med" "log_pop" {
+        foreach pop in "" "_2000" {
+            reghdfe taxa_homicidios_total_por_100m_1 F*event_`spec'`pop' L*event_`spec'`pop' `treat_var' [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code municipality_code)
+            estimates store `spec'`pop'
         }
-        
-        * Create and combine graphs
-        foreach spec in "pop" "pop_med" "log_pop" {
-            process_estimates, spec(`spec') panel(`panel') analysis(`analysis_type')
-        }
-        
-        graph combine g1_`panel' g2_`panel' g3_`panel', ///
-        rows(3) xsize(8.5) ysize(11) ///
-        graphregion(color(white) margin(zero)) ///
-        imargin(small) ///
-        scale(0.9) ///
-        name(combined_`analysis_type'_`panel', replace)
     }
+    
+    * Create and combine graphs for each specification
+    foreach spec in "pop" "pop_med" "log_pop" {
+        process_estimates, spec(`spec') analysis(`analysis_type')
+    }
+    
+    * Combine graphs for this analysis type
+    graph combine g1 g2 g3, ///
+    rows(3) xsize(8.5) ysize(11) ///
+    graphregion(color(white) margin(zero)) ///
+    imargin(small) ///
+    scale(0.9) ///
+    name(combined_`analysis_type', replace)
+    
+    graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/combined_`analysis_type'.pdf", replace
 end
 
 * Processing estimates and creating graphs
 capture program drop process_estimates
 program define process_estimates
-    syntax, spec(string) panel(string) analysis(string)
+    syntax, spec(string) analysis(string)
     
     preserve
     clear
@@ -121,7 +119,7 @@ program define process_estimates
     gen period = _n - 8
     
     foreach pop in "" "_2000" {
-        estimates restore `spec'`pop'_`panel'
+        estimates restore `spec'`pop'
         matrix b`pop' = e(b)
         matrix V`pop' = e(V)
         
@@ -164,7 +162,7 @@ program define process_estimates
         ylabel(,format(%9.2f) angle(horizontal) labsize(small)) ///
         legend(order(2 "`title1'" 4 "`title2'") rows(2) region(style(none)) size(small) position(6)) ///
         graphregion(color(white) margin(small)) bgcolor(white) ///
-        name(g`=cond("`spec'"=="pop",1,cond("`spec'"=="pop_med",2,3))'_`panel', replace)
+        name(g`=cond("`spec'"=="pop",1,cond("`spec'"=="pop_med",2,3))', replace)
         
     restore
 end
