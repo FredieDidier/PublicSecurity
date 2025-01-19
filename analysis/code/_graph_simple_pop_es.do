@@ -189,8 +189,5 @@ foreach metric in pop pop_above_median log_pop {
     process_results_treated event_treated_`metric' "Treatment Effects (`metric')"
 }
 
-graph combine event_treated_pop event_treated_pop_above_median event_treated_log_pop, ///
-    cols(2) rows(2) xsize(11) ysize(10) ///
-    graphregion(color(white) margin(zero))
-	
-	graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_pop_no_interaction.pdf", replace
+
+
