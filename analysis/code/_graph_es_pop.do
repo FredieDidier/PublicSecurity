@@ -70,61 +70,114 @@ program define run_analysis
         gen F`l'event = rel_year == -`l'
     }
     
-    * Generate interaction terms for both current and 2000 population
+    * Generate population interactions for both current and 2000 population
     foreach type in "" "_2000" {
         local pop_var = cond("`type'" == "", "population_muni", "population_2000_muni")
         
-        * Basic interactions
-        gen `treat_var'_pop`type' = `treat_var' * `pop_var'
-        gen `treat_var'_pop_med`type' = `treat_var' * (`pop_var' > pop_median`type')
+        * Create all population interactions
+        gen `treat_var'_population`type' = `treat_var' * `pop_var'
+        gen pop_above_median`type' = `pop_var' > pop_median`type'
+        gen `treat_var'_pop_above_median`type' = `treat_var' * pop_above_median`type'
         gen `treat_var'_log_pop`type' = `treat_var' * log_pop`type'
-    }
-    
-    * Run regressions and store estimates
-    foreach spec in "pop" "pop_med" "log_pop" {
-        foreach type in "" "_2000" {
-            local var_name "`treat_var'_`spec'`type'"
-            
-            reghdfe taxa_homicidios_total_por_100m_1 ///
-                F*event L*event `var_name' ///
-                [aw=population_2000_muni], ///
-                absorb(municipality_code year) ///
-                cluster(state_code municipality_code)
-                
-            estimates store `spec'`type'
+        
+        * Event study interactions
+        foreach var of varlist F*event L*event {
+            gen `var'_pop`type' = `var' * `pop_var'
+            gen `var'_pop_med`type' = `var' * pop_above_median`type'
+            gen `var'_log_pop`type' = `var' * log_pop`type'
         }
     }
     
-    * Create coefplot
-    coefplot ///
-        (pop, label("Current Population (Level)") mcolor(navy) msymbol(circle) ciopts(color(navy))) ///
-        (pop_med, label("Current Population > Median") mcolor(maroon) msymbol(circle) ciopts(color(maroon))) ///
-        (log_pop, label("Current Log Population") mcolor(forest_green) msymbol(circle) ciopts(color(forest_green))) ///
-        (pop_2000, label("2000 Population (Level)") mcolor(navy*0.5) msymbol(circle) ciopts(color(navy*0.5))) ///
-        (pop_med_2000, label("2000 Population > Median") mcolor(maroon*0.5) msymbol(circle) ciopts(color(maroon*0.5))) ///
-        (log_pop_2000, label("2000 Log Population") mcolor(forest_green*0.5) msymbol(circle) ciopts(color(forest_green*0.5))), ///
-        vertical ///
-        keep(F7event* F6event* F5event* F4event* F3event* F2event* L0event* L*event*) ///
-        order(F7event* F6event* F5event* F4event* F3event* F2event* L0event* L*event*) ///
-        coeflabels(F7event=-7 F6event=-6 F5event=-5 F4event=-4 F3event=-3 F2event=-2 ///
-                   L0event=0 L1event=1 L2event=2 L3event=3 L4event=4 L5event=5 ///
-                   L6event=6 L7event=7 L8event=8 L9event=9 L10event=10 L11event=11 L12event=12) ///
-        yline(0, lwidth(thick) lcolor(gs8)) xline(6.5, lcolor(gs12)) ///
-        xtitle("Years Relative to Treatment") ytitle("Coefficient") ///
-        legend(position(6) rows(2) region(color(none)) cols(3) ring(1) size(small) symxsize(4) keygap(2) rowgap(1)) ///
-        name(event_study_`analysis_type', replace) ///
-        graphregion(color(white) margin(medium)) bgcolor(white)
-        
-    * Export graph
-    graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_pop_no_interaction_`analysis_type'.pdf", replace
+    * Run regressions for each specification
+    foreach spec in "pop" "pop_med" "log_pop" {
+        foreach pop in "" "_2000" {
+            reghdfe taxa_homicidios_total_por_100m_1 F*event_`spec'`pop' L*event_`spec'`pop' `treat_var' [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code municipality_code)
+            estimates store `spec'`pop'
+        }
+    }
     
-    * Clean up
-    cap drop `treat_var'* rel_year F*event L*event treatment_year
+    * Create and combine graphs for each specification
+    foreach spec in "pop" "pop_med" "log_pop" {
+        process_estimates, spec(`spec') analysis(`analysis_type')
+    }
+    
+    * Combine graphs
+    graph combine g1 g2 g3, ///
+    rows(3) xsize(8.5) ysize(11) ///
+    graphregion(color(white) margin(zero)) ///
+    imargin(small) ///
+    scale(0.9) ///
+    name(combined_`analysis_type', replace)
+    
+    * Export combined graph
+    graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/combined_`analysis_type'.pdf", replace
 end
 
-* Run analysis for each type
-foreach type in treated neighbor spillover {
+* Processing estimates and creating individual graphs
+capture program drop process_estimates
+program define process_estimates
+    syntax, spec(string) analysis(string)
+    
     preserve
-    run_analysis, analysis_type("`type'")
+    clear
+    set obs 20
+    gen period = _n - 8
+    
+    foreach pop in "" "_2000" {
+        estimates restore `spec'`pop'
+        matrix b`pop' = e(b)
+        matrix V`pop' = e(V)
+        
+        gen b`pop' = .
+        gen se`pop' = .
+        
+        * Process pre-treatment periods
+        forval i = 2/7 {
+            local pos = 8 - `i'
+            replace b`pop' = b`pop'[1,`pos'] if period == -`i'
+            replace se`pop' = sqrt(V`pop'[`pos',`pos']) if period == -`i'
+        }
+        
+        * Process post-treatment periods
+        forval i = 0/12 {
+            local pos = `i' + 7
+            replace b`pop' = b`pop'[1,`pos'] if period == `i'
+            replace se`pop' = sqrt(V`pop'[`pos',`pos']) if period == `i'
+        }
+        
+        * Generate confidence intervals
+        gen ci_lb`pop' = b`pop' - 1.96*se`pop'
+        gen ci_ub`pop' = b`pop' + 1.96*se`pop'
+    }
+    
+    * Graph settings based on specification
+    local color = cond("`spec'" == "pop", "navy", cond("`spec'" == "pop_med", "maroon", "forest_green"))
+    local title1 = cond("`spec'" == "pop", "Current Population (Level)", ///
+                       cond("`spec'" == "pop_med", "Current Population > Median", "Current Log Population"))
+    local title2 = cond("`spec'" == "pop", "2000 Population (Level)", ///
+                       cond("`spec'" == "pop_med", "2000 Population > Median", "2000 Log Population"))
+    
+    * Create graph
+    twoway ///
+        (rcap ci_ub ci_lb period, lcolor(`color')) ///
+        (connected b period, lcolor(`color') mcolor(`color') msymbol(circle)) ///
+        (rcap ci_ub_2000 ci_lb_2000 period, lcolor(`color'*0.5)) ///
+        (connected b_2000 period, lcolor(`color'*0.5) mcolor(`color'*0.5) msymbol(circle)), ///
+        yline(0, lwidth(thick) lcolor(gs8)) xline(-1, lcolor(gs12) lpattern(dash)) ///
+        xlabel(-7(1)12, labsize(small)) /// 
+        xtitle("Years Relative to Treatment", size(small)) ///
+        ytitle("Coefficient", size(small)) ///
+        ylabel(,format(%9.2f) angle(horizontal) labsize(small)) ///
+        legend(order(2 "`title1'" 4 "`title2'") rows(2) region(style(none)) size(small) position(6)) ///
+        graphregion(color(white) margin(small)) bgcolor(white) ///
+        name(g`=cond("`spec'"=="pop",1,cond("`spec'"=="pop_med",2,3))', replace)
+    
+    restore
+end
+
+* Run all analyses
+foreach analysis in treated neighbor spillover {
+    preserve
+    run_analysis, analysis_type(`analysis')
     restore
 }
