@@ -48,16 +48,16 @@ scalar f_stat = r(F)
 scalar p_value = r(p)
 
 * Wild bootstrap p-value para cada coeficiente
-boottest pe_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest pe_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_pe = r(p)
 
-boottest ba_pb_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ba_pb_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_bapb = r(p)
 
-boottest ce_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ce_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_ce = r(p)
 
-boottest ma_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ma_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_ma = r(p)
 
 outreg2 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/simple_pooled_did.tex", tex replace ///
@@ -79,16 +79,16 @@ scalar f_stat = r(F)
 scalar p_value = r(p)
 
 * Wild bootstrap p-value para cada coeficiente
-boottest pe_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest pe_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_pe = r(p)
 
-boottest ba_pb_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ba_pb_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_bapb = r(p)
 
-boottest ce_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ce_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_ce = r(p)
 
-boottest ma_did, reps(9999) cluster(state_code) weighttype(webb)
+boottest ma_did, reps(9999) cluster(state_code) boottype(wild) weighttype(webb)
 scalar wild_p_ma = r(p)
 
 outreg2 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/simple_pooled_did.tex", tex append ///
@@ -115,30 +115,30 @@ foreach treat of local treatments {
     
     * Define sample conditions and intervals for each group
     if "`treat'" == "pe" {
-        local condition "inlist(state_code, 26) | !inlist(state_code, 29, 25, 23, 21)"
+        local condition "(inlist(state_code, 26)) | (inlist(state_code, 29, 25) & year <= 2011) | (inlist(state_code, 23) & year <= 2015) | (inlist(state_code, 21) & year <= 2016)"
         local states "26"
-        local title "Pernambuco (Group 2007) vs Never Treated"
+        local title "Pernambuco (Group 2007) vs Not Yet Treated"
         local lags "7"
         local leads "12"
     }
     else if "`treat'" == "bapb" {
-        local condition "inlist(state_code, 29, 25) | !inlist(state_code, 26, 23, 21)"
+        local condition "(inlist(state_code, 29, 25)) | (inlist(state_code, 23) & year <= 2015) | (inlist(state_code, 21) & year <= 2016)"
         local states "29 25"
-        local title "Bahia and Paraíba (Group 2011) vs Never Treated"
+        local title "Bahia and Paraíba (Group 2011) vs Not Yet Treated"
         local lags "11"
         local leads "8"
     }
     else if "`treat'" == "ce" {
-        local condition "inlist(state_code, 23) | !inlist(state_code, 26, 29, 25, 21)"
+        local condition "(inlist(state_code, 23)) | (inlist(state_code, 21) & year <= 2016)"
         local states "23"
-        local title "Ceará (Group 2015) vs Never Treated"
+        local title "Ceará (Group 2015) vs Not Yet Treated"
         local lags "15"
         local leads "4"
     }
     else {
-        local condition "inlist(state_code, 21) | !inlist(state_code, 26, 29, 25, 23)"
+        local condition "inlist(state_code, 21)"
         local states "21"
-        local title "Maranhão (Group 2016) vs Never Treated"
+        local title "Maranhão (Group 2016)"
         local lags "16"
         local leads "3"
     }
@@ -220,7 +220,7 @@ foreach treat of local treatments {
 * Combine all graphs
 graph combine graph_pe graph_bapb graph_ce graph_ma, ///
     rows(2) cols(2)
-	
+    
 * Export combined graph
 graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/group_specific_event_studies.pdf", replace
 
@@ -228,6 +228,7 @@ graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tabl
 foreach treat of local treatments {
     graph drop graph_`treat'
 }
+
 * 2. Event study
 
 * Create dummies for each relative time period

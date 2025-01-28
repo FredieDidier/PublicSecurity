@@ -17,7 +17,7 @@ replace treated = 1 if state == "MA" & year >= 2016
 reg taxa_homicidios_total_por_100m_1 treated i.municipality_code i.year [weight=population_2000_muni], cluster(state_code)
 
 // Calculando wild bootstrap p-value para treated
-boottest treated, cluster(state_code) noci nograph reps(9999) weighttype(webb)
+boottest treated, cluster(state_code) noci nograph reps(9999) boottype(wild) weighttype(webb)
 scalar pvalue1 = r(p)
 
 // Salvando primeira regressão
@@ -32,10 +32,10 @@ outreg2 using "/Users/fredie/Downloads/simple_twfe_did.tex", tex replace ///
 reg taxa_homicidios_total_por_100m_1 treated log_population i.municipality_code i.year [weight=population_2000_muni], cluster(state_code)
 
 // Calculando wild bootstrap p-values
-boottest treated, cluster(state_code) noci nograph reps(9999) weighttype(webb)
+boottest treated, cluster(state_code) noci nograph reps(9999) boottype(wild) weighttype(webb)
 scalar pvalue2 = r(p)
 
-boottest log_population, cluster(state_code) noci nograph reps(9999) weighttype(webb)
+boottest log_population, cluster(state_code) noci nograph reps(9999) boottype(wild) weighttype(webb)
 scalar pvalue3 = r(p)
 
 // Adicionando segunda regressão à tabela
