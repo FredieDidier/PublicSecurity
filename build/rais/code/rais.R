@@ -36,7 +36,7 @@ WHERE ano BETWEEN 2000 AND 2019
     AND cnae_1 IN ('75116', '75140', 
                    '80136', '80144', '80152', '80209',
                    '85111', '85120', '85138', '85146',
-                   '64114', '64203', '74110',
+                   '74110',
                    '92517', '92525')
     AND CAST(vinculo_ativo_3112 AS STRING) = '1'"
 
@@ -142,8 +142,6 @@ estabelecimentos_locais = rais[tipo_estabelecimento %in% c(1, 3) &
                                    "85146",  # Complementares diagnóstico/terapia
                                    
                                    # Serviços públicos diversos
-                                   "64114",  # Correios
-                                   "64203",  # Telecomunicações
                                    "74110",  # Cartórios
                                    
                                    # Cultura
