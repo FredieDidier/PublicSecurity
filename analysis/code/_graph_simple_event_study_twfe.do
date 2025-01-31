@@ -11,17 +11,20 @@ replace treat_year = 2007 if state == "PE"
 * Gerar relative time
 gen rel_year = year - treat_year
 
-* Gerar dummies de event time
-forvalues l = 2/7 {
-    gen F`l'event = rel_year == -`l'
-}
+
 forvalues l = 0/12 {
-    gen L`l'event = rel_year == `l'
+    gen L`l'event = rel_year==`l'
 }
+forvalues l = 1/7 {
+    gen F`l'event = rel_year==-`l'
+}
+drop F1event // normalize rel_year = -1 to zero
 
 * Rodar regressões event study sem controles
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
 estimates store est_no_controls
+
+mat list e(b)
 
 * Processar resultados sem controles
 preserve
@@ -37,7 +40,7 @@ gen se = .
 
 * Preencher coeficientes e erros padrão
 forval i = 2/7 {
-    local pos = 8 - `i'
+    local pos = `i' - 1
     replace coef = b[1,`pos'] if period == -`i'
     replace se = sqrt(V[`pos',`pos']) if period == -`i'
 }
@@ -74,6 +77,8 @@ gen log_pop = log(population_muni)
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event log_pop [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
 estimates store est_with_controls
 
+mat list e(b)
+
 * Processar resultados com controles
 preserve
 clear
@@ -88,7 +93,7 @@ gen se = .
 
 * Preencher coeficientes e erros padrão
 forval i = 2/7 {
-    local pos = 8 - `i'
+    local pos = `i' - 1
     replace coef = b[1,`pos'] if period == -`i'
     replace se = sqrt(V[`pos',`pos']) if period == -`i'
 }

@@ -1,6 +1,3 @@
-* Configurações iniciais
-clear all
-set more off
 
 ********************************************************************************
 * 1. Preparação inicial dos dados
@@ -17,31 +14,6 @@ replace treat_year = 2007 if state == "PE"
 
 gen rel_year = year - treat_year
 gen log_population = log(population_muni)
-
-********************************************************************************
-* 2. Criar medidas de capacidade
-********************************************************************************
-* 2.1 Log do número absoluto de funcionários
-preserve
-keep if year == 2006
-gen log_func_abs = log(total_func_pub_munic) if total_func_pub_munic > 0
-keep municipality_code log_func_abs
-save "temp_log_func_abs.dta", replace
-restore
-merge m:1 municipality_code using "temp_log_func_abs.dta", nogenerate
-erase "temp_log_func_abs.dta"
-
-* 2.2 Dummy baseada no log absoluto
-preserve
-keep if year == 2006
-gen log_func_temp = log(total_func_pub_munic) if total_func_pub_munic > 0
-sum log_func_temp, detail
-gen high_cap_abs = (log_func_temp > r(p50)) if !missing(log_func_temp)
-keep municipality_code high_cap_abs
-save "temp_high_cap_abs.dta", replace
-restore
-merge m:1 municipality_code using "temp_high_cap_abs.dta", nogenerate
-erase "temp_high_cap_abs.dta"
 
 * 2.3 Log dos funcionários por 1000 habitantes
 preserve
@@ -70,23 +42,30 @@ erase "temp_high_cap_pc.dta"
 ********************************************************************************
 * 3. Gerar dummies de event time e interações
 ********************************************************************************
-* Criar dummies de event time
-forvalues l = 2/7 {
-    gen F`l'event = rel_year == -`l'
-}
+* Primeiro, criar todas as dummies de event time
 forvalues l = 0/12 {
-    gen L`l'event = rel_year == `l'
+    gen L`l'event = rel_year==`l'
+}
+forvalues l = 1/7 {
+    gen F`l'event = rel_year==-`l'
 }
 
-* Criar interações para cada medida de capacidade
-foreach var in log_func_abs high_cap_abs log_func_pc high_cap_pc {
-    forvalues l = 2/7 {
+* Segundo, criar todas as interações para cada medida de capacidade
+foreach var in log_func_pc high_cap_pc {
+    forvalues l = 1/7 {
         gen F`l'event_`var' = F`l'event * `var'
     }
     forvalues l = 0/12 {
         gen L`l'event_`var' = L`l'event * `var'
     }
 }
+
+* Por último, dropar as variáveis de normalização
+drop F1event
+foreach var in log_func_pc high_cap_pc {
+    drop F1event_`var'
+}
+
 
 ********************************************************************************
 * 4. Rodar regressões e criar gráficos
@@ -110,7 +89,7 @@ program define process_results
         replace se = sqrt(V[`pos',`pos']) if period == -`i'
     }
     forval i = 0/12 {
-        local pos = `i' + 24  // Posição ajustada para pegar apenas interações
+        local pos = `i' + 26  // Posição ajustada para pegar apenas interações
         replace coef = b[1,`pos'] if period == `i'
         replace se = sqrt(V[`pos',`pos']) if period == `i'
     }
@@ -136,13 +115,6 @@ program define process_results
 end
 
 * Rodar regressões e gerar gráficos para cada medida
-* 1. Log absoluto
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_abs L*event_log_func_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results event_log_abs ""
-
-* 2. Dummy log absoluto
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_abs L*event_high_cap_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results event_high_abs ""
 
 * 3. Log per capita
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_pc L*event_log_func_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
@@ -155,8 +127,8 @@ process_results event_high_pc ""
 ********************************************************************************
 * 5. Combinar e salvar gráficos
 ********************************************************************************
-graph combine event_log_abs event_high_abs event_log_pc event_high_pc, ///
-    cols(2) rows(2) xsize(11) ysize(10) ///
+graph combine event_log_pc event_high_pc, ///
+    rows(2) xsize(11) ysize(10) ///
     graphregion(color(white) margin(zero)) ///
     name(combined_event, replace)
 
@@ -178,12 +150,12 @@ program define process_results_treated
     
     * Pegar coeficientes dos eventos (não das interações)
     forval i = 2/7 {
-        local pos = `i'  // Posição para eventos treated
+        local pos = `i' - 1  // Posição para eventos treated
         replace coef = b[1,`pos'] if period == -`i'
         replace se = sqrt(V[`pos',`pos']) if period == -`i'
     }
     forval i = 0/12 {
-        local pos = `i' + 6  // Posição para eventos treated
+        local pos = `i' + 7  // Posição para eventos treated
         replace coef = b[1,`pos'] if period == `i'
         replace se = sqrt(V[`pos',`pos']) if period == `i'
     }
@@ -209,13 +181,6 @@ program define process_results_treated
 end
 
 * Rodar regressões e gerar gráficos para treated
-* 1. Log absoluto
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_abs L*event_log_func_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results_treated treated_log_abs ""
-
-* 2. Dummy log absoluto
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_abs L*event_high_cap_abs log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results_treated treated_high_abs ""
 
 * 3. Log per capita
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_pc L*event_log_func_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
@@ -226,8 +191,8 @@ reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_pc L*e
 process_results_treated treated_high_pc ""
 
 * Combinar gráficos treated
-graph combine treated_log_abs treated_high_abs treated_log_pc treated_high_pc, ///
-    cols(2) rows(2) xsize(11) ysize(10) ///
+graph combine treated_log_pc treated_high_pc, ///
+    rows(2) xsize(11) ysize(10) ///
     graphregion(color(white) margin(zero)) ///
     name(combined_event_treated, replace)
 

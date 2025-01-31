@@ -10,13 +10,14 @@ replace treat_year = 2016 if state == "MA"
 replace treat_year = 2007 if state == "PE"
 gen rel_year = year - treat_year
 
-* Gerar dummies de event time
-forvalues l = 2/7 {
-    gen F`l'event = rel_year == -`l'
-}
+
 forvalues l = 0/12 {
-    gen L`l'event = rel_year == `l'
+    gen L`l'event = rel_year==`l'
 }
+forvalues l = 1/7 {
+    gen F`l'event = rel_year==-`l'
+}
+drop F1event // normalize rel_year = -1 to zero
 
 * Primeira regressão (sem controles)
 eststo: reg taxa_homicidios_total_por_100m_1 F*event L*event i.municipality_code i.year [weight=population_2000_muni], cluster(state_code)
