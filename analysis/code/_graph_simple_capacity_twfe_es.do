@@ -1,4 +1,3 @@
-
 ********************************************************************************
 * 1. Preparação inicial dos dados
 ********************************************************************************
@@ -67,105 +66,67 @@ foreach var in log_func_pc high_cap_pc {
 }
 
 
+
+
 ********************************************************************************
 * 4. Rodar regressões e criar gráficos
 ********************************************************************************
-* Criar programa para processar resultados e gerar gráficos
-capture program drop process_results
-program define process_results
+* Criar programa para processar resultados e gerar gráficos que mostre treated e interação
+capture program drop process_results_combined
+program define process_results_combined
     preserve
     clear
     set obs 20
     gen period = _n - 8
     matrix b = e(b)
     matrix V = e(V)
-    gen coef = .
-    gen se = .
     
-    * Ajuste para pegar apenas os coeficientes das interações
-    forval i = 2/7 {
-        local pos = `i' + 18  // Posição ajustada para pegar apenas interações
-        replace coef = b[1,`pos'] if period == -`i'
-        replace se = sqrt(V[`pos',`pos']) if period == -`i'
-    }
-    forval i = 0/12 {
-        local pos = `i' + 26  // Posição ajustada para pegar apenas interações
-        replace coef = b[1,`pos'] if period == `i'
-        replace se = sqrt(V[`pos',`pos']) if period == `i'
-    }
+    * Para treated
+    gen coef_treated = .
+    gen se_treated = .
     
-    gen ci_lb = coef - 1.96*se
-    gen ci_ub = coef + 1.96*se
+    * Para interação
+    gen coef_int = .
+    gen se_int = .
     
-    twoway (rcap ci_ub ci_lb period, lcolor(navy)) ///
-        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) ///
-        (connect coef period, lcolor(navy) lpattern(dash)), ///
-        xline(-1, lpattern(dash) lcolor(red)) ///
-        yline(0, lcolor(black)) ///
-        xlabel(-7(1)12, angle(45) labsize(small)) ///
-        ylabel(, grid) ///
-        xtitle("Years Relative to Treatment") ///
-        ytitle("Coefficient of Interaction") ///
-        graphregion(color(white)) ///
-        bgcolor(white) ///
-        legend(off) ///
-        title(`2', size(medium)) ///
-        name(`1', replace)
-    restore
-end
-
-* Rodar regressões e gerar gráficos para cada medida
-
-* 3. Log per capita
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_pc L*event_log_func_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results event_log_pc ""
-
-* 4. Dummy log per capita
-reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_pc L*event_high_cap_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results event_high_pc ""
-
-********************************************************************************
-* 5. Combinar e salvar gráficos
-********************************************************************************
-graph combine event_log_pc event_high_pc, ///
-    rows(2) xsize(11) ysize(10) ///
-    graphregion(color(white) margin(zero)) ///
-    name(combined_event, replace)
-
-graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_capacity_event_study.pdf", replace
-
-***********************
-
-* Modificar o programa process_results para processar coeficientes treated
-capture program drop process_results_treated
-program define process_results_treated
-    preserve
-    clear
-    set obs 20
-    gen period = _n - 8
-    matrix b = e(b)
-    matrix V = e(V)
-    gen coef = .
-    gen se = .
-    
-    * Pegar coeficientes dos eventos (não das interações)
+    * Pegar coeficientes treated
     forval i = 2/7 {
         local pos = `i' - 1  // Posição para eventos treated
-        replace coef = b[1,`pos'] if period == -`i'
-        replace se = sqrt(V[`pos',`pos']) if period == -`i'
+        replace coef_treated = b[1,`pos'] if period == -`i'
+        replace se_treated = sqrt(V[`pos',`pos']) if period == -`i'
     }
     forval i = 0/12 {
         local pos = `i' + 7  // Posição para eventos treated
-        replace coef = b[1,`pos'] if period == `i'
-        replace se = sqrt(V[`pos',`pos']) if period == `i'
+        replace coef_treated = b[1,`pos'] if period == `i'
+        replace se_treated = sqrt(V[`pos',`pos']) if period == `i'
     }
     
-    gen ci_lb = coef - 1.96*se
-    gen ci_ub = coef + 1.96*se
+    * Pegar coeficientes das interações
+    forval i = 2/7 {
+        local pos = `i' + 18  // Posição ajustada para interações
+        replace coef_int = b[1,`pos'] if period == -`i'
+        replace se_int = sqrt(V[`pos',`pos']) if period == -`i'
+    }
+    forval i = 0/12 {
+        local pos = `i' + 26  // Posição ajustada para interações
+        replace coef_int = b[1,`pos'] if period == `i'
+        replace se_int = sqrt(V[`pos',`pos']) if period == `i'
+    }
     
-    twoway (rcap ci_ub ci_lb period, lcolor(navy)) ///
-        (scatter coef period, mcolor(navy) msymbol(circle) msize(medium)) ///
-        (connect coef period, lcolor(navy) lpattern(dash)), ///
+    * Gerar intervalos de confiança
+    gen ci_lb_treated = coef_treated - 1.96*se_treated
+    gen ci_ub_treated = coef_treated + 1.96*se_treated
+    
+    gen ci_lb_int = coef_int - 1.96*se_int
+    gen ci_ub_int = coef_int + 1.96*se_int
+    
+    * Criar o gráfico combinado
+    twoway (rcap ci_ub_treated ci_lb_treated period, lcolor(navy)) ///
+        (scatter coef_treated period, mcolor(navy) msymbol(circle) msize(medium)) ///
+        (connect coef_treated period, lcolor(navy) lpattern(dash)) ///
+        (rcap ci_ub_int ci_lb_int period, lcolor(maroon)) ///
+        (scatter coef_int period, mcolor(maroon) msymbol(circle) msize(medium)) ///
+        (connect coef_int period, lcolor(maroon) lpattern(dash)), ///
         xline(-1, lpattern(dash) lcolor(red)) ///
         yline(0, lcolor(black)) ///
         xlabel(-7(1)12, angle(45) labsize(small)) ///
@@ -174,27 +135,23 @@ program define process_results_treated
         ytitle("Coefficient") ///
         graphregion(color(white)) ///
         bgcolor(white) ///
-        legend(off) ///
+        legend(order(2 5) label(2 "Low Capacity") label(5 "High Capacity") position(6)) ///
         title(`2', size(medium)) ///
         name(`1', replace)
     restore
 end
 
-* Rodar regressões e gerar gráficos para treated
-
-* 3. Log per capita
+* Rodar regressões e gerar gráficos para cada medida
+* Log per capita
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_log_func_pc L*event_log_func_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results_treated treated_log_pc ""
+process_results_combined event_log_pc ""
 
-* 4. Dummy log per capita
+* Exportar gráfico log per capita
+graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_capacity_event_study.png", replace
+
+* Dummy log per capita
 reghdfe taxa_homicidios_total_por_100m_1 F*event L*event F*event_high_cap_pc L*event_high_cap_pc log_population [aw=population_2000_muni], absorb(municipality_code year) cluster(state_code)
-process_results_treated treated_high_pc ""
+process_results_combined event_high_pc ""
 
-* Combinar gráficos treated
-graph combine treated_log_pc treated_high_pc, ///
-    rows(2) xsize(11) ysize(10) ///
-    graphregion(color(white) margin(zero)) ///
-    name(combined_event_treated, replace)
-
-* Exportar gráfico treated
-graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_treated_no_int_event_study.pdf", replace
+* Exportar gráfico dummy
+graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/simple_capacity_event_study_2.png", replace

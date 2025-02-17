@@ -1,7 +1,7 @@
 # Clear environment and set paths
 rm(list = ls())
-GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurity/"
-DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
+GITHUB_PATH <- "/Users/fredie/Documents/GitHub/PublicSecurity/"
+DROPBOX_PATH <- "/Users/fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
 # Load necessary libraries
 library(data.table)
@@ -17,7 +17,6 @@ load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
 load(paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
 load(paste0(DROPBOX_PATH, "build/delegacias/output/delegacias.RData"))
 load(paste0(DROPBOX_PATH, "build/bolsa familia/output/clean_bf.RData"))
-load(paste0(DROPBOX_PATH, "build/vacina/output/clean_vacina.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -236,15 +235,12 @@ main_data = main_data %>%
 # Substituir NA por 0 em todas colunas que contêm "bf"
 main_data[,7:9] <- lapply(main_data[,7:9], function(x) replace(x, is.na(x), 0))
 
-# Merge
-main_data = merge(main_data, vacina, by = c("year", "municipality_code", "state"), all.x = T)
-
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
            taxa_homicidios_total_por_100mil_munic, families_bf, pop_density_municipality,
            total_vinculos_munic, total_estabelecimentos_locais, total_func_pub_munic, funcionarios_superior,
-           perc_superior, cobertura_total,
+           perc_superior,
            log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
            id_delegacia, distancia_delegacia_km)
 

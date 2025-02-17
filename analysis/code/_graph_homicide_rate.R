@@ -3,8 +3,7 @@ library(dplyr)
 library(tidyr)
 library(scales)
 
-create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
-  
+create_homicide_graph <- function(data, category, GITHUB_PATH) {
   target_states <- c("BA", "PE", "PB", "MA", "CE")
   cols <- c(paste0("taxa_homicidios_", category, "_por_100mil_", target_states),
             paste0("taxa_homicidios_", category, "_por_100mil_other_states"))
@@ -16,91 +15,100 @@ create_homicide_graph <- function(data, category, GITHUB_PATH, graph_type) {
                  values_to = "rate") %>%
     mutate(state = sub("taxa_homicidios_.*_por_100mil_", "", state))
   
-  graph_data <- graph_data %>%
-    group_by(state, year) %>%
-    mutate(
-      mean_rate = mean(rate, na.rm = TRUE),
-      log_rate = log(rate + 1)
-    ) %>%
-    ungroup()
-  
-  y_var <- switch(graph_type,
-                  "rate" = "rate",
-                  "mean" = "mean_rate",
-                  "log" = "log_rate")
-  
-  y_label <- switch(graph_type,
-                    "rate" = "Homicide rate per 100,000 inhabitants",
-                    "mean" = "Mean homicide rate per 100,000 inhabitants",
-                    "log" = "Log of homicide rate per 100,000 inhabitants")
-  
   color_palette <- c(
-    "PE" = "#0074D9", # Azul para Pernambuco
-    "BA" = "#FF4136", # Vermelho para Bahia
-    "MA" = "#2ECC40", # Verde para Maranhão
-    "CE" = "#FFDC00", # Amarelo para Ceará
-    "PB" = "#FF851B", # Laranja para Paraíba
-    "other_states" = "#AAAAAA" # Cinza para outros estados
+    "PE" = "#1f77b4",
+    "BA" = "#d62728",
+    "MA" = "#2ca02c",
+    "CE" = "#ff7f0e",
+    "PB" = "#9467bd",
+    "other_states" = "#7f7f7f"
   )
   
-  graph <- ggplot(graph_data, aes(x = year, y = !!sym(y_var), color = state)) +
-    geom_line(size = 1.2) +
-    geom_point(size = 2) +
+  graph <- ggplot(graph_data, aes(x = year, y = rate, color = state)) +
+    geom_line(size = 1.5) +
+    geom_point(size = 3) +
     scale_color_manual(values = color_palette,
-                       labels = c("Bahia", "Ceará", "Maranhão", "Other Northeast States", "Paraíba", "Pernambuco")) +
-    geom_vline(xintercept = c(2007, 2011, 2015, 2016), linetype = "dashed", color = "black", size = 0.5) +
-    labs(x = "Year",
-         y = y_label,
+                       labels = c("Bahia", "Ceará", "Maranhão", 
+                                  "Other Northeast States", "Paraíba", "Pernambuco")) +
+    geom_vline(xintercept = c(2007, 2011, 2015, 2016), 
+               linetype = "dashed", color = "black", size = 0.8) +
+    labs(x = "",
+         y = "Homicide rate",
          color = "") +
     theme_minimal() +
     theme(
-      plot.title = element_text(face = "bold", size = 16),
-      plot.subtitle = element_text(size = 12),
-      axis.title = element_text(face = "bold"),
+      text = element_text(size = 20),
+      axis.title = element_text(face = "bold", size = 22),
+      axis.text = element_text(size = 20),
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      legend.text = element_text(size = 18),
       legend.position = "bottom",
+      legend.box = "horizontal",
+      legend.margin = margin(t = 20),
       panel.grid.minor = element_blank(),
-      panel.border = element_rect(colour = "black", fill=NA, size=0.5)
+      panel.grid.major = element_line(size = 0.5),
+      panel.border = element_rect(colour = "black", fill=NA, size=1),
+      plot.margin = unit(c(1, 1, 1.5, 1), "cm")
     ) +
-    scale_x_continuous(breaks = seq(2000, 2019, by = 1)) +
-    scale_y_continuous(labels = comma)
+    scale_x_continuous(breaks = seq(2000, 2019, by = 2)) +  # Intervalo de 2 anos
+    scale_y_continuous(labels = comma_format(big.mark = ","))
   
-  # Ajustar posições das anotações pra melhor visibilidade
+  max_y <- max(graph_data$rate, na.rm = TRUE)
   annotations <- data.frame(
     x = c(2007, 2011, 2011, 2015, 2016),
-    y = c(max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.15,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.2,
-          max(graph_data[[y_var]], na.rm = TRUE) * 0.2),
+    y = c(max_y * 0.2, max_y * 0.2, max_y * 0.15, max_y * 0.25,
+          max_y * 0.15),
     label = c("PE", "BA", "PB", "CE", "MA"),
-    color = c("#0074D9", "#FF4136", "#FF851B", "#FFDC00", "#2ECC40")
+    color = c("#1f77b4", "#d62728", "#9467bd", "#ff7f0e", "#2ca02c")
   )
   
   graph <- graph +
-    geom_text(data = annotations, aes(x = x, y = y, label = label), 
-              color = annotations$color, hjust = -0.2, size = 6, fontface = "bold") +
-    geom_segment(data = annotations, aes(x = x, xend = x, 
-                                         y = min(graph_data[[y_var]], na.rm = TRUE), 
-                                         yend = y), 
-                 arrow = arrow(length = unit(0.3, "cm")), color = "black", size = 0.7)
+    geom_text(data = annotations, 
+              aes(x = x, y = y, label = label),
+              color = annotations$color, 
+              hjust = -0.2, 
+              size = 10,
+              fontface = "bold") +
+    geom_segment(data = annotations, 
+                 aes(x = x, xend = x,
+                     y = min(graph_data$rate, na.rm = TRUE),
+                     yend = y),
+                 arrow = arrow(length = unit(0.4, "cm")),
+                 color = "black",
+                 size = 1)
   
-  filename <- paste0(GITHUB_PATH, "analysis/output/graphs/homicide_", graph_type, "_northeast_", 
-                     switch(category, "total" = "total", "homem" = "male", "mulher" = "female",
-                            "negro" = "non_white", "branco" = "white", "homem_jovem" = "young_male",
-                            "mulher_jovem" = "young_female", "negro_jovem" = "young_non_white",
-                            "branco_jovem" = "young_white"), ".pdf")
+  # Garantir que o diretório existe
+  dir.create(file.path(GITHUB_PATH, "analysis/output/graphs"), recursive = TRUE, showWarnings = FALSE)
   
-  ggsave(filename, graph, width = 12, height = 8, dpi = 300)
+  filename <- file.path(GITHUB_PATH, "analysis/output/graphs", 
+                        paste0("homicide_",
+                               switch(category,
+                                      "total" = "total",
+                                      "homem" = "male",
+                                      "mulher" = "female",
+                                      "negro" = "non_white",
+                                      "branco" = "white",
+                                      "homem_jovem" = "young_male",
+                                      "mulher_jovem" = "young_female",
+                                      "negro_jovem" = "young_non_white",
+                                      "branco_jovem" = "young_white"),
+                               ".png"))
+  
+  # Salvar o gráfico
+  ggsave(filename = filename,
+         plot = graph, 
+         width = 11, height = 8.5,
+         dpi = 600,
+         bg = "white")
   
   return(graph)
 }
 
-# Exemplo de uso da função
-categories <- c("total", "homem", "mulher", "negro", "branco", "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
-graph_types <- c("rate", "mean", "log")
+# Example usage
+categories <- c("total", "homem", "mulher", "negro", "branco", 
+                "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
+
 for (category in categories) {
-  for (graph_type in graph_types) {
-    graph <- create_homicide_graph(main_data, category, GITHUB_PATH, graph_type)
-    print(paste("Created", graph_type, "graph for category:", category))
-  }
+  graph <- create_homicide_graph(main_data, category, GITHUB_PATH)
+  print(paste("Created graph for category:", category))
 }

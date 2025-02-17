@@ -1,32 +1,29 @@
 \documentclass[]{article}
 \usepackage{booktabs}
-\usepackage{caption}
-\setlength{\pdfpagewidth}{8.5in} 
-\setlength{\pdfpageheight}{11in}
-
+\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
 \begin{document}
-
-\begin{table}[htbp]
-\centering
-\begin{tabular}{lcc}
-\toprule
-& \multicolumn{2}{c}{Homicide Rate per 100,000 inhabitants} \\
-\cmidrule(lr){2-3}
-& (1) & (2) \\
-\midrule
-All Treated & -0.347 & \\
-& (11.08) & \\
-& [0.979] & \\
-[1ex]
-2007 Cohort & & 24.83 \\
-& & (9.615) \\
-&& [0.172] \\
-\midrule
-Untreated Mean & 27.74 & 27.74 \\
-\midrule
-Observations & 1,784 & 746 \\
-\bottomrule
-\end{tabular}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcc} 
+        \hline
+        \multicolumn{3}{c}{\textit{Depedent Variable: Homicide Rate per 100,000 inhabitants}} \\
+        \hline
+        & (1) & (2) \\
+        \midrule
+        All Treated & -3.947 &  \\
+        & (10.00) &  \\
+        & [0.751] & \\
+        \midrule
+        2007 Cohort &  & 17.21 \\
+        &  & (10.05) \\
+        &  & [0.265] \\
+        \midrule
+        Control & Yes & Yes \\
+        Observations & 1,784 & 746 \\
+        R-squared & 0.412 & 0.597 \\
+        Untreated Mean & 27.74 & 27.74 \\
+        \hline
+    \end{tabular}
 \end{table}
 
 \end{document}

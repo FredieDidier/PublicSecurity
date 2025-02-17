@@ -4,6 +4,9 @@ library(sf)
 library(ggplot2)
 library(RColorBrewer)
 library(janitor)
+library(patchwork)
+library(cowplot)
+library(gridExtra)
 
 # Carregar e preparar dados principais
 main_data <- main_data %>%
@@ -31,32 +34,29 @@ map_data <- delegacias %>%
 # Definir a paleta de cores específica do mapa
 cores_homicidios <- c(
   "#FFFFFF",  # Sem Informações (branco)
-  "#FFE5E5",  # ≤ 20 (rosa claro)
-  "#FF9999",  # ≤ 30 (salmon)
-  "#FF4D4D",  # ≤ 40 (vermelho médio)
-  "#CC0000",  # ≤ 50 (vermelho escuro)
-  "#800000"   # ≥ 60 (vinho)
+  "#FFE5E5",  # ≤ 15
+  "#FF9999",  # ≤ 30
+  "#FF4D4D",  # ≤ 45
+  "#CC0000",  # ≤ 60
+  "#800000"   # ≥ 75
 )
 
 # Definir os breaks e labels
-breaks_homicidios <- c(-Inf, 20, 30, 40, 50, Inf)
-labels_homicidios <- c("≤ 20", "≤ 30", "≤ 40", "≤ 50", "≥ 60")
+breaks_homicidios <- c(-Inf, 15, 30, 45, 60, Inf)
+labels_homicidios <- c("≤ 15", "≤ 30", "≤ 45", "≤ 60", "≥ 75")
 
-# Anos para mapas do Nordeste inteiro
-anos_nordeste <- c(2006, 2010, 2014, 2015)
-
-# Configuração dos mapas por estado
+# Configuração dos mapas por estado com títulos
 mapas_estados <- list(
-  "PE" = 2006,
-  "BA" = 2010,
-  "PB" = 2010,
-  "CE" = 2014,
-  "MA" = 2015 
+  "PE" = list(ano = 2006, titulo = "Pernambuco 2006"),
+  "BA" = list(ano = 2010, titulo = "Bahia 2010"),
+  "PB" = list(ano = 2010, titulo = "Paraíba 2010"),
+  "CE" = list(ano = 2014, titulo = "Ceará 2014"),
+  "MA" = list(ano = 2015, titulo = "Maranhão 2015")
 )
 
-# Função para criar mapa
-criar_mapa <- function(dados, ano) {
-  ggplot() +
+# Função atualizada para criar mapa
+criar_mapa <- function(dados, ano, titulo = NULL, mostrar_legenda = TRUE) {
+  p <- ggplot() +
     geom_sf(data = dados %>% filter(year == ano),
             aes(fill = cut(taxa_homicidios_total_por_100mil_munic, 
                            breaks = breaks_homicidios,
@@ -66,101 +66,76 @@ criar_mapa <- function(dados, ano) {
             size = 0.1) +
     scale_fill_manual(
       values = cores_homicidios[-1],
-      name = NULL,
+      name = "Homicide Rate \nper 100,000 inhabitants",
       na.value = cores_homicidios[1],
       drop = FALSE
     ) +
     theme_minimal() +
     theme(
-      legend.position = "right",
-      legend.text = element_text(size = 8),
+      legend.position = if(mostrar_legenda) "right" else "none",
+      legend.text = element_text(size = 10),
+      legend.title = element_text(size = 11),
       axis.text = element_blank(),
       axis.ticks = element_blank(),
-      panel.grid = element_blank()
+      panel.grid = element_blank(),
+      plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
     ) +
     coord_sf()
-}
-
-# Filtrar estados do Nordeste
-estados_ne <- c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA")
-map_data_ne <- map_data %>%
-  filter(state %in% estados_ne)
-
-# 1. Criar e salvar mapas do Nordeste inteiro
-for (ano in anos_nordeste) {
-  mapa <- criar_mapa(map_data_ne, ano)
   
-  ggsave(
-    filename = paste0(GITHUB_PATH, "analysis/output/maps/map_homicide_rate_NE_", ano, ".pdf"),
-    plot = mapa,
-    width = 12,
-    height = 10,
-    dpi = 300
-  )
+  if (!is.null(titulo)) {
+    p <- p + ggtitle(titulo)
+  }
+  
+  return(p)
 }
 
-# 2. Criar e salvar mapas individuais dos estados
+# Criar os mapas individuais dos estados (sem legenda individual)
+mapas_individuais <- list()
 for (estado in names(mapas_estados)) {
-  ano <- mapas_estados[[estado]]
+  info <- mapas_estados[[estado]]
   
-  # Filtrar dados para o estado específico
   map_data_estado <- map_data %>%
     filter(state == estado)
   
-  mapa <- criar_mapa(map_data_estado, ano)
-  
-  ggsave(
-    filename = paste0(GITHUB_PATH, "analysis/output/maps/map_homicide_rate_", estado, "_", ano, ".pdf"),
-    plot = mapa,
-    width = 10,
-    height = 8,
-    dpi = 300
+  mapas_individuais[[estado]] <- criar_mapa(
+    map_data_estado, 
+    info$ano, 
+    titulo = info$titulo,
+    mostrar_legenda = FALSE
   )
 }
 
-# Criar os mapas individuais
-map2006 <- criar_mapa(map_data_ne, 2006)
-map2010 <- criar_mapa(map_data_ne, 2010)
-map2014 <- criar_mapa(map_data_ne, 2014)
-map2015 <- criar_mapa(map_data_ne, 2015)
+# Criar legenda separada
+legenda <- criar_mapa(map_data, 2006) +
+  theme(legend.position = "right")
+legenda_grob <- cowplot::get_legend(legenda)
 
-# Combinar os quatro mapas em uma única figura
-combined_plot <- gridExtra::grid.arrange(
-  map2006, map2010, map2014, map2015,
-  ncol = 2,
-  nrow = 2)
-
-# Salvar o plot combinado
-ggsave(
-  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_NE.pdf"),
-  plot = combined_plot,
-  width = 12,
-  height = 10,
-  dpi = 300
+# Criar um layout de 2 colunas x 3 linhas
+# Os primeiros 5 elementos são os mapas e o último é a legenda
+layout_matrix <- rbind(
+  c(1, 2),    # Primeira linha: PE e BA
+  c(3, 4),    # Segunda linha: PB e CE
+  c(5, 6)     # Terceira linha: MA e legenda
 )
 
-
-# Criar os mapas individuais dos estados
-mapPE <- criar_mapa(map_data %>% filter(state == "PE"), 2006)
-mapBA <- criar_mapa(map_data %>% filter(state == "BA"), 2010)
-mapPB <- criar_mapa(map_data %>% filter(state == "PB"), 2010)
-mapCE <- criar_mapa(map_data %>% filter(state == "CE"), 2014)
-mapMA <- criar_mapa(map_data %>% filter(state == "MA"), 2015)
-
-# Combinar os cinco mapas em uma única figura (3 em cima, 2 embaixo)
+# Combinar os mapas usando o novo layout
 combined_states_plot <- gridExtra::grid.arrange(
-  mapPE, mapBA, mapPB,
-  mapCE, mapMA,
-  layout_matrix = rbind(c(1,2,3), c(4,5,5)),
-  widths = c(1,1,1),
-  heights = c(1,1)
+  mapas_individuais$PE,  # 1
+  mapas_individuais$BA,  # 2
+  mapas_individuais$PB,  # 3
+  mapas_individuais$CE,  # 4
+  mapas_individuais$MA,  # 5
+  legenda_grob,         # 6
+  layout_matrix = layout_matrix,
+  widths = c(1, 1),     # Duas colunas de igual largura
+  heights = c(1, 1, 1)  # Três linhas de igual altura
 )
 
-# Salvar o plot combinado
+# Salvar o plot combinado com dimensões ajustadas para o novo layout
 ggsave(
-  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_states.pdf"),
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_states.png"),
   plot = combined_states_plot,
-  width = 15,
-  height = 10,
-  dpi = 300
+  width = 12,  # Ajustado para o novo layout
+  height = 15, # Mais alto para acomodar 3 linhas
+  dpi = 400
 )

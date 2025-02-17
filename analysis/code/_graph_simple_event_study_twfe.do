@@ -2,7 +2,7 @@
 drop if municipality_code == 2300000 | municipality_code == 2600000
 
 * Criar variável de treatment year
-gen treat_year = .
+gen treat_year = 0
 replace treat_year = 2011 if state == "BA" | state == "PB"
 replace treat_year = 2015 if state == "CE"
 replace treat_year = 2016 if state == "MA"
