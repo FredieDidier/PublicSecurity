@@ -10,30 +10,11 @@ main_data <- main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000)
 
-# Criar tabela com número total de municípios e estados na amostra
-table1 <- main_data %>%
-  summarise(
-    n_estados = n_distinct(state),
-    n_municipios = n_distinct(municipality_code)
-  )
-
 # Criar dataframe com informações do tratamento
 treatment_info <- data.frame(
   treatment_year = c(2007, 2011, 2011, 2015, 2016),
   state = c("PE", "BA", "PB", "CE", "MA")
 )
-
-# Criar tabela com número de estados e municípios tratados por ano
-table2 <- main_data %>%
-  inner_join(treatment_info, by = "state") %>%
-  group_by(treatment_year) %>%
-  summarise(
-    states = paste(sort(unique(state)), collapse = ", "),
-    n_state = n_distinct(state),
-    n_municipios = n_distinct(municipality_code)
-  ) %>%
-  arrange(treatment_year)
-
 
 # Ler dados das delegacias
 delegacias = st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp")) %>%
@@ -42,7 +23,7 @@ delegacias = st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacia
   rename(municipality_code = cd_geoc) %>%
   mutate(municipality_code = as.integer(municipality_code))
 
-# Criar map_data mantendo a estrutura sf
+# Criar map_data
 map_data <- delegacias %>%
   left_join(main_data, by = "municipality_code") %>%
   left_join(treatment_info, by = "state") %>%
@@ -53,12 +34,38 @@ map_data <- delegacias %>%
     )
   )
 
-map_data = map_data %>%
-  select(treatment_status)
+# Criar dataframe com as posições manuais das siglas dos estados
+state_labels <- data.frame(
+  state = c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"),
+  x = c(-44.5, -42.5, -40.0, -36.5, -36.5, -37.5, -36.5, -37.5, -41.0),
+  y = c(-5.0, -7.0, -5.0, -5.5, -7.0, -8.5, -9.5, -10.5, -12.0)
+)
+
+# Criar agregação por estado para adicionar bordas
+estados_agregados <- map_data %>%
+  group_by(state) %>%
+  summarise(geometry = st_union(geometry)) %>%
+  ungroup()
 
 # Criar o mapa
 map = ggplot() +
-  geom_sf(data = map_data, aes(fill = treatment_status), color = "white", size = 0.1) +
+  # Base map layer
+  geom_sf(data = map_data, 
+          aes(fill = treatment_status), 
+          color = "white", 
+          size = 0.2) +
+  # Adicionar bordas dos estados
+  geom_sf(data = estados_agregados,
+          fill = NA,
+          color = "black",
+          size = 0.5) +
+  # Add state labels manually
+  geom_text(data = state_labels,
+            aes(x = x, y = y, label = state),
+            color = "black",
+            size = 6,  # Aumentei o tamanho para melhor legibilidade
+            fontface = "bold") +
+  # Customize colors
   scale_fill_manual(
     values = c(
       "Not Treated" = "grey80",
@@ -69,14 +76,34 @@ map = ggplot() +
     ),
     name = "Treatment Status"
   ) +
+  # Customize theme
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 14, face = "bold"),
-    legend.position = "bottom",
+    # Remove axis elements
     axis.text = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    
+    # Customize legend
+    legend.position = "left",
+    legend.title = element_text(size = 15, face = "bold"),
+    legend.text = element_text(size = 13),
+    legend.key.size = unit(1, "cm"),
+    
+    # Remove panel elements
+    panel.grid = element_blank(),
+    panel.border = element_blank(),
+    
+    # Adjust plot margins
+    plot.margin = margin(1, 1, 1, 1, "cm")
   )
 
-# Salvar o mapa como um arquivo PDF
-ggsave(paste0(GITHUB_PATH, "analysis/output/maps/_map_all_municipalities_treated_not_treated.pdf"), map, width = 12, height = 8, dpi = 300)
-
+# Save the map as PNG with high resolution
+ggsave(
+  paste0(GITHUB_PATH, "analysis/output/maps/map_all_municipalities_treated_not_treated.png"), 
+  map, 
+  width = 12, 
+  height = 8, 
+  dpi = 300,
+  bg = "white"
+)

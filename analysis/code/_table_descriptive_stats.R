@@ -14,19 +14,12 @@ main_data$treated <- main_data$state %in% treated_states
 # Criar as novas variáveis
 main_data <- main_data %>%
   mutate(
-    # Log da taxa de homicídios
-    log_homicide_rate = log(taxa_homicidios_total_por_100mil_munic + 1),
-    
-    # Funcionários públicos em 2006 (absoluto e per capita)
-    func_pub_2006 = ifelse(year == 2006, total_func_pub_munic, NA),
-    log_func_pub_2006 = log(func_pub_2006),
-    func_pub_per_1000_2006 = ifelse(year == 2006, (total_func_pub_munic/population_muni)*1000, NA),
-    log_func_pub_per_1000_2006 = log(func_pub_per_1000_2006),
+    # Porcentagem de funcionários públicos municipais com ensino superior em relação ao total
+    func_pub_superior_percent_2006 = ifelse(year == 2006, (funcionarios_superior/total_func_pub_munic)*100, NA),
     
     # Escolas e estabelecimentos de saúde em 2006
     schools_2006 = ifelse(year == 2006, total_estabelecimentos_educ, NA),
-    health_2006 = ifelse(year == 2006, total_estabelecimentos_saude, NA)
-  )
+    health_2006 = ifelse(year == 2006, total_estabelecimentos_saude, NA))
 
 # Criar função para formatar números
 format_num <- function(x) {
@@ -37,13 +30,12 @@ format_num <- function(x) {
 vars_list <- list(
   # Dependent Variables
   "Homicide Rate per 100,000 inhabitants" = "taxa_homicidios_total_por_100mil_munic",
-  "Log(Homicide Rate per 100,000 inhabitants + 1)" = "log_homicide_rate",
   
   # Local Capacity
-  "Number of Municipality Employees (2006)" = "func_pub_2006",
-  "Log(Municipality Employees 2006)" = "log_func_pub_2006",
-  "Municipality Employees per 1,000 inhabitants (2006)" = "func_pub_per_1000_2006",
-  "Log(Municipality Employees per 1,000 inhabitants 2006)" = "log_func_pub_per_1000_2006",
+  "Percentage of Municipality Employees with Higher Education (2006)" = "func_pub_superior_percent_2006",
+  
+  # Police Station Variable
+  "Distance to Nearest Police Station" = "distancia_delegacia_km",
   
   # Time-Varying Controls
   "Population" = "population_muni",
@@ -113,46 +105,55 @@ Variable & Mean & Median & SD & Mean & Median & SD & Mean & Median & SD \\\\
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel A: Dependent Variables}} \\\\"
 
-# Adicionar Dependent Variables (índices 1-2)
-for(i in 1:2) {
-  latex_output <- paste0(latex_output, "\n",
-                         stats_df$Variable[i], " & ",
-                         stats_df$Mean_All[i], " & ",
-                         stats_df$Median_All[i], " & ",
-                         stats_df$SD_All[i], " & ",
-                         stats_df$Mean_Treated[i], " & ",
-                         stats_df$Median_Treated[i], " & ",
-                         stats_df$SD_Treated[i], " & ",
-                         stats_df$Mean_Never[i], " & ",
-                         stats_df$Median_Never[i], " & ",
-                         stats_df$SD_Never[i], " \\\\")
-}
+# Adicionar Dependent Variables (índice 1)
+latex_output <- paste0(latex_output, "\n",
+                       stats_df$Variable[1], " & ",
+                       stats_df$Mean_All[1], " & ",
+                       stats_df$Median_All[1], " & ",
+                       stats_df$SD_All[1], " & ",
+                       stats_df$Mean_Treated[1], " & ",
+                       stats_df$Median_Treated[1], " & ",
+                       stats_df$SD_Treated[1], " & ",
+                       stats_df$Mean_Never[1], " & ",
+                       stats_df$Median_Never[1], " & ",
+                       stats_df$SD_Never[1], " \\\\")
 
-# Adicionar Local Capacity (índices 3-6)
+# Adicionar Local Capacity (índice 2)
 latex_output <- paste0(latex_output, "
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel B: Local Capacity Variables}} \\\\")
 
-for(i in 3:6) {
-  latex_output <- paste0(latex_output, "\n",
-                         stats_df$Variable[i], " & ",
-                         stats_df$Mean_All[i], " & ",
-                         stats_df$Median_All[i], " & ",
-                         stats_df$SD_All[i], " & ",
-                         stats_df$Mean_Treated[i], " & ",
-                         stats_df$Median_Treated[i], " & ",
-                         stats_df$SD_Treated[i], " & ",
-                         stats_df$Mean_Never[i], " & ",
-                         stats_df$Median_Never[i], " & ",
-                         stats_df$SD_Never[i], " \\\\")
-}
+latex_output <- paste0(latex_output, "\n",
+                       stats_df$Variable[2], " & ",
+                       stats_df$Mean_All[2], " & ",
+                       stats_df$Median_All[2], " & ",
+                       stats_df$SD_All[2], " & ",
+                       stats_df$Mean_Treated[2], " & ",
+                       stats_df$Median_Treated[2], " & ",
+                       stats_df$SD_Treated[2], " & ",
+                       stats_df$Mean_Never[2], " & ",
+                       stats_df$Median_Never[2], " & ",
+                       stats_df$SD_Never[2], " \\\\")
 
-# Adicionar Time-Varying Controls (índices 7-10)
+# Adicionar Police Station Variable (índice 3)
+latex_output <- paste0(latex_output, "\n",
+                       stats_df$Variable[3], " & ",
+                       stats_df$Mean_All[3], " & ",
+                       stats_df$Median_All[3], " & ",
+                       stats_df$SD_All[3], " & ",
+                       stats_df$Mean_Treated[3], " & ",
+                       stats_df$Median_Treated[3], " & ",
+                       stats_df$SD_Treated[3], " & ",
+                       stats_df$Mean_Never[3], " & ",
+                       stats_df$Median_Never[3], " & ",
+                       stats_df$SD_Never[3], " \\\\")
+
+# Adicionar Time-Varying Controls (índices 4-7)
 latex_output <- paste0(latex_output, "
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel C: Time-Varying Variables}} \\\\")
 
-for(i in 7:10) {
+for(i in 4:7) {
   latex_output <- paste0(latex_output, "\n",
                          stats_df$Variable[i], " & ",
                          stats_df$Mean_All[i], " & ",
@@ -175,7 +176,7 @@ Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolum
 \\end{adjustbox}
 \\begin{tablenotes}
 \\footnotesize
-\\item \\textit{Notes:} This table presents descriptive statistics for the main variables used in the analysis, separated by treatment status. Treated municipalities are those located in the states of PE, BA, PB, CE, and MA. All variables are measured at the municipality level in 2006. Municipality employees per 1,000 inhabitants is calculated as the total number of municipality employees divided by population and multiplied by 1,000.
+\\item \\textit{Notes:} This table presents descriptive statistics for the main variables used in the analysis, separated by treatment status. Treated municipalities are those located in the states of PE, BA, PB, CE, and MA. All variables are measured at the municipality level in 2006. Percentage of municipality employees with higher education is calculated as the number of municipality employees with higher education divided by the total number of municipality employees and multiplied by 100.
 \\end{tablenotes}
 \\end{table}")
 

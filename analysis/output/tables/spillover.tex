@@ -1,0 +1,31 @@
+\documentclass[]{article}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{amsmath}
+\usepackage{caption}
+\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
+\begin{document}
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lcccccc} \toprule
+& \multicolumn{6}{c}{\textit{Dependent Variable:}} \\
+& \multicolumn{6}{c}{Homicide Rate per 100,000 Inhabitants} \\
+\cmidrule(lr){2-7} \\
+& \multicolumn{6}{c}{\textit{Distance From Treated State Border}} \\
+\cmidrule{2-7}
+& \multicolumn{2}{c}{$<$ 100km} & \multicolumn{2}{c}{$<$ 75km} & \multicolumn{2}{c}{$<$ 50km} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+& (1) & (2) & (3) & (4) & (5) & (6) \\
+\midrule
+Spillover & 14.07 & 14.06 & 13.58 & 13.59 & 5.993 & 5.991 \\
+ & (5.956) & (5.967) & (6.995) & (7.015) & (4.580) & (4.598) \\
+ & [0.257]  & [0.274]  & [0.458]  & [0.459]  & [0.647]  & [0.644] \\\\
+\midrule
+Observations & 10,146 & 10,146 & 8,668 & 8,668 & 6,694 & 6,694 \\
+R-squared & 0.881 & 0.881 & 0.888 & 0.888 & 0.845 & 0.845 \\
+Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{document}

@@ -27,8 +27,8 @@ library(sf)
 # Folder Path
 ####################
 
-GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurity/"
-DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
+GITHUB_PATH <- "/Users/fredie/Documents/GitHub/PublicSecurity/"
+DROPBOX_PATH <- "/Users/fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
 # Make sure to set all macro globals
 codedir <- file.path(GITHUB_PATH, "analysis",  "code")

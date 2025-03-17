@@ -3,11 +3,6 @@ main_data = main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000) 
 
-# Primeiro, criar a variável log_formal_emp
-main_data <- main_data %>%
-  mutate(log_formal_emp = log(total_vinculos_munic + 1)) %>%
-  mutate(log_pop_density_municipality = log(pop_density_municipality))
-
 # Função para criar density plots
 plot_density <- function(data, var, title, x_label) {
   p <- ggplot(data, aes(x = !!sym(var))) +
@@ -30,29 +25,3 @@ plot_density(main_data,
              "taxa_homicidios_total_por_100mil_munic", 
              "",
              "Homicide Rate per 100,000 inhabitants")
-
-plot_density(main_data, 
-             "pop_density_municipality", 
-             "",
-             "Population Density")
-
-plot_density(main_data, 
-             "log_pib_municipal_per_capita", 
-             "",
-             "Log (GDP per capita)")
-
-plot_density(main_data, 
-             "log_formal_emp", 
-             "",
-             "Log (Formal Employment + 1)")
-
-plot_density(main_data,
-             "log_pop_density_municipality",
-             "",
-             "Log (Population Density)")
-
-plot_density(main_data,
-             "pib_municipal_per_capita",
-             "",
-             "GDP per capita")
-

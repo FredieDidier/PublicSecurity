@@ -1,43 +1,36 @@
 \documentclass[]{article}
-\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
 \usepackage{booktabs}
+\usepackage{caption}
+\setlength{\pdfpagewidth}{8.5in} 
+\setlength{\pdfpageheight}{11in}
+
 \begin{document}
 
 \begin{table}[htbp]
+\centering
 \begin{tabular}{lcc}
 \toprule
-\multicolumn{3}{c}{Dependent Variable: Homicide Rate per 100,000 inhabitants} \\
+& \multicolumn{2}{c}{\textit{Dependent Variable:}} \\
+& \multicolumn{2}{c}{Homicide Rate per 100,000 Inhabitants} \\
+\cmidrule(lr){2-3}
+& (1) & (2) \\
 \midrule
- & (1) & (2) \\
-\midrule
-\multicolumn{3}{l}{\textit{Panel A: Log(Municipality Employees in 2006)}} \\\\
-Treated & 10.74 & 11.71 \\
- & (15.60) & (15.39) \\
- & [0.749] & [0.706] \\\\
-Treated $\times$ High Capacity & -2.149 & -2.255 \\
- & (2.594) & (2.573) \\
- & [0.783] & [0.768] \\\\
-Log(Population) &  & 9.237* \\
- &  & (4.888) \\
- &  & [0.088] \\\\
-\midrule
-\multicolumn{3}{l}{\textit{Panel B: Log(Municipality Employees in 2006) $>$ Median}} \\\\
-Treated & -5.560 & -5.277 \\
- & (2.821) & (2.698) \\
- & [0.099] & [0.103] \\\\
-Treated $\times$ High Capacity & -0.00450 & -0.188 \\
- & (6.217) & (6.149) \\
- & [1.000] & [0.981] \\\\
-Log(Population) &  & 7.142 \\
- &  & (5.012) \\
- &  & [0.149] \\\\
-\midrule
+\textbf{Treatment Effect by Capacity: }& & \\
+\hspace{3mm}Low Capacity &  -2.417 & --2.220 \\
+& (3.130) & (3.111) \\
+& [0.404] & [0.423] \\
+ &  &  \\
+\hspace{3mm}High Capacity & -7.254 & -7.196 \\
+& (6.861) & (6.827) \\
+& [0.539] & [0.538] \\
+ &  &  \\
+ \midrule
+Control & No & Yes \\ 
+Observations & 35,606 & 35,606 \\
+R-squared & 0.864 & 0.865 \\
 Municipality FE & Yes & Yes \\
 Year FE & Yes & Yes \\
-Observations & 35,392 & 35,392 \\
-R-squared & 0.662 & 0.663 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 \end{document}

@@ -38,12 +38,12 @@ cores_homicidios <- c(
   "#FF9999",  # ≤ 30
   "#FF4D4D",  # ≤ 45
   "#CC0000",  # ≤ 60
-  "#800000"   # ≥ 75
+  "#800000"   # ≥ 60
 )
 
 # Definir os breaks e labels
 breaks_homicidios <- c(-Inf, 15, 30, 45, 60, Inf)
-labels_homicidios <- c("≤ 15", "≤ 30", "≤ 45", "≤ 60", "≥ 75")
+labels_homicidios <- c("≤ 15", "≤ 30", "≤ 45", "≤ 60", "> 60")
 
 # Configuração dos mapas por estado com títulos
 mapas_estados <- list(

@@ -7,56 +7,31 @@
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{lcccccc}
 \toprule
-& \multicolumn{6}{l}{{Dependent Variable: Homicide Rate per 100,000 inhabitants}} \\
-\cmidrule{2-7}\\
-
-& \multicolumn{6}{c}{\textit{Panel A: Log(Municipality Employees in 2006)}} \\
+& \multicolumn{6}{c}{\textit{Dependent Variable:}} \\
+& \multicolumn{6}{c}{Homicide Rate per 100,000 Inhabitants} \\
+\cmidrule{2-7} \\
+& \multicolumn{6}{c}{\textit{Distance From Treated State Border}} \\
 \cmidrule{2-7}
-& \multicolumn{2}{c}{100km} & \multicolumn{2}{c}{75km} & \multicolumn{2}{c}{50km} \\
+& \multicolumn{2}{c}{$<$ 100km} & \multicolumn{2}{c}{$<$ 75km} & \multicolumn{2}{c}{$<$ 50km} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
 & (1) & (2) & (3) & (4) & (5) & (6) \\
 \midrule
-
-Spillover & -9.049 & -6.980 & -0.459 & 2.105 & -14.12 & -11.42 \\
-& (12.97) & (11.05) & (10.92) & (9.001) & (11.43) & (10.79) \\
-& [0.575] & [0.598] & [0.968] & [0.791] & [0.076] & [0.072] \\
+Spillover $\times$ Low Capacity & 10.70 & 10.70 & 11.21 & 11.21 & 3.794 & 3.792 \\
+& (6.897) & (6.890) & (7.230) & (7.208) & (3.636) & (3.625) \\
+& [0.431] & [0.436] & [0.557] & [0.553] & [0.779] & [0.783] \\
 [0.5em]
-
-Spillover $\times$ High Capacity & 3.143* & 2.831* & 1.940* & 1.564* & 2.948 & 2.548 \\
-& (1.218) & (0.923) & (0.726) & (0.638) & (2.023) & (2.040) \\
-& [0.158] & [0.157] & [0.165] & [0.173] & [0.138] & [0.134] \\
+Spillover $\times$ High Capacity & 15.76 & 15.77 & 14.79 & 14.80 & 7.597 & 7.605 \\
+& (5.628) & (5.636) & (6.965) & (7.002) & (5.666) & (5.702) \\
+& [0.139] & [0.142] & [0.358] & [0.360] & [0.548] & [0.551] \\
 [0.5em]
-
-Log Population & & 15.08 & & 15.42 & & 22.32 \\
-& & (16.50) & & (20.00) & & (19.94) \\
-& & [0.644] & & [0.649] & & [0.554] \\
-
 \midrule
-& \multicolumn{6}{c}{\textit{Panel B: Log(Municipality Employees in 2006 $>$ Median)}} \\
-\cmidrule{2-7}
-& \multicolumn{2}{c}{100km} & \multicolumn{2}{c}{75km} & \multicolumn{2}{c}{50km} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-
-Spillover & 2.572 & 3.281 & 4.170 & 4.821 & -2.372 & -1.527 \\
-& (6.887) & (6.423) & (7.257) & (6.765) & (3.596) & (2.965) \\
-& [0.924] & [0.922] & [0.933] & [0.926] & [0.522] & [0.626] \\
-[0.5em]
-
-Spillover $\times$ High Capacity & 13.51** & 12.35*** & 11.07*** & 10.11*** & 10.20*** & 9.121** \\
-& (2.393) & (1.174) & (1.043) & (1.431) & (0.690) & (1.585) \\
-& [0.140] & [0.040] & [0.011] & [0.053] & [0.015] & [0.045] \\
-[0.5em]
-
-Log Population & & 17.93 & & 15.65 & & 23.47 \\
-& & (16.52) & & (18.56) & & (17.01) \\
-& & [0.605] & & [0.664] & & [0.338] \\
-
-\midrule
+Control & No & Yes & No & Yes & No & Yes \\
+Observations & 10,146 & 10,146 & 8,668 & 8,668 & 6,694 & 6,694 \\
 Municipality FE & Yes & Yes & Yes & Yes & Yes & Yes \\
 Year FE & Yes & Yes & Yes & Yes & Yes & Yes \\
-Observations & 10,088 & 10,088 & 8,629 & 8,629 & 6,655 & 6,655 \\
-R-squared & 0.720 & 0.721 & 0.732 & 0.733 & 0.655 & 0.658 \\
+R-squared & 0.882 & 0.882 & 0.888 & 0.888 & 0.846 & 0.846 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
+
 \end{document}

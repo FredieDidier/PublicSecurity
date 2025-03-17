@@ -38,13 +38,13 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
     geom_vline(xintercept = c(2007, 2011, 2015, 2016), 
                linetype = "dashed", color = "black", size = 0.8) +
     labs(x = "",
-         y = "Residual homicide rate",
+         y = "Homicide rate",
          color = "") +
     theme_minimal() +
     theme(
       text = element_text(size = 20),
-      axis.title = element_text(face = "bold", size = 22),
-      axis.text = element_text(size = 20),
+      axis.title.x = element_text(face = "bold", size = 22),  # Mantém negrito apenas no título do eixo x
+      axis.title.y = element_text(size = 22),  # Remove o negrito do título do eixo y    
       axis.text.x = element_text(angle = 45, hjust = 1),
       legend.text = element_text(size = 18),
       legend.position = "bottom",

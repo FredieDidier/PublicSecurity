@@ -3,6 +3,11 @@ library(dplyr)
 library(tidyr)
 library(scales)
 
+create_homicide_graph <- function(data, category, GITHUB_PATH) library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(scales)
+
 create_homicide_graph <- function(data, category, GITHUB_PATH) {
   target_states <- c("BA", "PE", "PB", "MA", "CE")
   cols <- c(paste0("taxa_homicidios_", category, "_por_100mil_", target_states),
@@ -38,7 +43,8 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
     theme_minimal() +
     theme(
       text = element_text(size = 20),
-      axis.title = element_text(face = "bold", size = 22),
+      axis.title.x = element_text(face = "bold", size = 22),  # Mantém negrito apenas no título do eixo x
+      axis.title.y = element_text(size = 22),  # Remove o negrito do título do eixo y
       axis.text = element_text(size = 20),
       axis.text.x = element_text(angle = 45, hjust = 1),
       legend.text = element_text(size = 18),
@@ -50,7 +56,7 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
       panel.border = element_rect(colour = "black", fill=NA, size=1),
       plot.margin = unit(c(1, 1, 1.5, 1), "cm")
     ) +
-    scale_x_continuous(breaks = seq(2000, 2019, by = 2)) +  # Intervalo de 2 anos
+    scale_x_continuous(breaks = seq(2000, 2019, by = 2)) +
     scale_y_continuous(labels = comma_format(big.mark = ","))
   
   max_y <- max(graph_data$rate, na.rm = TRUE)
@@ -77,7 +83,6 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                  color = "black",
                  size = 1)
   
-  # Garantir que o diretório existe
   dir.create(file.path(GITHUB_PATH, "analysis/output/graphs"), recursive = TRUE, showWarnings = FALSE)
   
   filename <- file.path(GITHUB_PATH, "analysis/output/graphs", 
@@ -94,7 +99,6 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                                       "branco_jovem" = "young_white"),
                                ".png"))
   
-  # Salvar o gráfico
   ggsave(filename = filename,
          plot = graph, 
          width = 11, height = 8.5,

@@ -1,0 +1,33 @@
+\documentclass[12pt]{article}
+% Pacotes necessários
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{caption}
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=2.54cm,right=2.54cm,marginparwidth=2.54cm]{geometry}
+\usepackage{adjustbox}
+
+\begin{document}
+
+\begin{table}[htbp]
+\centering
+\caption{Municipal Public Employees by Population Size} 
+\label{tab:public_employees_population}
+\begin{adjustbox}{max width=\textwidth}
+\begin{threeparttable}
+\begin{tabular}{lrr}
+  \toprule
+  \textbf{Variables} & \textbf{Below Pop. Median} & \textbf{Above Pop. Median} \\ 
+  \midrule
+  Public Employees (per 1,000 inhab.) & 43.53 & 30.99 \\ 
+  \addlinespace
+  Public Employees with College Degree (per 1,000 inhab.) & 8.74 & 7.17 \\ 
+  \addlinespace
+  \% of Public Employees with College Degree & 18.90 & 21.70 \\ 
+  \bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{adjustbox}
+\end{table}
+
+\end{document}

@@ -55,40 +55,10 @@ calcular_taxa <- function(x, population) {
 # List of variables to calculate rates for
 vars_to_calculate <- c(
   # Homicídios totais e suas categorias
-  "homicidios_total", "homicidios_homem", "homicidios_mulher", 
+  "homicidios_total", "homicidios_fora_casa", "homicidios_homem", "homicidios_mulher", 
   "homicidios_homem_jovem", "homicidios_mulher_jovem", 
   "homicidios_negro", "homicidios_branco", 
-  "homicidios_negro_jovem", "homicidios_branco_jovem",
-  
-  # Homicídios por arma de fogo e suas categorias
-  "homicidios_arma_fogo_total", "homicidios_arma_fogo_homem", "homicidios_arma_fogo_mulher",
-  "homicidios_arma_fogo_homem_jovem", "homicidios_arma_fogo_mulher_jovem",
-  "homicidios_arma_fogo_negro", "homicidios_arma_fogo_branco",
-  "homicidios_arma_fogo_negro_jovem", "homicidios_arma_fogo_branco_jovem",
-  
-  # Mortes não determinadas e suas categorias
-  "morte_nao_determinado_total", "morte_nao_determinado_homem", "morte_nao_determinado_mulher",
-  "morte_nao_determinado_homem_jovem", "morte_nao_determinado_mulher_jovem",
-  "morte_nao_determinado_negro", "morte_nao_determinado_branco",
-  "morte_nao_determinado_negro_jovem", "morte_nao_determinado_branco_jovem",
-  
-  # Suicídios e suas categorias
-  "suicidios_total", "suicidios_homem", "suicidios_mulher",
-  "suicidios_homem_jovem", "suicidios_mulher_jovem",
-  "suicidios_negro", "suicidios_branco",
-  "suicidios_negro_jovem", "suicidios_branco_jovem",
-  
-  # Intervenções legais e suas categorias
-  "intervencoes_legais_total", "intervencoes_legais_homem", "intervencoes_legais_mulher",
-  "intervencoes_legais_homem_jovem", "intervencoes_legais_mulher_jovem",
-  "intervencoes_legais_negro", "intervencoes_legais_branco",
-  "intervencoes_legais_negro_jovem", "intervencoes_legais_branco_jovem",
-  
-  # Acidentes de trânsito e suas categorias
-  "acidentes_transito_total", "acidentes_transito_homem", "acidentes_transito_mulher",
-  "acidentes_transito_homem_jovem", "acidentes_transito_mulher_jovem",
-  "acidentes_transito_negro", "acidentes_transito_branco",
-  "acidentes_transito_negro_jovem", "acidentes_transito_branco_jovem"
+  "homicidios_negro_jovem", "homicidios_branco_jovem"
 )
 
 # Calculate rates by state and year
