@@ -27,7 +27,9 @@ xtset municipality_code year
 
 * Criar dummies para as coortes de tratamento
 gen t2007 = (treatment_year == 2007)  // PE
-gen never = (treatment_year == 0)     // Nunca tratados
+gen t2011 = (treatment_year == 2011)  // BA, PB
+gen t2015 = (treatment_year == 2015)  // CE
+gen t2016 = (treatment_year == 2016)  // MA
 
 * Criar dummies de ano
 forvalues y = 2000/2019 {
@@ -37,12 +39,11 @@ forvalues y = 2000/2019 {
 * Preparar variável de capacidade conforme solicitado
 preserve
 keep if year == 2006
-* Calculando a porcentagem de funcionários com ensino superior em relação ao total
-gen porc_func_superior = (funcionarios_superior / total_func_pub_munic) * 100
+drop if perc_superior == .
 * Calculando a estatística descritiva para identificar a mediana
-sum porc_func_superior, detail
+sum perc_superior, detail
 * Criando a dummy high_cap que é 1 se proporção > mediana, 0 caso contrário
-gen high_cap = (porc_func_superior > r(p50))
+gen high_cap = (perc_superior > r(p50))
 * Mantendo apenas as variáveis necessárias para o merge
 keep municipality_code high_cap
 save "temp_high_cap.dta", replace
@@ -51,6 +52,9 @@ restore
 * Fazendo o merge com o dataset principal
 merge m:1 municipality_code using "temp_high_cap.dta", nogenerate
 erase "temp_high_cap.dta"
+
+drop if high_cap == .
+drop if population_2000_muni == .
 
 * Preparar variável de delegacia conforme solicitado
 * Calculando a estatística descritiva para identificar a mediana da distância até delegacia
@@ -171,11 +175,311 @@ gen t10_2007_cat4 = t2007 * d2017 * delcap4
 gen t11_2007_cat4 = t2007 * d2018 * delcap4
 gen t12_2007_cat4 = t2007 * d2019 * delcap4
 
+******************************************************************************
+* Criar dummies de evento para BA/PB (2011) interagidas com as 4 categorias
+******************************************************************************
+
+* Para coorte 2011 (BA, PB) - Categoria 1: low cap & close delegacia
+* Pré-tratamento
+gen t_11_2011_cat1 = t2011 * d2000 * delcap1
+gen t_10_2011_cat1 = t2011 * d2001 * delcap1
+gen t_9_2011_cat1 = t2011 * d2002 * delcap1
+gen t_8_2011_cat1 = t2011 * d2003 * delcap1
+gen t_7_2011_cat1 = t2011 * d2004 * delcap1
+gen t_6_2011_cat1 = t2011 * d2005 * delcap1
+gen t_5_2011_cat1 = t2011 * d2006 * delcap1
+gen t_4_2011_cat1 = t2011 * d2007 * delcap1
+gen t_3_2011_cat1 = t2011 * d2008 * delcap1
+gen t_2_2011_cat1 = t2011 * d2009 * delcap1
+gen t_1_2011_cat1 = t2011 * d2010 * delcap1
+* Omitir o ano do tratamento (2011)
+* Pós-tratamento
+gen t1_2011_cat1 = t2011 * d2012 * delcap1
+gen t2_2011_cat1 = t2011 * d2013 * delcap1
+gen t3_2011_cat1 = t2011 * d2014 * delcap1
+gen t4_2011_cat1 = t2011 * d2015 * delcap1
+gen t5_2011_cat1 = t2011 * d2016 * delcap1
+gen t6_2011_cat1 = t2011 * d2017 * delcap1
+gen t7_2011_cat1 = t2011 * d2018 * delcap1
+gen t8_2011_cat1 = t2011 * d2019 * delcap1
+
+* Para coorte 2011 (BA, PB) - Categoria 2: low cap & far delegacia
+* Pré-tratamento
+gen t_11_2011_cat2 = t2011 * d2000 * delcap2
+gen t_10_2011_cat2 = t2011 * d2001 * delcap2
+gen t_9_2011_cat2 = t2011 * d2002 * delcap2
+gen t_8_2011_cat2 = t2011 * d2003 * delcap2
+gen t_7_2011_cat2 = t2011 * d2004 * delcap2
+gen t_6_2011_cat2 = t2011 * d2005 * delcap2
+gen t_5_2011_cat2 = t2011 * d2006 * delcap2
+gen t_4_2011_cat2 = t2011 * d2007 * delcap2
+gen t_3_2011_cat2 = t2011 * d2008 * delcap2
+gen t_2_2011_cat2 = t2011 * d2009 * delcap2
+gen t_1_2011_cat2 = t2011 * d2010 * delcap2
+* Omitir o ano do tratamento (2011)
+* Pós-tratamento
+gen t1_2011_cat2 = t2011 * d2012 * delcap2
+gen t2_2011_cat2 = t2011 * d2013 * delcap2
+gen t3_2011_cat2 = t2011 * d2014 * delcap2
+gen t4_2011_cat2 = t2011 * d2015 * delcap2
+gen t5_2011_cat2 = t2011 * d2016 * delcap2
+gen t6_2011_cat2 = t2011 * d2017 * delcap2
+gen t7_2011_cat2 = t2011 * d2018 * delcap2
+gen t8_2011_cat2 = t2011 * d2019 * delcap2
+
+* Para coorte 2011 (BA, PB) - Categoria 3: high cap & close delegacia
+* Pré-tratamento
+gen t_11_2011_cat3 = t2011 * d2000 * delcap3
+gen t_10_2011_cat3 = t2011 * d2001 * delcap3
+gen t_9_2011_cat3 = t2011 * d2002 * delcap3
+gen t_8_2011_cat3 = t2011 * d2003 * delcap3
+gen t_7_2011_cat3 = t2011 * d2004 * delcap3
+gen t_6_2011_cat3 = t2011 * d2005 * delcap3
+gen t_5_2011_cat3 = t2011 * d2006 * delcap3
+gen t_4_2011_cat3 = t2011 * d2007 * delcap3
+gen t_3_2011_cat3 = t2011 * d2008 * delcap3
+gen t_2_2011_cat3 = t2011 * d2009 * delcap3
+gen t_1_2011_cat3 = t2011 * d2010 * delcap3
+* Omitir o ano do tratamento (2011)
+* Pós-tratamento
+gen t1_2011_cat3 = t2011 * d2012 * delcap3
+gen t2_2011_cat3 = t2011 * d2013 * delcap3
+gen t3_2011_cat3 = t2011 * d2014 * delcap3
+gen t4_2011_cat3 = t2011 * d2015 * delcap3
+gen t5_2011_cat3 = t2011 * d2016 * delcap3
+gen t6_2011_cat3 = t2011 * d2017 * delcap3
+gen t7_2011_cat3 = t2011 * d2018 * delcap3
+gen t8_2011_cat3 = t2011 * d2019 * delcap3
+
+* Para coorte 2011 (BA, PB) - Categoria 4: high cap & far delegacia
+* Pré-tratamento
+gen t_11_2011_cat4 = t2011 * d2000 * delcap4
+gen t_10_2011_cat4 = t2011 * d2001 * delcap4
+gen t_9_2011_cat4 = t2011 * d2002 * delcap4
+gen t_8_2011_cat4 = t2011 * d2003 * delcap4
+gen t_7_2011_cat4 = t2011 * d2004 * delcap4
+gen t_6_2011_cat4 = t2011 * d2005 * delcap4
+gen t_5_2011_cat4 = t2011 * d2006 * delcap4
+gen t_4_2011_cat4 = t2011 * d2007 * delcap4
+gen t_3_2011_cat4 = t2011 * d2008 * delcap4
+gen t_2_2011_cat4 = t2011 * d2009 * delcap4
+gen t_1_2011_cat4 = t2011 * d2010 * delcap4
+* Omitir o ano do tratamento (2011)
+* Pós-tratamento
+gen t1_2011_cat4 = t2011 * d2012 * delcap4
+gen t2_2011_cat4 = t2011 * d2013 * delcap4
+gen t3_2011_cat4 = t2011 * d2014 * delcap4
+gen t4_2011_cat4 = t2011 * d2015 * delcap4
+gen t5_2011_cat4 = t2011 * d2016 * delcap4
+gen t6_2011_cat4 = t2011 * d2017 * delcap4
+gen t7_2011_cat4 = t2011 * d2018 * delcap4
+gen t8_2011_cat4 = t2011 * d2019 * delcap4
+
+******************************************************************************
+* Criar dummies de evento para CE (2015) interagidas com as 4 categorias
+******************************************************************************
+
+* Para coorte 2015 (CE) - Categoria 1: low cap & close delegacia
+* Pré-tratamento
+gen t_15_2015_cat1 = t2015 * d2000 * delcap1
+gen t_14_2015_cat1 = t2015 * d2001 * delcap1
+gen t_13_2015_cat1 = t2015 * d2002 * delcap1
+gen t_12_2015_cat1 = t2015 * d2003 * delcap1
+gen t_11_2015_cat1 = t2015 * d2004 * delcap1
+gen t_10_2015_cat1 = t2015 * d2005 * delcap1
+gen t_9_2015_cat1 = t2015 * d2006 * delcap1
+gen t_8_2015_cat1 = t2015 * d2007 * delcap1
+gen t_7_2015_cat1 = t2015 * d2008 * delcap1
+gen t_6_2015_cat1 = t2015 * d2009 * delcap1
+gen t_5_2015_cat1 = t2015 * d2010 * delcap1
+gen t_4_2015_cat1 = t2015 * d2011 * delcap1
+gen t_3_2015_cat1 = t2015 * d2012 * delcap1
+gen t_2_2015_cat1 = t2015 * d2013 * delcap1
+gen t_1_2015_cat1 = t2015 * d2014 * delcap1
+* Omitir o ano do tratamento (2015)
+* Pós-tratamento
+gen t1_2015_cat1 = t2015 * d2016 * delcap1
+gen t2_2015_cat1 = t2015 * d2017 * delcap1
+gen t3_2015_cat1 = t2015 * d2018 * delcap1
+gen t4_2015_cat1 = t2015 * d2019 * delcap1
+
+* Para coorte 2015 (CE) - Categoria 2: low cap & far delegacia
+* Pré-tratamento
+gen t_15_2015_cat2 = t2015 * d2000 * delcap2
+gen t_14_2015_cat2 = t2015 * d2001 * delcap2
+gen t_13_2015_cat2 = t2015 * d2002 * delcap2
+gen t_12_2015_cat2 = t2015 * d2003 * delcap2
+gen t_11_2015_cat2 = t2015 * d2004 * delcap2
+gen t_10_2015_cat2 = t2015 * d2005 * delcap2
+gen t_9_2015_cat2 = t2015 * d2006 * delcap2
+gen t_8_2015_cat2 = t2015 * d2007 * delcap2
+gen t_7_2015_cat2 = t2015 * d2008 * delcap2
+gen t_6_2015_cat2 = t2015 * d2009 * delcap2
+gen t_5_2015_cat2 = t2015 * d2010 * delcap2
+gen t_4_2015_cat2 = t2015 * d2011 * delcap2
+gen t_3_2015_cat2 = t2015 * d2012 * delcap2
+gen t_2_2015_cat2 = t2015 * d2013 * delcap2
+gen t_1_2015_cat2 = t2015 * d2014 * delcap2
+* Omitir o ano do tratamento (2015)
+* Pós-tratamento
+gen t1_2015_cat2 = t2015 * d2016 * delcap2
+gen t2_2015_cat2 = t2015 * d2017 * delcap2
+gen t3_2015_cat2 = t2015 * d2018 * delcap2
+gen t4_2015_cat2 = t2015 * d2019 * delcap2
+
+* Para coorte 2015 (CE) - Categoria 3: high cap & close delegacia
+* Pré-tratamento
+gen t_15_2015_cat3 = t2015 * d2000 * delcap3
+gen t_14_2015_cat3 = t2015 * d2001 * delcap3
+gen t_13_2015_cat3 = t2015 * d2002 * delcap3
+gen t_12_2015_cat3 = t2015 * d2003 * delcap3
+gen t_11_2015_cat3 = t2015 * d2004 * delcap3
+gen t_10_2015_cat3 = t2015 * d2005 * delcap3
+gen t_9_2015_cat3 = t2015 * d2006 * delcap3
+gen t_8_2015_cat3 = t2015 * d2007 * delcap3
+gen t_7_2015_cat3 = t2015 * d2008 * delcap3
+gen t_6_2015_cat3 = t2015 * d2009 * delcap3
+gen t_5_2015_cat3 = t2015 * d2010 * delcap3
+gen t_4_2015_cat3 = t2015 * d2011 * delcap3
+gen t_3_2015_cat3 = t2015 * d2012 * delcap3
+gen t_2_2015_cat3 = t2015 * d2013 * delcap3
+gen t_1_2015_cat3 = t2015 * d2014 * delcap3
+* Omitir o ano do tratamento (2015)
+* Pós-tratamento
+gen t1_2015_cat3 = t2015 * d2016 * delcap3
+gen t2_2015_cat3 = t2015 * d2017 * delcap3
+gen t3_2015_cat3 = t2015 * d2018 * delcap3
+gen t4_2015_cat3 = t2015 * d2019 * delcap3
+
+* Para coorte 2015 (CE) - Categoria 4: high cap & far delegacia
+* Pré-tratamento
+gen t_15_2015_cat4 = t2015 * d2000 * delcap4
+gen t_14_2015_cat4 = t2015 * d2001 * delcap4
+gen t_13_2015_cat4 = t2015 * d2002 * delcap4
+gen t_12_2015_cat4 = t2015 * d2003 * delcap4
+gen t_11_2015_cat4 = t2015 * d2004 * delcap4
+gen t_10_2015_cat4 = t2015 * d2005 * delcap4
+gen t_9_2015_cat4 = t2015 * d2006 * delcap4
+gen t_8_2015_cat4 = t2015 * d2007 * delcap4
+gen t_7_2015_cat4 = t2015 * d2008 * delcap4
+gen t_6_2015_cat4 = t2015 * d2009 * delcap4
+gen t_5_2015_cat4 = t2015 * d2010 * delcap4
+gen t_4_2015_cat4 = t2015 * d2011 * delcap4
+gen t_3_2015_cat4 = t2015 * d2012 * delcap4
+gen t_2_2015_cat4 = t2015 * d2013 * delcap4
+gen t_1_2015_cat4 = t2015 * d2014 * delcap4
+* Omitir o ano do tratamento (2015)
+* Pós-tratamento
+gen t1_2015_cat4 = t2015 * d2016 * delcap4
+gen t2_2015_cat4 = t2015 * d2017 * delcap4
+gen t3_2015_cat4 = t2015 * d2018 * delcap4
+gen t4_2015_cat4 = t2015 * d2019 * delcap4
+
+******************************************************************************
+* Criar dummies de evento para MA (2016) interagidas com as 4 categorias
+******************************************************************************
+
+* Para coorte 2016 (MA) - Categoria 1: low cap & close delegacia
+* Pré-tratamento
+gen t_16_2016_cat1 = t2016 * d2000 * delcap1
+gen t_15_2016_cat1 = t2016 * d2001 * delcap1
+gen t_14_2016_cat1 = t2016 * d2002 * delcap1
+gen t_13_2016_cat1 = t2016 * d2003 * delcap1
+gen t_12_2016_cat1 = t2016 * d2004 * delcap1
+gen t_11_2016_cat1 = t2016 * d2005 * delcap1
+gen t_10_2016_cat1 = t2016 * d2006 * delcap1
+gen t_9_2016_cat1 = t2016 * d2007 * delcap1
+gen t_8_2016_cat1 = t2016 * d2008 * delcap1
+gen t_7_2016_cat1 = t2016 * d2009 * delcap1
+gen t_6_2016_cat1 = t2016 * d2010 * delcap1
+gen t_5_2016_cat1 = t2016 * d2011 * delcap1
+gen t_4_2016_cat1 = t2016 * d2012 * delcap1
+gen t_3_2016_cat1 = t2016 * d2013 * delcap1
+gen t_2_2016_cat1 = t2016 * d2014 * delcap1
+gen t_1_2016_cat1 = t2016 * d2015 * delcap1
+* Omitir o ano do tratamento (2016)
+* Pós-tratamento
+gen t1_2016_cat1 = t2016 * d2017 * delcap1
+gen t2_2016_cat1 = t2016 * d2018 * delcap1
+gen t3_2016_cat1 = t2016 * d2019 * delcap1
+
+* Para coorte 2016 (MA) - Categoria 2: low cap & far delegacia
+* Pré-tratamento
+gen t_16_2016_cat2 = t2016 * d2000 * delcap2
+gen t_15_2016_cat2 = t2016 * d2001 * delcap2
+gen t_14_2016_cat2 = t2016 * d2002 * delcap2
+gen t_13_2016_cat2 = t2016 * d2003 * delcap2
+gen t_12_2016_cat2 = t2016 * d2004 * delcap2
+gen t_11_2016_cat2 = t2016 * d2005 * delcap2
+gen t_10_2016_cat2 = t2016 * d2006 * delcap2
+gen t_9_2016_cat2 = t2016 * d2007 * delcap2
+gen t_8_2016_cat2 = t2016 * d2008 * delcap2
+gen t_7_2016_cat2 = t2016 * d2009 * delcap2
+gen t_6_2016_cat2 = t2016 * d2010 * delcap2
+gen t_5_2016_cat2 = t2016 * d2011 * delcap2
+gen t_4_2016_cat2 = t2016 * d2012 * delcap2
+gen t_3_2016_cat2 = t2016 * d2013 * delcap2
+gen t_2_2016_cat2 = t2016 * d2014 * delcap2
+gen t_1_2016_cat2 = t2016 * d2015 * delcap2
+* Omitir o ano do tratamento (2016)
+* Pós-tratamento
+gen t1_2016_cat2 = t2016 * d2017 * delcap2
+gen t2_2016_cat2 = t2016 * d2018 * delcap2
+gen t3_2016_cat2 = t2016 * d2019 * delcap2
+
+* Para coorte 2016 (MA) - Categoria 3: high cap & close delegacia
+* Pré-tratamento
+gen t_16_2016_cat3 = t2016 * d2000 * delcap3
+gen t_15_2016_cat3 = t2016 * d2001 * delcap3
+gen t_14_2016_cat3 = t2016 * d2002 * delcap3
+gen t_13_2016_cat3 = t2016 * d2003 * delcap3
+gen t_12_2016_cat3 = t2016 * d2004 * delcap3
+gen t_11_2016_cat3 = t2016 * d2005 * delcap3
+gen t_10_2016_cat3 = t2016 * d2006 * delcap3
+gen t_9_2016_cat3 = t2016 * d2007 * delcap3
+gen t_8_2016_cat3 = t2016 * d2008 * delcap3
+gen t_7_2016_cat3 = t2016 * d2009 * delcap3
+gen t_6_2016_cat3 = t2016 * d2010 * delcap3
+gen t_5_2016_cat3 = t2016 * d2011 * delcap3
+gen t_4_2016_cat3 = t2016 * d2012 * delcap3
+gen t_3_2016_cat3 = t2016 * d2013 * delcap3
+gen t_2_2016_cat3 = t2016 * d2014 * delcap3
+gen t_1_2016_cat3 = t2016 * d2015 * delcap3
+* Omitir o ano do tratamento (2016)
+* Pós-tratamento
+gen t1_2016_cat3 = t2016 * d2017 * delcap3
+gen t2_2016_cat3 = t2016 * d2018 * delcap3
+gen t3_2016_cat3 = t2016 * d2019 * delcap3
+
+* Para coorte 2016 (MA) - Categoria 4: high cap & far delegacia
+* Pré-tratamento
+gen t_16_2016_cat4 = t2016 * d2000 * delcap4
+gen t_15_2016_cat4 = t2016 * d2001 * delcap4
+gen t_14_2016_cat4 = t2016 * d2002 * delcap4
+gen t_13_2016_cat4 = t2016 * d2003 * delcap4
+gen t_12_2016_cat4 = t2016 * d2004 * delcap4
+gen t_11_2016_cat4 = t2016 * d2005 * delcap4
+gen t_10_2016_cat4 = t2016 * d2006 * delcap4
+gen t_9_2016_cat4 = t2016 * d2007 * delcap4
+gen t_8_2016_cat4 = t2016 * d2008 * delcap4
+gen t_7_2016_cat4 = t2016 * d2009 * delcap4
+gen t_6_2016_cat4 = t2016 * d2010 * delcap4
+gen t_5_2016_cat4 = t2016 * d2011 * delcap4
+gen t_4_2016_cat4 = t2016 * d2012 * delcap4
+gen t_3_2016_cat4 = t2016 * d2013 * delcap4
+gen t_2_2016_cat4 = t2016 * d2014 * delcap4
+gen t_1_2016_cat4 = t2016 * d2015 * delcap4
+* Omitir o ano do tratamento (2016)
+* Pós-tratamento
+gen t1_2016_cat4 = t2016 * d2017 * delcap4
+gen t2_2016_cat4 = t2016 * d2018 * delcap4
+gen t3_2016_cat4 = t2016 * d2019 * delcap4
+
 ********************************************************************************
 * Parte 1: Event Study em uma Única Regressão com as 4 Categorias
 ********************************************************************************
 
-* Modelo com todas as variáveis e interações com as 4 categorias para PE
+* Modelo com todas as variáveis e interações com as 4 categorias para PE, BA/PB, CE e MA
 xtreg taxa_homicidios_total_por_100m_1 ///
     t_7_2007_cat1 t_6_2007_cat1 t_5_2007_cat1 t_4_2007_cat1 t_3_2007_cat1 t_2_2007_cat1 t_1_2007_cat1 ///
     t1_2007_cat1 t2_2007_cat1 t3_2007_cat1 t4_2007_cat1 t5_2007_cat1 t6_2007_cat1 t7_2007_cat1 t8_2007_cat1 t9_2007_cat1 t10_2007_cat1 t11_2007_cat1 t12_2007_cat1 ///
@@ -185,8 +489,32 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t1_2007_cat3 t2_2007_cat3 t3_2007_cat3 t4_2007_cat3 t5_2007_cat3 t6_2007_cat3 t7_2007_cat3 t8_2007_cat3 t9_2007_cat3 t10_2007_cat3 t11_2007_cat3 t12_2007_cat3 ///
     t_7_2007_cat4 t_6_2007_cat4 t_5_2007_cat4 t_4_2007_cat4 t_3_2007_cat4 t_2_2007_cat4 t_1_2007_cat4 ///
     t1_2007_cat4 t2_2007_cat4 t3_2007_cat4 t4_2007_cat4 t5_2007_cat4 t6_2007_cat4 t7_2007_cat4 t8_2007_cat4 t9_2007_cat4 t10_2007_cat4 t11_2007_cat4 t12_2007_cat4 ///
+    t_11_2011_cat1 t_10_2011_cat1 t_9_2011_cat1 t_8_2011_cat1 t_7_2011_cat1 t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
+    t1_2011_cat1 t2_2011_cat1 t3_2011_cat1 t4_2011_cat1 t5_2011_cat1 t6_2011_cat1 t7_2011_cat1 t8_2011_cat1 ///
+    t_11_2011_cat2 t_10_2011_cat2 t_9_2011_cat2 t_8_2011_cat2 t_7_2011_cat2 t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
+    t1_2011_cat2 t2_2011_cat2 t3_2011_cat2 t4_2011_cat2 t5_2011_cat2 t6_2011_cat2 t7_2011_cat2 t8_2011_cat2 ///
+    t_11_2011_cat3 t_10_2011_cat3 t_9_2011_cat3 t_8_2011_cat3 t_7_2011_cat3 t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
+    t1_2011_cat3 t2_2011_cat3 t3_2011_cat3 t4_2011_cat3 t5_2011_cat3 t6_2011_cat3 t7_2011_cat3 t8_2011_cat3 ///
+    t_11_2011_cat4 t_10_2011_cat4 t_9_2011_cat4 t_8_2011_cat4 t_7_2011_cat4 t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
+    t1_2011_cat4 t2_2011_cat4 t3_2011_cat4 t4_2011_cat4 t5_2011_cat4 t6_2011_cat4 t7_2011_cat4 t8_2011_cat4 ///
+    t_15_2015_cat1 t_14_2015_cat1 t_13_2015_cat1 t_12_2015_cat1 t_11_2015_cat1 t_10_2015_cat1 t_9_2015_cat1 t_8_2015_cat1 t_7_2015_cat1 t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
+    t1_2015_cat1 t2_2015_cat1 t3_2015_cat1 t4_2015_cat1 ///
+    t_15_2015_cat2 t_14_2015_cat2 t_13_2015_cat2 t_12_2015_cat2 t_11_2015_cat2 t_10_2015_cat2 t_9_2015_cat2 t_8_2015_cat2 t_7_2015_cat2 t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
+    t1_2015_cat2 t2_2015_cat2 t3_2015_cat2 t4_2015_cat2 ///
+    t_15_2015_cat3 t_14_2015_cat3 t_13_2015_cat3 t_12_2015_cat3 t_11_2015_cat3 t_10_2015_cat3 t_9_2015_cat3 t_8_2015_cat3 t_7_2015_cat3 t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
+    t1_2015_cat3 t2_2015_cat3 t3_2015_cat3 t4_2015_cat3 ///
+    t_15_2015_cat4 t_14_2015_cat4 t_13_2015_cat4 t_12_2015_cat4 t_11_2015_cat4 t_10_2015_cat4 t_9_2015_cat4 t_8_2015_cat4 t_7_2015_cat4 t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
+    t1_2015_cat4 t2_2015_cat4 t3_2015_cat4 t4_2015_cat4 ///
+    t_16_2016_cat1 t_15_2016_cat1 t_14_2016_cat1 t_13_2016_cat1 t_12_2016_cat1 t_11_2016_cat1 t_10_2016_cat1 t_9_2016_cat1 t_8_2016_cat1 t_7_2016_cat1 t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
+    t1_2016_cat1 t2_2016_cat1 t3_2016_cat1 ///
+    t_16_2016_cat2 t_15_2016_cat2 t_14_2016_cat2 t_13_2016_cat2 t_12_2016_cat2 t_11_2016_cat2 t_10_2016_cat2 t_9_2016_cat2 t_8_2016_cat2 t_7_2016_cat2 t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
+    t1_2016_cat2 t2_2016_cat2 t3_2016_cat2 ///
+    t_16_2016_cat3 t_15_2016_cat3 t_14_2016_cat3 t_13_2016_cat3 t_12_2016_cat3 t_11_2016_cat3 t_10_2016_cat3 t_9_2016_cat3 t_8_2016_cat3 t_7_2016_cat3 t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
+    t1_2016_cat3 t2_2016_cat3 t3_2016_cat3 ///
+    t_16_2016_cat4 t_15_2016_cat4 t_14_2016_cat4 t_13_2016_cat4 t_12_2016_cat4 t_11_2016_cat4 t_10_2016_cat4 t_9_2016_cat4 t_8_2016_cat4 t_7_2016_cat4 t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
+    t1_2016_cat4 t2_2016_cat4 t3_2016_cat4 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
-
+	
 * Salvar o número de observações
 sca nobs = e(N)
 
@@ -267,22 +595,40 @@ scalar f2007_cat4 = r(F)
 scalar f2007p_cat4 = r(p)
 
 ********************************************************************************
-* Criar tendência específica por categoria para PE
+* Criar tendência específica por categoria para todos os estados tratados
 ********************************************************************************
 gen trend = year - 2000 // Tendência linear começando em 2000
 
-* Criar tendências específicas para cada categoria de PE
+* Criar tendências específicas para cada categoria de PE (2007)
 gen partrend2007_cat1 = trend * t2007 * delcap1
 gen partrend2007_cat2 = trend * t2007 * delcap2
 gen partrend2007_cat3 = trend * t2007 * delcap3
 gen partrend2007_cat4 = trend * t2007 * delcap4
 
+* Criar tendências específicas para cada categoria de BA/PB (2011)
+gen partrend2011_cat1 = trend * t2011 * delcap1
+gen partrend2011_cat2 = trend * t2011 * delcap2
+gen partrend2011_cat3 = trend * t2011 * delcap3
+gen partrend2011_cat4 = trend * t2011 * delcap4
+
+* Criar tendências específicas para cada categoria de CE (2015)
+gen partrend2015_cat1 = trend * t2015 * delcap1
+gen partrend2015_cat2 = trend * t2015 * delcap2
+gen partrend2015_cat3 = trend * t2015 * delcap3
+gen partrend2015_cat4 = trend * t2015 * delcap4
+
+* Criar tendências específicas para cada categoria de MA (2016)
+gen partrend2016_cat1 = trend * t2016 * delcap1
+gen partrend2016_cat2 = trend * t2016 * delcap2
+gen partrend2016_cat3 = trend * t2016 * delcap3
+gen partrend2016_cat4 = trend * t2016 * delcap4
+
+
 ********************************************************************************
-* Parte 2: Event Study com Tendências Lineares Específicas por Categoria para PE
+* Parte 2: Event Study com Tendências Lineares Específicas por Categoria para Todos os Estados
 ********************************************************************************
 
-* IMPORTANTE: Remover t_7 para cada categoria (seguindo a lógica do código original)
-* Modelo com todas as variáveis incluindo tendências lineares específicas por categoria
+* IMPORTANTE: Omitindo t_7_2007, t_11_2011, t_15_2015, t_16_2016 para cada categoria
 xtreg taxa_homicidios_total_por_100m_1 ///
     t_6_2007_cat1 t_5_2007_cat1 t_4_2007_cat1 t_3_2007_cat1 t_2_2007_cat1 t_1_2007_cat1 ///
     t1_2007_cat1 t2_2007_cat1 t3_2007_cat1 t4_2007_cat1 t5_2007_cat1 t6_2007_cat1 t7_2007_cat1 t8_2007_cat1 t9_2007_cat1 t10_2007_cat1 t11_2007_cat1 t12_2007_cat1 ///
@@ -296,8 +642,43 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t_6_2007_cat4 t_5_2007_cat4 t_4_2007_cat4 t_3_2007_cat4 t_2_2007_cat4 t_1_2007_cat4 ///
     t1_2007_cat4 t2_2007_cat4 t3_2007_cat4 t4_2007_cat4 t5_2007_cat4 t6_2007_cat4 t7_2007_cat4 t8_2007_cat4 t9_2007_cat4 t10_2007_cat4 t11_2007_cat4 t12_2007_cat4 ///
     partrend2007_cat4 ///
+    t_10_2011_cat1 t_9_2011_cat1 t_8_2011_cat1 t_7_2011_cat1 t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
+    t1_2011_cat1 t2_2011_cat1 t3_2011_cat1 t4_2011_cat1 t5_2011_cat1 t6_2011_cat1 t7_2011_cat1 t8_2011_cat1 ///
+    partrend2011_cat1 ///
+    t_10_2011_cat2 t_9_2011_cat2 t_8_2011_cat2 t_7_2011_cat2 t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
+    t1_2011_cat2 t2_2011_cat2 t3_2011_cat2 t4_2011_cat2 t5_2011_cat2 t6_2011_cat2 t7_2011_cat2 t8_2011_cat2 ///
+    partrend2011_cat2 ///
+    t_10_2011_cat3 t_9_2011_cat3 t_8_2011_cat3 t_7_2011_cat3 t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
+    t1_2011_cat3 t2_2011_cat3 t3_2011_cat3 t4_2011_cat3 t5_2011_cat3 t6_2011_cat3 t7_2011_cat3 t8_2011_cat3 ///
+    partrend2011_cat3 ///
+    t_10_2011_cat4 t_9_2011_cat4 t_8_2011_cat4 t_7_2011_cat4 t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
+    t1_2011_cat4 t2_2011_cat4 t3_2011_cat4 t4_2011_cat4 t5_2011_cat4 t6_2011_cat4 t7_2011_cat4 t8_2011_cat4 ///
+    partrend2011_cat4 ///
+    t_14_2015_cat1 t_13_2015_cat1 t_12_2015_cat1 t_11_2015_cat1 t_10_2015_cat1 t_9_2015_cat1 t_8_2015_cat1 t_7_2015_cat1 t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
+    t1_2015_cat1 t2_2015_cat1 t3_2015_cat1 t4_2015_cat1 ///
+    partrend2015_cat1 ///
+    t_14_2015_cat2 t_13_2015_cat2 t_12_2015_cat2 t_11_2015_cat2 t_10_2015_cat2 t_9_2015_cat2 t_8_2015_cat2 t_7_2015_cat2 t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
+    t1_2015_cat2 t2_2015_cat2 t3_2015_cat2 t4_2015_cat2 ///
+    partrend2015_cat2 ///
+    t_14_2015_cat3 t_13_2015_cat3 t_12_2015_cat3 t_11_2015_cat3 t_10_2015_cat3 t_9_2015_cat3 t_8_2015_cat3 t_7_2015_cat3 t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
+    t1_2015_cat3 t2_2015_cat3 t3_2015_cat3 t4_2015_cat3 ///
+    partrend2015_cat3 ///
+    t_14_2015_cat4 t_13_2015_cat4 t_12_2015_cat4 t_11_2015_cat4 t_10_2015_cat4 t_9_2015_cat4 t_8_2015_cat4 t_7_2015_cat4 t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
+    t1_2015_cat4 t2_2015_cat4 t3_2015_cat4 t4_2015_cat4 ///
+    partrend2015_cat4 ///
+    t_15_2016_cat1 t_14_2016_cat1 t_13_2016_cat1 t_12_2016_cat1 t_11_2016_cat1 t_10_2016_cat1 t_9_2016_cat1 t_8_2016_cat1 t_7_2016_cat1 t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
+    t1_2016_cat1 t2_2016_cat1 t3_2016_cat1 ///
+    partrend2016_cat1 ///
+    t_15_2016_cat2 t_14_2016_cat2 t_13_2016_cat2 t_12_2016_cat2 t_11_2016_cat2 t_10_2016_cat2 t_9_2016_cat2 t_8_2016_cat2 t_7_2016_cat2 t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
+    t1_2016_cat2 t2_2016_cat2 t3_2016_cat2 ///
+    partrend2016_cat2 ///
+    t_15_2016_cat3 t_14_2016_cat3 t_13_2016_cat3 t_12_2016_cat3 t_11_2016_cat3 t_10_2016_cat3 t_9_2016_cat3 t_8_2016_cat3 t_7_2016_cat3 t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
+    t1_2016_cat3 t2_2016_cat3 t3_2016_cat3 ///
+    partrend2016_cat3 ///
+    t_15_2016_cat4 t_14_2016_cat4 t_13_2016_cat4 t_12_2016_cat4 t_11_2016_cat4 t_10_2016_cat4 t_9_2016_cat4 t_8_2016_cat4 t_7_2016_cat4 t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
+    t1_2016_cat4 t2_2016_cat4 t3_2016_cat4 ///
+    partrend2016_cat4 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
-
 * Salvar o número de observações
 sca nobs_trend = e(N)
 

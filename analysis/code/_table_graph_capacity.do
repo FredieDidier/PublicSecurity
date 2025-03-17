@@ -33,7 +33,6 @@ gen t2007 = (treatment_year == 2007)  // PE
 gen t2011 = (treatment_year == 2011)  // BA, PB
 gen t2015 = (treatment_year == 2015)  // CE
 gen t2016 = (treatment_year == 2016)  // MA
-gen never = (treatment_year == 0)     // Nunca tratados
 
 * Criar dummies de ano
 forvalues y = 2000/2019 {
@@ -43,12 +42,11 @@ forvalues y = 2000/2019 {
 * Preparar variável de capacidade conforme solicitado
 preserve
 keep if year == 2006
-* Calculando a porcentagem de funcionários com ensino superior em relação ao total
-gen porc_func_superior = (funcionarios_superior / total_func_pub_munic) * 100
+drop if perc_superior == .
 * Calculando a estatística descritiva para identificar a mediana
-sum porc_func_superior, detail
-* Criando a dummy high_cap_pc que é 1 se proporção > mediana, 0 caso contrário
-gen high_cap_pc = (porc_func_superior > r(p50))
+sum perc_superior, detail
+* Criando a dummy high_cap_pc que é 1 se percentual > mediana, 0 caso contrário
+gen high_cap_pc = (perc_superior > r(p50))
 * Mantendo apenas as variáveis necessárias para o merge
 keep municipality_code high_cap_pc
 save "temp_high_cap_pc.dta", replace
@@ -60,6 +58,9 @@ erase "temp_high_cap_pc.dta"
 
 * Criar dummy para baixa capacidade
 gen low_cap_pc = 1 - high_cap_pc
+
+drop if high_cap_pc == .
+drop if population_2000_muni == .
 
 ******************************************************************************
 * Criar dummies de evento para todas as coortes interagidas com capacidade

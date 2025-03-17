@@ -1,5 +1,5 @@
 ********************************************************************************
-* Event Study em uma Única Regressão com Interação de Capacidade - APENAS PERNAMBUCO
+* Event Study em uma Única Regressão com Interação de Delegacia
 ********************************************************************************
 
 * Load data
@@ -27,7 +27,9 @@ xtset municipality_code year
 
 * Criar dummies para as coortes de tratamento - Apenas PE
 gen t2007 = (treatment_year == 2007)  // PE 
-gen never = (treatment_year == 0)     // Nunca tratados
+gen t2011 = (treatment_year == 2011)  // BA, PB
+gen t2015 = (treatment_year == 2015)  // CE
+gen t2016 = (treatment_year == 2016)  // MA
 
 * Criar dummies de ano
 forvalues y = 2000/2019 {
@@ -42,6 +44,8 @@ gen delegacia = (distancia_delegacia_km > r(p50))
 
 * Criar dummy para baixa capacidade
 gen close_delegacia = 1 - delegacia
+
+drop if population_2000_muni == .
 
 ******************************************************************************
 * Criar dummies de evento para todas as coortes interagidas com capacidade
@@ -90,16 +94,114 @@ gen t11_2007_low = t2007 * d2018 * close_delegacia
 gen t12_2007_high = t2007 * d2019 * delegacia
 gen t12_2007_low = t2007 * d2019 * close_delegacia
 
+* Para coorte 2011 (BA, PB)
+* Pré-tratamento
+gen t_7_2011_high = t2011 * d2004 * delegacia
+gen t_7_2011_low = t2011 * d2004 * close_delegacia
+gen t_6_2011_high = t2011 * d2005 * delegacia
+gen t_6_2011_low = t2011 * d2005 * close_delegacia
+gen t_5_2011_high = t2011 * d2006 * delegacia
+gen t_5_2011_low = t2011 * d2006 * close_delegacia
+gen t_4_2011_high = t2011 * d2007 * delegacia
+gen t_4_2011_low = t2011 * d2007 * close_delegacia
+gen t_3_2011_high = t2011 * d2008 * delegacia
+gen t_3_2011_low = t2011 * d2008 * close_delegacia
+gen t_2_2011_high = t2011 * d2009 * delegacia
+gen t_2_2011_low = t2011 * d2009 * close_delegacia
+gen t_1_2011_high = t2011 * d2010 * delegacia
+gen t_1_2011_low = t2011 * d2010 * close_delegacia
+* Omitir o ano do tratamento (2011)
+* Pós-tratamento
+gen t1_2011_high = t2011 * d2012 * delegacia
+gen t1_2011_low = t2011 * d2012 * close_delegacia
+gen t2_2011_high = t2011 * d2013 * delegacia
+gen t2_2011_low = t2011 * d2013 * close_delegacia
+gen t3_2011_high = t2011 * d2014 * delegacia
+gen t3_2011_low = t2011 * d2014 * close_delegacia
+gen t4_2011_high = t2011 * d2015 * delegacia
+gen t4_2011_low = t2011 * d2015 * close_delegacia
+gen t5_2011_high = t2011 * d2016 * delegacia
+gen t5_2011_low = t2011 * d2016 * close_delegacia
+gen t6_2011_high = t2011 * d2017 * delegacia
+gen t6_2011_low = t2011 * d2017 * close_delegacia
+gen t7_2011_high = t2011 * d2018 * delegacia
+gen t7_2011_low = t2011 * d2018 * close_delegacia
+gen t8_2011_high = t2011 * d2019 * delegacia
+gen t8_2011_low = t2011 * d2019 * close_delegacia
+
+* Para coorte 2015 (CE)
+* Pré-tratamento
+gen t_7_2015_high = t2015 * d2008 * delegacia
+gen t_7_2015_low = t2015 * d2008 * close_delegacia
+gen t_6_2015_high = t2015 * d2009 * delegacia
+gen t_6_2015_low = t2015 * d2009 * close_delegacia
+gen t_5_2015_high = t2015 * d2010 * delegacia
+gen t_5_2015_low = t2015 * d2010 * close_delegacia
+gen t_4_2015_high = t2015 * d2011 * delegacia
+gen t_4_2015_low = t2015 * d2011 * close_delegacia
+gen t_3_2015_high = t2015 * d2012 * delegacia
+gen t_3_2015_low = t2015 * d2012 * close_delegacia
+gen t_2_2015_high = t2015 * d2013 * delegacia
+gen t_2_2015_low = t2015 * d2013 * close_delegacia
+gen t_1_2015_high = t2015 * d2014 * delegacia
+gen t_1_2015_low = t2015 * d2014 * close_delegacia
+* Omitir o ano do tratamento (2015)
+* Pós-tratamento
+gen t1_2015_high = t2015 * d2016 * delegacia
+gen t1_2015_low = t2015 * d2016 * close_delegacia
+gen t2_2015_high = t2015 * d2017 * delegacia
+gen t2_2015_low = t2015 * d2017 * close_delegacia
+gen t3_2015_high = t2015 * d2018 * delegacia
+gen t3_2015_low = t2015 * d2018 * close_delegacia
+gen t4_2015_high = t2015 * d2019 * delegacia
+gen t4_2015_low = t2015 * d2019 * close_delegacia
+
+* Para coorte 2016 (MA)
+* Pré-tratamento
+gen t_7_2016_high = t2016 * d2009 * delegacia
+gen t_7_2016_low = t2016 * d2009 * close_delegacia
+gen t_6_2016_high = t2016 * d2010 * delegacia
+gen t_6_2016_low = t2016 * d2010 * close_delegacia
+gen t_5_2016_high = t2016 * d2011 * delegacia
+gen t_5_2016_low = t2016 * d2011 * close_delegacia
+gen t_4_2016_high = t2016 * d2012 * delegacia
+gen t_4_2016_low = t2016 * d2012 * close_delegacia
+gen t_3_2016_high = t2016 * d2013 * delegacia
+gen t_3_2016_low = t2016 * d2013 * close_delegacia
+gen t_2_2016_high = t2016 * d2014 * delegacia
+gen t_2_2016_low = t2016 * d2014 * close_delegacia
+gen t_1_2016_high = t2016 * d2015 * delegacia
+gen t_1_2016_low = t2016 * d2015 * close_delegacia
+* Omitir o ano do tratamento (2016)
+* Pós-tratamento
+gen t1_2016_high = t2016 * d2017 * delegacia
+gen t1_2016_low = t2016 * d2017 * close_delegacia
+gen t2_2016_high = t2016 * d2018 * delegacia
+gen t2_2016_low = t2016 * d2018 * close_delegacia
+gen t3_2016_high = t2016 * d2019 * delegacia
+gen t3_2016_low = t2016 * d2019 * close_delegacia
+
 ********************************************************************************
-* Parte 1: Event Study em uma Única Regressão com Capacidade - Apenas PE
+* Parte 1: Event Study em uma Única Regressão com delegacia
 ********************************************************************************
 
-* Modelo com todas as variáveis e interações com capacidade - Apenas PE
 xtreg taxa_homicidios_total_por_100m_1 ///
     t_7_2007_high t_6_2007_high t_5_2007_high t_4_2007_high t_3_2007_high t_2_2007_high t_1_2007_high ///
     t1_2007_high t2_2007_high t3_2007_high t4_2007_high t5_2007_high t6_2007_high t7_2007_high t8_2007_high t9_2007_high t10_2007_high t11_2007_high t12_2007_high ///
     t_7_2007_low t_6_2007_low t_5_2007_low t_4_2007_low t_3_2007_low t_2_2007_low t_1_2007_low ///
     t1_2007_low t2_2007_low t3_2007_low t4_2007_low t5_2007_low t6_2007_low t7_2007_low t8_2007_low t9_2007_low t10_2007_low t11_2007_low t12_2007_low ///
+    t_7_2011_high t_6_2011_high t_5_2011_high t_4_2011_high t_3_2011_high t_2_2011_high t_1_2011_high ///
+    t1_2011_high t2_2011_high t3_2011_high t4_2011_high t5_2011_high t6_2011_high t7_2011_high t8_2011_high ///
+    t_7_2011_low t_6_2011_low t_5_2011_low t_4_2011_low t_3_2011_low t_2_2011_low t_1_2011_low ///
+    t1_2011_low t2_2011_low t3_2011_low t4_2011_low t5_2011_low t6_2011_low t7_2011_low t8_2011_low ///
+    t_7_2015_high t_6_2015_high t_5_2015_high t_4_2015_high t_3_2015_high t_2_2015_high t_1_2015_high ///
+    t1_2015_high t2_2015_high t3_2015_high t4_2015_high ///
+    t_7_2015_low t_6_2015_low t_5_2015_low t_4_2015_low t_3_2015_low t_2_2015_low t_1_2015_low ///
+    t1_2015_low t2_2015_low t3_2015_low t4_2015_low ///
+    t_7_2016_high t_6_2016_high t_5_2016_high t_4_2016_high t_3_2016_high t_2_2016_high t_1_2016_high ///
+    t1_2016_high t2_2016_high t3_2016_high ///
+    t_7_2016_low t_6_2016_low t_5_2016_low t_4_2016_low t_3_2016_low t_2_2016_low t_1_2016_low ///
+    t1_2016_low t2_2016_low t3_2016_low ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
 
 * Salvar o número de observações
@@ -151,16 +253,22 @@ scalar f2007_low = r(F)
 scalar f2007p_low = r(p)
 
 ********************************************************************************
-* Criar tendência específica por coorte e capacidade
+* Criar tendência específica por coorte e delegacia
 ********************************************************************************
 gen trend = year - 2000 // Tendência linear começando em 2000
 
-* Criar tendências específicas para PE por capacidade
+* Criar tendências específicas para PE por delegacia
 gen partrend2007_high = trend * t2007 * delegacia
 gen partrend2007_low = trend * t2007 * close_delegacia
+gen partrend2011_high = trend * t2011 * delegacia
+gen partrend2011_low = trend * t2011 * close_delegacia
+gen partrend2015_high = trend * t2015 * delegacia
+gen partrend2015_low = trend * t2015 * close_delegacia
+gen partrend2016_high = trend * t2016 * delegacia
+gen partrend2016_low = trend * t2016 * close_delegacia
 
 ********************************************************************************
-* Parte 2: Event Study com Tendências Lineares Específicas por Coorte e Capacidade
+* Parte 2: Event Study com Tendências Lineares Específicas por Coorte e Delegacia
 ********************************************************************************
 
 * IMPORTANTE: Remover t_7 para cada coorte (seguindo a lógica do código original)
@@ -172,8 +280,25 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t_6_2007_low t_5_2007_low t_4_2007_low t_3_2007_low t_2_2007_low t_1_2007_low ///
     t1_2007_low t2_2007_low t3_2007_low t4_2007_low t5_2007_low t6_2007_low t7_2007_low t8_2007_low t9_2007_low t10_2007_low t11_2007_low t12_2007_low ///
     partrend2007_low ///
+    t_6_2011_high t_5_2011_high t_4_2011_high t_3_2011_high t_2_2011_high t_1_2011_high ///
+    t1_2011_high t2_2011_high t3_2011_high t4_2011_high t5_2011_high t6_2011_high t7_2011_high t8_2011_high ///
+    partrend2011_high ///
+    t_6_2011_low t_5_2011_low t_4_2011_low t_3_2011_low t_2_2011_low t_1_2011_low ///
+    t1_2011_low t2_2011_low t3_2011_low t4_2011_low t5_2011_low t6_2011_low t7_2011_low t8_2011_low ///
+    partrend2011_low ///
+    t_6_2015_high t_5_2015_high t_4_2015_high t_3_2015_high t_2_2015_high t_1_2015_high ///
+    t1_2015_high t2_2015_high t3_2015_high t4_2015_high ///
+    partrend2015_high ///
+    t_6_2015_low t_5_2015_low t_4_2015_low t_3_2015_low t_2_2015_low t_1_2015_low ///
+    t1_2015_low t2_2015_low t3_2015_low t4_2015_low ///
+    partrend2015_low ///
+    t_6_2016_high t_5_2016_high t_4_2016_high t_3_2016_high t_2_2016_high t_1_2016_high ///
+    t1_2016_high t2_2016_high t3_2016_high ///
+    partrend2016_high ///
+    t_6_2016_low t_5_2016_low t_4_2016_low t_3_2016_low t_2_2016_low t_1_2016_low ///
+    t1_2016_low t2_2016_low t3_2016_low ///
+    partrend2016_low ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
-
 * Salvar o número de observações
 sca nobs_trend = e(N)
 
