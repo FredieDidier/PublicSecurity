@@ -174,7 +174,7 @@ boottest {t_7_2007} {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_
         {t1_2015} {t2_2015} {t3_2015} {t4_2015} ///
         {t_7_2016} {t_6_2016} {t_5_2016} {t_4_2016} {t_3_2016} {t_2_2016} {t_1_2016} ///
         {t1_2016} {t2_2016} {t3_2016}, ///
-        noci cluster(state_code) reps(9999) weighttype(webb) seed(982638)
+        noci cluster(state_code) reps(999) weighttype(webb) seed(982638)
 
 * Guardar p-values para cada coorte
 matrix pvalue2007 = r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), r(p_7), ///
@@ -286,7 +286,7 @@ boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
         {t_6_2016} {t_5_2016} {t_4_2016} {t_3_2016} {t_2_2016} {t_1_2016} ///
         {t1_2016} {t2_2016} {t3_2016} ///
         {partrend2016}, ///
-        noci cluster(state_code) reps(9999) weighttype(webb) seed(982638)
+        noci cluster(state_code) reps(999) weighttype(webb) seed(982638)
 
 * Guardar p-values para cada coorte, incluindo as tendências
 * Por causa da remoção de t_7, ajustamos os índices
