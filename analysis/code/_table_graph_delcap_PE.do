@@ -9,15 +9,14 @@ drop if municipality_code == 2300000 | municipality_code == 2600000
 * Configurar o seed para bootstrap
 set seed 982638
 
-* Criar a variável de tratamento
-gen treated = 0
-replace treated = 1 if state == "PE" & year >= 2007
-
 * Criar a variável de ano de adoção
 gen treatment_year = 0
 replace treatment_year = 2007 if state == "PE"
+replace treatment_year = 2011 if state == "BA" | state == "PB"
+replace treatment_year = 2015 if state == "CE"
+replace treatment_year = 2016 if state == "MA"
 
-* Criar a variável de tempo relativo ao tratamento
+* Criar a variável de tempo relatvo ao tratamento
 gen rel_year = year - treatment_year
 
 gen log_pop = log(population_muni)
@@ -489,29 +488,29 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t1_2007_cat3 t2_2007_cat3 t3_2007_cat3 t4_2007_cat3 t5_2007_cat3 t6_2007_cat3 t7_2007_cat3 t8_2007_cat3 t9_2007_cat3 t10_2007_cat3 t11_2007_cat3 t12_2007_cat3 ///
     t_7_2007_cat4 t_6_2007_cat4 t_5_2007_cat4 t_4_2007_cat4 t_3_2007_cat4 t_2_2007_cat4 t_1_2007_cat4 ///
     t1_2007_cat4 t2_2007_cat4 t3_2007_cat4 t4_2007_cat4 t5_2007_cat4 t6_2007_cat4 t7_2007_cat4 t8_2007_cat4 t9_2007_cat4 t10_2007_cat4 t11_2007_cat4 t12_2007_cat4 ///
-    t_11_2011_cat1 t_10_2011_cat1 t_9_2011_cat1 t_8_2011_cat1 t_7_2011_cat1 t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
+     t_7_2011_cat1 t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
     t1_2011_cat1 t2_2011_cat1 t3_2011_cat1 t4_2011_cat1 t5_2011_cat1 t6_2011_cat1 t7_2011_cat1 t8_2011_cat1 ///
-    t_11_2011_cat2 t_10_2011_cat2 t_9_2011_cat2 t_8_2011_cat2 t_7_2011_cat2 t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
+     t_7_2011_cat2 t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
     t1_2011_cat2 t2_2011_cat2 t3_2011_cat2 t4_2011_cat2 t5_2011_cat2 t6_2011_cat2 t7_2011_cat2 t8_2011_cat2 ///
-    t_11_2011_cat3 t_10_2011_cat3 t_9_2011_cat3 t_8_2011_cat3 t_7_2011_cat3 t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
+     t_7_2011_cat3 t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
     t1_2011_cat3 t2_2011_cat3 t3_2011_cat3 t4_2011_cat3 t5_2011_cat3 t6_2011_cat3 t7_2011_cat3 t8_2011_cat3 ///
-    t_11_2011_cat4 t_10_2011_cat4 t_9_2011_cat4 t_8_2011_cat4 t_7_2011_cat4 t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
+    t_7_2011_cat4 t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
     t1_2011_cat4 t2_2011_cat4 t3_2011_cat4 t4_2011_cat4 t5_2011_cat4 t6_2011_cat4 t7_2011_cat4 t8_2011_cat4 ///
-    t_15_2015_cat1 t_14_2015_cat1 t_13_2015_cat1 t_12_2015_cat1 t_11_2015_cat1 t_10_2015_cat1 t_9_2015_cat1 t_8_2015_cat1 t_7_2015_cat1 t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
+     t_7_2015_cat1 t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
     t1_2015_cat1 t2_2015_cat1 t3_2015_cat1 t4_2015_cat1 ///
-    t_15_2015_cat2 t_14_2015_cat2 t_13_2015_cat2 t_12_2015_cat2 t_11_2015_cat2 t_10_2015_cat2 t_9_2015_cat2 t_8_2015_cat2 t_7_2015_cat2 t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
+     t_7_2015_cat2 t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
     t1_2015_cat2 t2_2015_cat2 t3_2015_cat2 t4_2015_cat2 ///
-    t_15_2015_cat3 t_14_2015_cat3 t_13_2015_cat3 t_12_2015_cat3 t_11_2015_cat3 t_10_2015_cat3 t_9_2015_cat3 t_8_2015_cat3 t_7_2015_cat3 t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
+     t_7_2015_cat3 t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
     t1_2015_cat3 t2_2015_cat3 t3_2015_cat3 t4_2015_cat3 ///
-    t_15_2015_cat4 t_14_2015_cat4 t_13_2015_cat4 t_12_2015_cat4 t_11_2015_cat4 t_10_2015_cat4 t_9_2015_cat4 t_8_2015_cat4 t_7_2015_cat4 t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
+     t_7_2015_cat4 t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
     t1_2015_cat4 t2_2015_cat4 t3_2015_cat4 t4_2015_cat4 ///
-    t_16_2016_cat1 t_15_2016_cat1 t_14_2016_cat1 t_13_2016_cat1 t_12_2016_cat1 t_11_2016_cat1 t_10_2016_cat1 t_9_2016_cat1 t_8_2016_cat1 t_7_2016_cat1 t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
+    t_7_2016_cat1 t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
     t1_2016_cat1 t2_2016_cat1 t3_2016_cat1 ///
-    t_16_2016_cat2 t_15_2016_cat2 t_14_2016_cat2 t_13_2016_cat2 t_12_2016_cat2 t_11_2016_cat2 t_10_2016_cat2 t_9_2016_cat2 t_8_2016_cat2 t_7_2016_cat2 t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
+     t_7_2016_cat2 t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
     t1_2016_cat2 t2_2016_cat2 t3_2016_cat2 ///
-    t_16_2016_cat3 t_15_2016_cat3 t_14_2016_cat3 t_13_2016_cat3 t_12_2016_cat3 t_11_2016_cat3 t_10_2016_cat3 t_9_2016_cat3 t_8_2016_cat3 t_7_2016_cat3 t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
+     t_7_2016_cat3 t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
     t1_2016_cat3 t2_2016_cat3 t3_2016_cat3 ///
-    t_16_2016_cat4 t_15_2016_cat4 t_14_2016_cat4 t_13_2016_cat4 t_12_2016_cat4 t_11_2016_cat4 t_10_2016_cat4 t_9_2016_cat4 t_8_2016_cat4 t_7_2016_cat4 t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
+     t_7_2016_cat4 t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
     t1_2016_cat4 t2_2016_cat4 t3_2016_cat4 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
 	
@@ -642,40 +641,40 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t_6_2007_cat4 t_5_2007_cat4 t_4_2007_cat4 t_3_2007_cat4 t_2_2007_cat4 t_1_2007_cat4 ///
     t1_2007_cat4 t2_2007_cat4 t3_2007_cat4 t4_2007_cat4 t5_2007_cat4 t6_2007_cat4 t7_2007_cat4 t8_2007_cat4 t9_2007_cat4 t10_2007_cat4 t11_2007_cat4 t12_2007_cat4 ///
     partrend2007_cat4 ///
-    t_10_2011_cat1 t_9_2011_cat1 t_8_2011_cat1 t_7_2011_cat1 t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
+    t_6_2011_cat1 t_5_2011_cat1 t_4_2011_cat1 t_3_2011_cat1 t_2_2011_cat1 t_1_2011_cat1 ///
     t1_2011_cat1 t2_2011_cat1 t3_2011_cat1 t4_2011_cat1 t5_2011_cat1 t6_2011_cat1 t7_2011_cat1 t8_2011_cat1 ///
     partrend2011_cat1 ///
-    t_10_2011_cat2 t_9_2011_cat2 t_8_2011_cat2 t_7_2011_cat2 t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
+    t_6_2011_cat2 t_5_2011_cat2 t_4_2011_cat2 t_3_2011_cat2 t_2_2011_cat2 t_1_2011_cat2 ///
     t1_2011_cat2 t2_2011_cat2 t3_2011_cat2 t4_2011_cat2 t5_2011_cat2 t6_2011_cat2 t7_2011_cat2 t8_2011_cat2 ///
     partrend2011_cat2 ///
-    t_10_2011_cat3 t_9_2011_cat3 t_8_2011_cat3 t_7_2011_cat3 t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
+    t_6_2011_cat3 t_5_2011_cat3 t_4_2011_cat3 t_3_2011_cat3 t_2_2011_cat3 t_1_2011_cat3 ///
     t1_2011_cat3 t2_2011_cat3 t3_2011_cat3 t4_2011_cat3 t5_2011_cat3 t6_2011_cat3 t7_2011_cat3 t8_2011_cat3 ///
     partrend2011_cat3 ///
-    t_10_2011_cat4 t_9_2011_cat4 t_8_2011_cat4 t_7_2011_cat4 t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
+    t_6_2011_cat4 t_5_2011_cat4 t_4_2011_cat4 t_3_2011_cat4 t_2_2011_cat4 t_1_2011_cat4 ///
     t1_2011_cat4 t2_2011_cat4 t3_2011_cat4 t4_2011_cat4 t5_2011_cat4 t6_2011_cat4 t7_2011_cat4 t8_2011_cat4 ///
     partrend2011_cat4 ///
-    t_14_2015_cat1 t_13_2015_cat1 t_12_2015_cat1 t_11_2015_cat1 t_10_2015_cat1 t_9_2015_cat1 t_8_2015_cat1 t_7_2015_cat1 t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
+    t_6_2015_cat1 t_5_2015_cat1 t_4_2015_cat1 t_3_2015_cat1 t_2_2015_cat1 t_1_2015_cat1 ///
     t1_2015_cat1 t2_2015_cat1 t3_2015_cat1 t4_2015_cat1 ///
     partrend2015_cat1 ///
-    t_14_2015_cat2 t_13_2015_cat2 t_12_2015_cat2 t_11_2015_cat2 t_10_2015_cat2 t_9_2015_cat2 t_8_2015_cat2 t_7_2015_cat2 t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
+    t_6_2015_cat2 t_5_2015_cat2 t_4_2015_cat2 t_3_2015_cat2 t_2_2015_cat2 t_1_2015_cat2 ///
     t1_2015_cat2 t2_2015_cat2 t3_2015_cat2 t4_2015_cat2 ///
     partrend2015_cat2 ///
-    t_14_2015_cat3 t_13_2015_cat3 t_12_2015_cat3 t_11_2015_cat3 t_10_2015_cat3 t_9_2015_cat3 t_8_2015_cat3 t_7_2015_cat3 t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
+    t_6_2015_cat3 t_5_2015_cat3 t_4_2015_cat3 t_3_2015_cat3 t_2_2015_cat3 t_1_2015_cat3 ///
     t1_2015_cat3 t2_2015_cat3 t3_2015_cat3 t4_2015_cat3 ///
     partrend2015_cat3 ///
-    t_14_2015_cat4 t_13_2015_cat4 t_12_2015_cat4 t_11_2015_cat4 t_10_2015_cat4 t_9_2015_cat4 t_8_2015_cat4 t_7_2015_cat4 t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
+    t_6_2015_cat4 t_5_2015_cat4 t_4_2015_cat4 t_3_2015_cat4 t_2_2015_cat4 t_1_2015_cat4 ///
     t1_2015_cat4 t2_2015_cat4 t3_2015_cat4 t4_2015_cat4 ///
     partrend2015_cat4 ///
-    t_15_2016_cat1 t_14_2016_cat1 t_13_2016_cat1 t_12_2016_cat1 t_11_2016_cat1 t_10_2016_cat1 t_9_2016_cat1 t_8_2016_cat1 t_7_2016_cat1 t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
+    t_6_2016_cat1 t_5_2016_cat1 t_4_2016_cat1 t_3_2016_cat1 t_2_2016_cat1 t_1_2016_cat1 ///
     t1_2016_cat1 t2_2016_cat1 t3_2016_cat1 ///
     partrend2016_cat1 ///
-    t_15_2016_cat2 t_14_2016_cat2 t_13_2016_cat2 t_12_2016_cat2 t_11_2016_cat2 t_10_2016_cat2 t_9_2016_cat2 t_8_2016_cat2 t_7_2016_cat2 t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
+    t_6_2016_cat2 t_5_2016_cat2 t_4_2016_cat2 t_3_2016_cat2 t_2_2016_cat2 t_1_2016_cat2 ///
     t1_2016_cat2 t2_2016_cat2 t3_2016_cat2 ///
     partrend2016_cat2 ///
-    t_15_2016_cat3 t_14_2016_cat3 t_13_2016_cat3 t_12_2016_cat3 t_11_2016_cat3 t_10_2016_cat3 t_9_2016_cat3 t_8_2016_cat3 t_7_2016_cat3 t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
+    t_6_2016_cat3 t_5_2016_cat3 t_4_2016_cat3 t_3_2016_cat3 t_2_2016_cat3 t_1_2016_cat3 ///
     t1_2016_cat3 t2_2016_cat3 t3_2016_cat3 ///
     partrend2016_cat3 ///
-    t_15_2016_cat4 t_14_2016_cat4 t_13_2016_cat4 t_12_2016_cat4 t_11_2016_cat4 t_10_2016_cat4 t_9_2016_cat4 t_8_2016_cat4 t_7_2016_cat4 t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
+    t_6_2016_cat4 t_5_2016_cat4 t_4_2016_cat4 t_3_2016_cat4 t_2_2016_cat4 t_1_2016_cat4 ///
     t1_2016_cat4 t2_2016_cat4 t3_2016_cat4 ///
     partrend2016_cat4 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)

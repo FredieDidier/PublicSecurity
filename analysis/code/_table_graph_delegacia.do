@@ -13,8 +13,11 @@ set seed 982638
 gen treated = 0
 replace treated = 1 if state == "PE" & year >= 2007
 
-* Criar a variável de ano de adoção - Apenas PE
+* Criar a variável de ano de adoção (staggered treatment)
 gen treatment_year = 0
+replace treatment_year = 2011 if state == "BA" | state == "PB"
+replace treatment_year = 2015 if state == "CE"
+replace treatment_year = 2016 if state == "MA"
 replace treatment_year = 2007 if state == "PE"
 
 * Criar a variável de tempo relativo ao tratamento

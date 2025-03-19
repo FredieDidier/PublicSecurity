@@ -143,13 +143,13 @@ matrix betas = e(b)
 
 * Extrair coeficientes para cada coorte
 * Para PE (2007)
-matrix betas2007 = betas[1, 1..19], .
+matrix betas2007 = betas[1, 1..19]
 * Para BA/PB (2011)
-matrix betas2011 = betas[1, 20..34], ., .
+matrix betas2011 = betas[1, 20..34]
 * Para CE (2015)
-matrix betas2015 = betas[1, 35..45], ., ., .
+matrix betas2015 = betas[1, 35..45]
 * Para MA (2016)
-matrix betas2016 = betas[1, 46..55], ., ., ., .
+matrix betas2016 = betas[1, 46..55]
 
 * Extrair erros padrão
 mata st_matrix("A", sqrt(st_matrix("e(V)")))
@@ -157,13 +157,13 @@ mata st_matrix("A", diagonal(st_matrix("A")))
 matrix A = A'
 
 * Para PE (2007)
-matrix vars2007 = A[1, 1..19], .
+matrix vars2007 = A[1, 1..19]
 * Para BA/PB (2011)
-matrix vars2011 = A[1, 20..34], ., .
+matrix vars2011 = A[1, 20..34]
 * Para CE (2015)
-matrix vars2015 = A[1, 35..45], ., ., .
+matrix vars2015 = A[1, 35..45]
 * Para MA (2016)
-matrix vars2016 = A[1, 46..55], ., ., ., .
+matrix vars2016 = A[1, 46..55]
 
 * Calcular p-values usando boottest com Webb weights
 boottest {t_7_2007} {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
@@ -178,16 +178,16 @@ boottest {t_7_2007} {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_
 
 * Guardar p-values para cada coorte
 matrix pvalue2007 = r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), r(p_7), ///
-                   r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18), r(p_19), .
+                   r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18), r(p_19)
 
 matrix pvalue2011 = r(p_20), r(p_21), r(p_22), r(p_23), r(p_24), r(p_25), r(p_26), ///
-                   r(p_27), r(p_28), r(p_29), r(p_30), r(p_31), r(p_32), r(p_33), r(p_34), ., .
+                   r(p_27), r(p_28), r(p_29), r(p_30), r(p_31), r(p_32), r(p_33), r(p_34)
 
 matrix pvalue2015 = r(p_35), r(p_36), r(p_37), r(p_38), r(p_39), r(p_40), r(p_41), ///
-                   r(p_42), r(p_43), r(p_44), r(p_45), ., ., ., .
+                   r(p_42), r(p_43), r(p_44), r(p_45)
 
 matrix pvalue2016 = r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51), r(p_52), ///
-                   r(p_53), r(p_54), r(p_55), ., ., ., ., .
+                   r(p_53), r(p_54), r(p_55)
 
 * Testes de tendências paralelas (pré-tratamento)
 * Para PE (2007)
@@ -251,13 +251,13 @@ matrix betas_trend = e(b)
 
 * Extrair coeficientes para cada coorte, incluindo as tendências
 * Para PE (2007) - notamos que não temos mais t_7, então começamos em t_6
-matrix betas2007_trend = ., betas_trend[1, 1..18], ., betas_trend[1, 19]
+matrix betas2007_trend = ., betas_trend[1, 1..18]
 * Para BA/PB (2011)
-matrix betas2011_trend = ., betas_trend[1, 20..33], ., ., betas_trend[1, 34]
+matrix betas2011_trend = ., betas_trend[1, 20..33]
 * Para CE (2015)
-matrix betas2015_trend = ., betas_trend[1, 35..44], ., ., ., betas_trend[1, 45]
+matrix betas2015_trend = ., betas_trend[1, 35..44]
 * Para MA (2016)
-matrix betas2016_trend = ., betas_trend[1, 46..54], ., ., ., ., betas_trend[1, 55]
+matrix betas2016_trend = ., betas_trend[1, 46..54]
 
 * Extrair erros padrão
 mata st_matrix("A", sqrt(st_matrix("e(V)")))
@@ -265,13 +265,13 @@ mata st_matrix("A", diagonal(st_matrix("A")))
 matrix A = A'
 
 * Para PE (2007)
-matrix vars2007_trend = ., A[1, 1..18], ., A[1, 19]
+matrix vars2007_trend = ., A[1, 1..18]
 * Para BA/PB (2011)
-matrix vars2011_trend = ., A[1, 20..33], ., ., A[1, 34]
+matrix vars2011_trend = ., A[1, 20..33]
 * Para CE (2015)
-matrix vars2015_trend = ., A[1, 35..44], ., ., ., A[1, 45]
+matrix vars2015_trend = ., A[1, 35..44]
 * Para MA (2016)
-matrix vars2016_trend = ., A[1, 46..54], ., ., ., ., A[1, 55]
+matrix vars2016_trend = ., A[1, 46..54]
 
 * Calcular p-values usando boottest com Webb weights
 boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
@@ -291,16 +291,16 @@ boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
 * Guardar p-values para cada coorte, incluindo as tendências
 * Por causa da remoção de t_7, ajustamos os índices
 matrix pvalue2007_trend = ., r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), ///
-                  r(p_7), r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18), ., r(p_19)
+                  r(p_7), r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18)
 
 matrix pvalue2011_trend = ., r(p_20), r(p_21), r(p_22), r(p_23), r(p_24), r(p_25), ///
-                  r(p_26), r(p_27), r(p_28), r(p_29), r(p_30), r(p_31), r(p_32), r(p_33), ., ., r(p_34)
+                  r(p_26), r(p_27), r(p_28), r(p_29), r(p_30), r(p_31), r(p_32), r(p_33)
 
 matrix pvalue2015_trend = ., r(p_35), r(p_36), r(p_37), r(p_38), r(p_39), r(p_40), ///
-                  r(p_41), r(p_42), r(p_43), r(p_44), ., ., ., ., r(p_45)
+                  r(p_41), r(p_42), r(p_43), r(p_44)
 
 matrix pvalue2016_trend = ., r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51), ///
-                  r(p_52), r(p_53), r(p_54), ., ., ., ., ., r(p_55)
+                  r(p_52), r(p_53), r(p_54)
 
 * Testes de tendências paralelas (pré-tratamento) - excluindo t_7 conforme especificação
 * Para PE (2007)
