@@ -7,6 +7,9 @@
 # 4. Gerar gráficos de residuos de taxa de homicidio
 # 5. Gerar mapa de todos os municipios da amostra
 # 6. Gerar tabela descritiva
+# 7. Gerar mapa funcionários públicos
+# 8. Gerar tabela descritiva de funcionários públicos
+# 9. Gerar tabela descritiva de comparação de funcionários públicos em low e high states
 
 ###########
 #  Setup  #
@@ -15,13 +18,20 @@
 # Limpeza do environnment
 
 rm(list = ls())
+
 # Carregar pacotes
-library(dplyr)     # Para manipulação de dados
-library(stringr)   # Para manipulação de strings
-library(haven)     # Para salvar o dataframe no formato .dta (Stata)
+library(dplyr)     
+library(stringr)   
+library(haven)    
 library(tidyverse)
 library(ggplot2)
 library(sf)
+library(scales)
+library(RColorBrewer)
+library(janitor)
+library(patchwork)
+library(cowplot)
+library(gridExtra)
 
 ####################
 # Folder Path
@@ -83,5 +93,29 @@ source(paste0(GITHUB_PATH, "analysis/code/_map_all_municipalities.R"))
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_map_all_municipalities.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_table_descriptive_stats.R"))
+
+######################################################
+#                                         
+# 7) Gerar mapa de funcionários públicos              #
+#                                         
+######################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_map_employees_municipality.R"))
+
+######################################################
+#                                         
+# 8) Gerar tabela descritiva de funcionários públicos #
+#                                         
+######################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_table_public_employees_stats.R"))
+
+########################################################################################
+#                                         
+# 9) Gerar tabela descritiva de comparação de funcionários públicos em low e high states 
+#                                         
+########################################################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_table_capacity_comparison.R"))
 
