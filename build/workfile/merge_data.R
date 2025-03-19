@@ -16,7 +16,6 @@ load(paste0(DROPBOX_PATH, "build/idh/output/clean_idh.RData"))
 load(paste0(DROPBOX_PATH, "build/area/output/clean_area.RData"))
 load(paste0(DROPBOX_PATH, "build/rais/output/clean_rais.RData"))
 load(paste0(DROPBOX_PATH, "build/delegacias/output/delegacias.RData"))
-load(paste0(DROPBOX_PATH, "build/bolsa familia/output/clean_bf.RData"))
 mun_codes = read.csv(paste0(DROPBOX_PATH, "build/municipios_codibge.csv"))
 
 mun_codes = mun_codes %>%
@@ -187,17 +186,10 @@ delegacias$state = NULL
 delegacias$municipality_code = as.integer(delegacias$municipality_code)
 main_data = merge(main_data, delegacias, by = c("municipality_code"), all.x = T)
 
-#
-bf = bf %>%
-  filter(state %in% c("BA", "PE", "PB", "CE", "PI", "MA", "AL", "SE", "RN"))
-
-# Merge Main Data with Bolsa Familia
-main_data = merge(main_data, bf, by = c("municipality_code", "year", "state", "municipality"), all.x = T)
-
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
-           taxa_homicidios_total_por_100mil_munic, families_bf, bf_value_families, average_value_bf, pop_density_state, pop_density_municipality,
+           taxa_homicidios_total_por_100mil_munic, pop_density_state, pop_density_municipality,
            total_vinculos_state, total_vinculos_munic, total_estabelecimentos_state, total_estabelecimentos_munic,
            log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
            id_delegacia, distancia_delegacia_km)
@@ -208,7 +200,7 @@ main_data[,7:9] <- lapply(main_data[,7:9], function(x) replace(x, is.na(x), 0))
 # Relocating columns
 main_data = main_data %>%
   relocate(year, municipality_code, municipality, state, taxa_homicidios_total_por_100mil_state,
-           taxa_homicidios_total_por_100mil_munic, families_bf, pop_density_municipality,
+           taxa_homicidios_total_por_100mil_munic, pop_density_municipality,
            total_vinculos_munic, total_estabelecimentos_locais, total_func_pub_munic, funcionarios_superior,
            perc_superior,
            log_pib_municipal_per_capita, population_2000_muni, population_2010_muni,
