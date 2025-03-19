@@ -83,7 +83,7 @@ map = ggplot() +
   # Usando paleta de cores laranja
   scale_fill_manual(
     values = cores_categorias,
-    name = "Distance to Nearest Police Station in Straight Line (km)",
+    name = "Distance to Nearest Police Station (km)",
     na.value = "#D3D3D3",
     drop = FALSE  # Garantir que todas as categorias apareçam na legenda mesmo se não tiverem dados
   ) +
