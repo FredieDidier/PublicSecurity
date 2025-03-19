@@ -2077,3 +2077,160 @@ twoway (rcap ci_upper_2016_cat1_trend ci_lower_2016_cat1_trend rel_year if rel_y
        name(ma_com_tendencia, replace) scheme(s1mono)
 	   
 	 graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/delcap_event_study_trends_MA.pdf", replace	  
+
+	
+
+********************************************************************************
+* Criar Tabela LaTeX para Event Study de PE com Heterogeneidade
+********************************************************************************
+
+* Abrir arquivo para escrever
+cap file close f1
+file open f1 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/event_study_PE_heterogeneity.tex", write replace
+
+* Escrever cabeçalho da tabela
+file write f1 "\begin{table}[h!]" _n
+file write f1 "\centering" _n
+file write f1 "\caption{Event Study for Pernambuco (2007) by Capacity and Distance to Police Stations}" _n
+file write f1 "\label{tab:event_study_PE_het}" _n
+file write f1 "\begin{tabular}{lcccccccc}" _n
+file write f1 "\hline\hline" _n
+file write f1 "& \multicolumn{2}{c}{Low Cap \& Close} & \multicolumn{2}{c}{Low Cap \& Far} & \multicolumn{2}{c}{High Cap \& Close} & \multicolumn{2}{c}{High Cap \& Far} \\" _n
+file write f1 "\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9}" _n
+file write f1 "Trends & No & Yes & No & Yes & No & Yes & No & Yes \\" _n
+file write f1 "\hline" _n
+
+* Parte 1: Períodos pré-tratamento
+* t-7 (apenas para o modelo sem tendência)
+file write f1 "$t_{-7}$ & $" %7.3f (betas2007_cat1[1,1]) "$ & - & $" %7.3f (betas2007_cat2[1,1]) "$ & - & $" %7.3f (betas2007_cat3[1,1]) "$ & - & $" %7.3f (betas2007_cat4[1,1]) "$ & - \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,1]) ")$ & - & $(" %7.3f (vars2007_cat2[1,1]) ")$ & - & $(" %7.3f (vars2007_cat3[1,1]) ")$ & - & $(" %7.3f (vars2007_cat4[1,1]) ")$ & - \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,1]) "]$ & - & $[" %7.3f (pvalue2007_cat2[1,1]) "]$ & - & $[" %7.3f (pvalue2007_cat3[1,1]) "]$ & - & $[" %7.3f (pvalue2007_cat4[1,1]) "]$ & - \\" _n
+file write f1 "\hline" _n
+
+* t-6
+file write f1 "$t_{-6}$ & $" %7.3f (betas2007_cat1[1,2]) "$ & $" %7.3f (betas2007_cat1_trend[1,1]) "$ & $" %7.3f (betas2007_cat2[1,2]) "$ & $" %7.3f (betas2007_cat2_trend[1,1]) "$ & $" %7.3f (betas2007_cat3[1,2]) "$ & $" %7.3f (betas2007_cat3_trend[1,1]) "$ & $" %7.3f (betas2007_cat4[1,2]) "$ & $" %7.3f (betas2007_cat4_trend[1,1]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,2]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,1]) ")$ & $(" %7.3f (vars2007_cat2[1,2]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,1]) ")$ & $(" %7.3f (vars2007_cat3[1,2]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,1]) ")$ & $(" %7.3f (vars2007_cat4[1,2]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,1]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,2]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,2]) "]$ & $[" %7.3f (pvalue2007_cat2[1,2]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,2]) "]$ & $[" %7.3f (pvalue2007_cat3[1,2]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,2]) "]$ & $[" %7.3f (pvalue2007_cat4[1,2]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,2]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t-5
+file write f1 "$t_{-5}$ & $" %7.3f (betas2007_cat1[1,3]) "$ & $" %7.3f (betas2007_cat1_trend[1,2]) "$ & $" %7.3f (betas2007_cat2[1,3]) "$ & $" %7.3f (betas2007_cat2_trend[1,2]) "$ & $" %7.3f (betas2007_cat3[1,3]) "$ & $" %7.3f (betas2007_cat3_trend[1,2]) "$ & $" %7.3f (betas2007_cat4[1,3]) "$ & $" %7.3f (betas2007_cat4_trend[1,2]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,3]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,2]) ")$ & $(" %7.3f (vars2007_cat2[1,3]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,2]) ")$ & $(" %7.3f (vars2007_cat3[1,3]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,2]) ")$ & $(" %7.3f (vars2007_cat4[1,3]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,2]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,3]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,3]) "]$ & $[" %7.3f (pvalue2007_cat2[1,3]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,3]) "]$ & $[" %7.3f (pvalue2007_cat3[1,3]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,3]) "]$ & $[" %7.3f (pvalue2007_cat4[1,3]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,3]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t-4
+file write f1 "$t_{-4}$ & $" %7.3f (betas2007_cat1[1,4]) "$ & $" %7.3f (betas2007_cat1_trend[1,3]) "$ & $" %7.3f (betas2007_cat2[1,4]) "$ & $" %7.3f (betas2007_cat2_trend[1,3]) "$ & $" %7.3f (betas2007_cat3[1,4]) "$ & $" %7.3f (betas2007_cat3_trend[1,3]) "$ & $" %7.3f (betas2007_cat4[1,4]) "$ & $" %7.3f (betas2007_cat4_trend[1,3]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,4]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,3]) ")$ & $(" %7.3f (vars2007_cat2[1,4]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,3]) ")$ & $(" %7.3f (vars2007_cat3[1,4]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,3]) ")$ & $(" %7.3f (vars2007_cat4[1,4]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,3]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,4]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,4]) "]$ & $[" %7.3f (pvalue2007_cat2[1,4]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,4]) "]$ & $[" %7.3f (pvalue2007_cat3[1,4]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,4]) "]$ & $[" %7.3f (pvalue2007_cat4[1,4]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,4]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t-3
+file write f1 "$t_{-3}$ & $" %7.3f (betas2007_cat1[1,5]) "$ & $" %7.3f (betas2007_cat1_trend[1,4]) "$ & $" %7.3f (betas2007_cat2[1,5]) "$ & $" %7.3f (betas2007_cat2_trend[1,4]) "$ & $" %7.3f (betas2007_cat3[1,5]) "$ & $" %7.3f (betas2007_cat3_trend[1,4]) "$ & $" %7.3f (betas2007_cat4[1,5]) "$ & $" %7.3f (betas2007_cat4_trend[1,4]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,5]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,4]) ")$ & $(" %7.3f (vars2007_cat2[1,5]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,4]) ")$ & $(" %7.3f (vars2007_cat3[1,5]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,4]) ")$ & $(" %7.3f (vars2007_cat4[1,5]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,4]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,5]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,5]) "]$ & $[" %7.3f (pvalue2007_cat2[1,5]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,5]) "]$ & $[" %7.3f (pvalue2007_cat3[1,5]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,5]) "]$ & $[" %7.3f (pvalue2007_cat4[1,5]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,5]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t-2
+file write f1 "$t_{-2}$ & $" %7.3f (betas2007_cat1[1,6]) "$ & $" %7.3f (betas2007_cat1_trend[1,5]) "$ & $" %7.3f (betas2007_cat2[1,6]) "$ & $" %7.3f (betas2007_cat2_trend[1,5]) "$ & $" %7.3f (betas2007_cat3[1,6]) "$ & $" %7.3f (betas2007_cat3_trend[1,5]) "$ & $" %7.3f (betas2007_cat4[1,6]) "$ & $" %7.3f (betas2007_cat4_trend[1,5]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,6]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,5]) ")$ & $(" %7.3f (vars2007_cat2[1,6]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,5]) ")$ & $(" %7.3f (vars2007_cat3[1,6]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,5]) ")$ & $(" %7.3f (vars2007_cat4[1,6]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,5]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,6]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,6]) "]$ & $[" %7.3f (pvalue2007_cat2[1,6]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,6]) "]$ & $[" %7.3f (pvalue2007_cat3[1,6]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,6]) "]$ & $[" %7.3f (pvalue2007_cat4[1,6]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,6]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t-1
+file write f1 "$t_{-1}$ & $" %7.3f (betas2007_cat1[1,7]) "$ & $" %7.3f (betas2007_cat1_trend[1,6]) "$ & $" %7.3f (betas2007_cat2[1,7]) "$ & $" %7.3f (betas2007_cat2_trend[1,6]) "$ & $" %7.3f (betas2007_cat3[1,7]) "$ & $" %7.3f (betas2007_cat3_trend[1,6]) "$ & $" %7.3f (betas2007_cat4[1,7]) "$ & $" %7.3f (betas2007_cat4_trend[1,6]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,7]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,6]) ")$ & $(" %7.3f (vars2007_cat2[1,7]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,6]) ")$ & $(" %7.3f (vars2007_cat3[1,7]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,6]) ")$ & $(" %7.3f (vars2007_cat4[1,7]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,6]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,7]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,7]) "]$ & $[" %7.3f (pvalue2007_cat2[1,7]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,7]) "]$ & $[" %7.3f (pvalue2007_cat3[1,7]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,7]) "]$ & $[" %7.3f (pvalue2007_cat4[1,7]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,7]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* Escrever linha para indicar que t0 é omitido
+file write f1 "$t_{0}$ & \multicolumn{8}{c}{(omitido - ano do tratamento)} \\" _n
+file write f1 "\hline" _n
+
+* Parte 2: Períodos pós-tratamento
+* t+1
+file write f1 "$t_{+1}$ & $" %7.3f (betas2007_cat1[1,8]) "$ & $" %7.3f (betas2007_cat1_trend[1,7]) "$ & $" %7.3f (betas2007_cat2[1,8]) "$ & $" %7.3f (betas2007_cat2_trend[1,7]) "$ & $" %7.3f (betas2007_cat3[1,8]) "$ & $" %7.3f (betas2007_cat3_trend[1,7]) "$ & $" %7.3f (betas2007_cat4[1,8]) "$ & $" %7.3f (betas2007_cat4_trend[1,7]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,8]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,7]) ")$ & $(" %7.3f (vars2007_cat2[1,8]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,7]) ")$ & $(" %7.3f (vars2007_cat3[1,8]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,7]) ")$ & $(" %7.3f (vars2007_cat4[1,8]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,7]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,8]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,8]) "]$ & $[" %7.3f (pvalue2007_cat2[1,8]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,8]) "]$ & $[" %7.3f (pvalue2007_cat3[1,8]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,8]) "]$ & $[" %7.3f (pvalue2007_cat4[1,8]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,8]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+2
+file write f1 "$t_{+2}$ & $" %7.3f (betas2007_cat1[1,9]) "$ & $" %7.3f (betas2007_cat1_trend[1,8]) "$ & $" %7.3f (betas2007_cat2[1,9]) "$ & $" %7.3f (betas2007_cat2_trend[1,8]) "$ & $" %7.3f (betas2007_cat3[1,9]) "$ & $" %7.3f (betas2007_cat3_trend[1,8]) "$ & $" %7.3f (betas2007_cat4[1,9]) "$ & $" %7.3f (betas2007_cat4_trend[1,8]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,9]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,8]) ")$ & $(" %7.3f (vars2007_cat2[1,9]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,8]) ")$ & $(" %7.3f (vars2007_cat3[1,9]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,8]) ")$ & $(" %7.3f (vars2007_cat4[1,9]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,8]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,9]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,9]) "]$ & $[" %7.3f (pvalue2007_cat2[1,9]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,9]) "]$ & $[" %7.3f (pvalue2007_cat3[1,9]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,9]) "]$ & $[" %7.3f (pvalue2007_cat4[1,9]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,9]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+3
+file write f1 "$t_{+3}$ & $" %7.3f (betas2007_cat1[1,10]) "$ & $" %7.3f (betas2007_cat1_trend[1,9]) "$ & $" %7.3f (betas2007_cat2[1,10]) "$ & $" %7.3f (betas2007_cat2_trend[1,9]) "$ & $" %7.3f (betas2007_cat3[1,10]) "$ & $" %7.3f (betas2007_cat3_trend[1,9]) "$ & $" %7.3f (betas2007_cat4[1,10]) "$ & $" %7.3f (betas2007_cat4_trend[1,9]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,10]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,9]) ")$ & $(" %7.3f (vars2007_cat2[1,10]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,9]) ")$ & $(" %7.3f (vars2007_cat3[1,10]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,9]) ")$ & $(" %7.3f (vars2007_cat4[1,10]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,9]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,10]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,10]) "]$ & $[" %7.3f (pvalue2007_cat2[1,10]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,10]) "]$ & $[" %7.3f (pvalue2007_cat3[1,10]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,10]) "]$ & $[" %7.3f (pvalue2007_cat4[1,10]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,10]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+4
+file write f1 "$t_{+4}$ & $" %7.3f (betas2007_cat1[1,11]) "$ & $" %7.3f (betas2007_cat1_trend[1,10]) "$ & $" %7.3f (betas2007_cat2[1,11]) "$ & $" %7.3f (betas2007_cat2_trend[1,10]) "$ & $" %7.3f (betas2007_cat3[1,11]) "$ & $" %7.3f (betas2007_cat3_trend[1,10]) "$ & $" %7.3f (betas2007_cat4[1,11]) "$ & $" %7.3f (betas2007_cat4_trend[1,10]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,11]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,10]) ")$ & $(" %7.3f (vars2007_cat2[1,11]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,10]) ")$ & $(" %7.3f (vars2007_cat3[1,11]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,10]) ")$ & $(" %7.3f (vars2007_cat4[1,11]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,10]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,11]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,11]) "]$ & $[" %7.3f (pvalue2007_cat2[1,11]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,11]) "]$ & $[" %7.3f (pvalue2007_cat3[1,11]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,11]) "]$ & $[" %7.3f (pvalue2007_cat4[1,11]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,11]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+5
+file write f1 "$t_{+5}$ & $" %7.3f (betas2007_cat1[1,12]) "$ & $" %7.3f (betas2007_cat1_trend[1,11]) "$ & $" %7.3f (betas2007_cat2[1,12]) "$ & $" %7.3f (betas2007_cat2_trend[1,11]) "$ & $" %7.3f (betas2007_cat3[1,12]) "$ & $" %7.3f (betas2007_cat3_trend[1,11]) "$ & $" %7.3f (betas2007_cat4[1,12]) "$ & $" %7.3f (betas2007_cat4_trend[1,11]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,12]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,11]) ")$ & $(" %7.3f (vars2007_cat2[1,12]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,11]) ")$ & $(" %7.3f (vars2007_cat3[1,12]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,11]) ")$ & $(" %7.3f (vars2007_cat4[1,12]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,11]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,12]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,12]) "]$ & $[" %7.3f (pvalue2007_cat2[1,12]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,12]) "]$ & $[" %7.3f (pvalue2007_cat3[1,12]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,12]) "]$ & $[" %7.3f (pvalue2007_cat4[1,12]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,12]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+6
+file write f1 "$t_{+6}$ & $" %7.3f (betas2007_cat1[1,13]) "$ & $" %7.3f (betas2007_cat1_trend[1,12]) "$ & $" %7.3f (betas2007_cat2[1,13]) "$ & $" %7.3f (betas2007_cat2_trend[1,12]) "$ & $" %7.3f (betas2007_cat3[1,13]) "$ & $" %7.3f (betas2007_cat3_trend[1,12]) "$ & $" %7.3f (betas2007_cat4[1,13]) "$ & $" %7.3f (betas2007_cat4_trend[1,12]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,13]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,12]) ")$ & $(" %7.3f (vars2007_cat2[1,13]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,12]) ")$ & $(" %7.3f (vars2007_cat3[1,13]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,12]) ")$ & $(" %7.3f (vars2007_cat4[1,13]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,12]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,13]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,13]) "]$ & $[" %7.3f (pvalue2007_cat2[1,13]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,13]) "]$ & $[" %7.3f (pvalue2007_cat3[1,13]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,13]) "]$ & $[" %7.3f (pvalue2007_cat4[1,13]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,13]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+7
+file write f1 "$t_{+7}$ & $" %7.3f (betas2007_cat1[1,14]) "$ & $" %7.3f (betas2007_cat1_trend[1,13]) "$ & $" %7.3f (betas2007_cat2[1,14]) "$ & $" %7.3f (betas2007_cat2_trend[1,13]) "$ & $" %7.3f (betas2007_cat3[1,14]) "$ & $" %7.3f (betas2007_cat3_trend[1,13]) "$ & $" %7.3f (betas2007_cat4[1,14]) "$ & $" %7.3f (betas2007_cat4_trend[1,13]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,14]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,13]) ")$ & $(" %7.3f (vars2007_cat2[1,14]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,13]) ")$ & $(" %7.3f (vars2007_cat3[1,14]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,13]) ")$ & $(" %7.3f (vars2007_cat4[1,14]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,13]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,14]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,14]) "]$ & $[" %7.3f (pvalue2007_cat2[1,14]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,14]) "]$ & $[" %7.3f (pvalue2007_cat3[1,14]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,14]) "]$ & $[" %7.3f (pvalue2007_cat4[1,14]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,14]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+8
+file write f1 "$t_{+8}$ & $" %7.3f (betas2007_cat1[1,15]) "$ & $" %7.3f (betas2007_cat1_trend[1,14]) "$ & $" %7.3f (betas2007_cat2[1,15]) "$ & $" %7.3f (betas2007_cat2_trend[1,14]) "$ & $" %7.3f (betas2007_cat3[1,15]) "$ & $" %7.3f (betas2007_cat3_trend[1,14]) "$ & $" %7.3f (betas2007_cat4[1,15]) "$ & $" %7.3f (betas2007_cat4_trend[1,14]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,15]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,14]) ")$ & $(" %7.3f (vars2007_cat2[1,15]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,14]) ")$ & $(" %7.3f (vars2007_cat3[1,15]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,14]) ")$ & $(" %7.3f (vars2007_cat4[1,15]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,14]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,15]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,15]) "]$ & $[" %7.3f (pvalue2007_cat2[1,15]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,15]) "]$ & $[" %7.3f (pvalue2007_cat3[1,15]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,15]) "]$ & $[" %7.3f (pvalue2007_cat4[1,15]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,15]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+9
+file write f1 "$t_{+9}$ & $" %7.3f (betas2007_cat1[1,16]) "$ & $" %7.3f (betas2007_cat1_trend[1,15]) "$ & $" %7.3f (betas2007_cat2[1,16]) "$ & $" %7.3f (betas2007_cat2_trend[1,15]) "$ & $" %7.3f (betas2007_cat3[1,16]) "$ & $" %7.3f (betas2007_cat3_trend[1,15]) "$ & $" %7.3f (betas2007_cat4[1,16]) "$ & $" %7.3f (betas2007_cat4_trend[1,15]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,16]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,15]) ")$ & $(" %7.3f (vars2007_cat2[1,16]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,15]) ")$ & $(" %7.3f (vars2007_cat3[1,16]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,15]) ")$ & $(" %7.3f (vars2007_cat4[1,16]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,15]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,16]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,16]) "]$ & $[" %7.3f (pvalue2007_cat2[1,16]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,16]) "]$ & $[" %7.3f (pvalue2007_cat3[1,16]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,16]) "]$ & $[" %7.3f (pvalue2007_cat4[1,16]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,16]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+10
+file write f1 "$t_{+10}$ & $" %7.3f (betas2007_cat1[1,17]) "$ & $" %7.3f (betas2007_cat1_trend[1,16]) "$ & $" %7.3f (betas2007_cat2[1,17]) "$ & $" %7.3f (betas2007_cat2_trend[1,16]) "$ & $" %7.3f (betas2007_cat3[1,17]) "$ & $" %7.3f (betas2007_cat3_trend[1,16]) "$ & $" %7.3f (betas2007_cat4[1,17]) "$ & $" %7.3f (betas2007_cat4_trend[1,16]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,17]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,16]) ")$ & $(" %7.3f (vars2007_cat2[1,17]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,16]) ")$ & $(" %7.3f (vars2007_cat3[1,17]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,16]) ")$ & $(" %7.3f (vars2007_cat4[1,17]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,16]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,17]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,17]) "]$ & $[" %7.3f (pvalue2007_cat2[1,17]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,17]) "]$ & $[" %7.3f (pvalue2007_cat3[1,17]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,17]) "]$ & $[" %7.3f (pvalue2007_cat4[1,17]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,17]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+11
+file write f1 "$t_{+11}$ & $" %7.3f (betas2007_cat1[1,18]) "$ & $" %7.3f (betas2007_cat1_trend[1,17]) "$ & $" %7.3f (betas2007_cat2[1,18]) "$ & $" %7.3f (betas2007_cat2_trend[1,17]) "$ & $" %7.3f (betas2007_cat3[1,18]) "$ & $" %7.3f (betas2007_cat3_trend[1,17]) "$ & $" %7.3f (betas2007_cat4[1,18]) "$ & $" %7.3f (betas2007_cat4_trend[1,17]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,18]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,17]) ")$ & $(" %7.3f (vars2007_cat2[1,18]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,17]) ")$ & $(" %7.3f (vars2007_cat3[1,18]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,17]) ")$ & $(" %7.3f (vars2007_cat4[1,18]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,17]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,18]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,18]) "]$ & $[" %7.3f (pvalue2007_cat2[1,18]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,18]) "]$ & $[" %7.3f (pvalue2007_cat3[1,18]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,18]) "]$ & $[" %7.3f (pvalue2007_cat4[1,18]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,18]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* t+12
+file write f1 "$t_{+12}$ & $" %7.3f (betas2007_cat1[1,19]) "$ & $" %7.3f (betas2007_cat1_trend[1,18]) "$ & $" %7.3f (betas2007_cat2[1,19]) "$ & $" %7.3f (betas2007_cat2_trend[1,18]) "$ & $" %7.3f (betas2007_cat3[1,19]) "$ & $" %7.3f (betas2007_cat3_trend[1,18]) "$ & $" %7.3f (betas2007_cat4[1,19]) "$ & $" %7.3f (betas2007_cat4_trend[1,18]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007_cat1[1,19]) ")$ & $(" %7.3f (vars2007_cat1_trend[1,18]) ")$ & $(" %7.3f (vars2007_cat2[1,19]) ")$ & $(" %7.3f (vars2007_cat2_trend[1,18]) ")$ & $(" %7.3f (vars2007_cat3[1,19]) ")$ & $(" %7.3f (vars2007_cat3_trend[1,18]) ")$ & $(" %7.3f (vars2007_cat4[1,19]) ")$ & $(" %7.3f (vars2007_cat4_trend[1,18]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007_cat1[1,19]) "]$ & $[" %7.3f (pvalue2007_cat1_trend[1,19]) "]$ & $[" %7.3f (pvalue2007_cat2[1,19]) "]$ & $[" %7.3f (pvalue2007_cat2_trend[1,19]) "]$ & $[" %7.3f (pvalue2007_cat3[1,19]) "]$ & $[" %7.3f (pvalue2007_cat3_trend[1,19]) "]$ & $[" %7.3f (pvalue2007_cat4[1,19]) "]$ & $[" %7.3f (pvalue2007_cat4_trend[1,19]) "]$ \\" _n
+file write f1 "\hline" _n
+
+* Número de observações
+file write f1 "Observations & \multicolumn{4}{c}{$" %10.0f (nobs) "$} & \multicolumn{4}{c}{$" %10.0f (nobs_trend) "$} \\" _n
+file write f1 "\hline\hline" _n
+
+* Adicionar notas de rodapé
+file write f1 "\end{tabular}" _n
+file write f1 "\begin{tablenotes}" _n
+file write f1 "\small" _n
+file write f1 "\item Nota: Esta tabela apresenta os coeficientes do event study para Pernambuco (2007), divididos por categorias de capacidade policial e distância a delegacias. Categoria 1: Baixa capacidade \& Delegacia próxima; Categoria 2: Baixa capacidade \& Delegacia distante; Categoria 3: Alta capacidade \& Delegacia próxima; Categoria 4: Alta capacidade \& Delegacia distante. Erros padrão entre parênteses e p-values do bootstrap wild cluster entre colchetes. Os modelos incluem efeitos fixos de município e ano, além do logaritmo da população. Os testes F avaliam a hipótese nula de que todos os coeficientes pré-tratamento são conjuntamente iguais a zero." _n
+file write f1 "\end{tablenotes}" _n
+file write f1 "\end{table}" _n
+
+* Fechar o arquivo
+file close f1
