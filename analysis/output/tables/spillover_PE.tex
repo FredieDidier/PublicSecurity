@@ -1,29 +1,37 @@
 \documentclass[]{article}
-\usepackage{booktabs}
-\usepackage{threeparttable}
-\setlength{\pdfpagewidth}{8.5in} \setlength{\pdfpageheight}{11in}
+\usepackage{booktabs}   % Para linhas de tabela de melhor qualidade
+\usepackage{amsmath}    % Para símbolos matemáticos
+\usepackage{dcolumn}    % Para alinhamento de colunas decimais
+\usepackage{geometry}   % Para ajustes de margens
+\usepackage{caption}    % Para legendas mais flexíveis
+\usepackage{threeparttable} % Para notas de tabela
+\usepackage{tabularx}   % Para tabelas mais flexíveis
 \begin{document}
 \begin{table}[htbp]
 \centering
 \begin{threeparttable}
+\caption{}
+\label{tab:spillover}
 \begin{tabular}{lcc}
 \toprule
-\multicolumn{3}{c}{Dependent Variable: Homicide Rate per 100,000 inhabitants} \\
+& \multicolumn{2}{c}{Dependent Variable: Homicide Rate per 100,000 Inhabitants} \\
+\cmidrule(l){2-3} 
+& (1) & (2) \\ 
+& Distance to PE border $<$ 50 km & Distance to PE border $<$ 75 km \\ 
 \midrule
- & (1) & (2) \\
- & Distance to PE border $<$ 75 km & Distance to PE border $<$ 50 km \\
+Spillover & 0.478 &  \\
+& (3.826) &  \\
+& [0.914] &  \\
+Spillover &  & 0.405 \\
+&  & (3.681) \\
+&  & [0.920] \\
 \midrule
-Spillover & 3.147 & 3.938 \\
- & (4.886) & (3.598) \\
- & [0.701] & [0.425] \\
- &  &  \\
- \midrule
-Trends & Yes & Yes \\
-Control & Yes & Yes \\
 Municipality FE & Yes & Yes \\
 Year FE & Yes & Yes \\
-Observations & 11,244 & 11,244 \\
-R-squared & 0.288 & 0.288 \\
+Controls & Yes & Yes \\
+Trends & Yes & Yes \\
+Observations & 24,439 & 24,439 \\
+R-squared & 0.349 & 0.349 \\
 \bottomrule
 \end{tabular}
 \end{threeparttable}

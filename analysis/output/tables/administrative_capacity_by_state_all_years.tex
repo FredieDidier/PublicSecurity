@@ -1,5 +1,4 @@
 \documentclass[12pt]{article}
-
 % Pacotes necessários
 \usepackage[utf8]{inputenc}     % Codificação de caracteres
 \usepackage[T1]{fontenc}        % Codificação de fontes
@@ -13,8 +12,6 @@
 \usepackage{caption}            % Personalização de legendas
 \usepackage{subcaption}         % Para subtabelas e subfiguras
 \usepackage{dcolumn}            % Alinhamento decimal em tabelas
-
-
 \begin{document}
 \begin{table}[htbp]
 \centering
@@ -27,36 +24,42 @@
 \toprule
 & \multicolumn{6}{c}{State} & \\
 \cmidrule(lr){2-7}
-Variable (Mean) & PE & BA & PB & CE & MA & Never Treated & P-Value \\
+Variable (Mean) & PE & BA & PB & CE & MA & Never Treated \\
 \midrule
 \multicolumn{8}{l}{\textit{Formal Employment}} \\
 \quad Low Capacity & 1,850.50 & 1,580.50 & 687.20 & 3,421.10 & 1,825.60 & 1,151.30 & \\
-\quad High Capacity & 11,109.50 & 10,658.40 & 3,903.90 & 8,164.70 & 3,652.40 & 4,382.70 & $<$0.05 \\[4pt]
+\quad High Capacity & 11,109.50 & 10,658.40 & 3,903.90 & 8,164.70 & 3,652.40 & 4,382.70 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.01 & $<$0.01 & $<$0.001 \\[4pt]
 \multicolumn{8}{l}{\textit{GDP per capita (log)}} \\
 \quad Low Capacity & 1.14 & 1.26 & 1.11 & 0.90 & 1.04 & 1.15 & \\
-\quad High Capacity & 1.91 & 2.16 & 1.90 & 1.79 & 1.82 & 1.93 & $<$0.05 \\[4pt]
+\quad High Capacity & 1.91 & 2.16 & 1.90 & 1.79 & 1.82 & 1.93 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 \\[4pt]
 \multicolumn{8}{l}{\textit{Population}} \\
 \quad Low Capacity & 24,978 & 22,024 & 10,429 & 31,217 & 27,033 & 13,900 & \\
-\quad High Capacity & 62,570 & 59,400 & 22,591 & 53,591 & 33,573 & 25,742 & $<$0.05 \\[4pt]
+\quad High Capacity & 62,570 & 59,400 & 22,591 & 53,591 & 33,573 & 25,742 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.01 & $<$0.001 \\[4pt]
 \multicolumn{8}{l}{\textit{Population Density}} \\
 \quad Low Capacity & 117.48 & 38.59 & 59.71 & 71.02 & 33.50 & 53.00 & \\
-\quad High Capacity & 332.49 & 102.39 & 131.06 & 137.77 & 40.96 & 84.72 & $<$0.05 \\[4pt]
+\quad High Capacity & 332.49 & 102.39 & 131.06 & 137.77 & 40.96 & 84.72 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.05 & $<$0.001 \\[4pt]
 \multicolumn{8}{l}{\textit{Distance to Police Station (km)}} \\
 \quad Low Capacity & 16.66 & 24.71 & 16.86 & 19.73 & 43.11 & 22.78 & \\
-\quad High Capacity & 14.90 & 22.61 & 16.79 & 17.11 & 43.84 & 22.67 & $<$0.05$^{\dag}$ \\[4pt]
+\quad High Capacity & 14.90 & 22.61 & 16.79 & 17.11 & 43.84 & 22.67 \\
+\quad P-Value & $<$0.001 & $<$0.001 & 0.826 & $<$0.001 & 0.373 & 0.768 \\[4pt]
 \multicolumn{8}{l}{\textit{Public Employees per 1,000 inhabitants}} \\
 \quad Low Capacity & 31.21 & 32.14 & 45.45 & 35.68 & 20.96 & 36.54 & \\
-\quad High Capacity & 32.98 & 37.69 & 53.81 & 42.34 & 30.04 & 42.00 & $<$0.05 \\[4pt]
+\quad High Capacity & 32.98 & 37.69 & 53.81 & 42.34 & 30.04 & 42.00 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 \\[4pt]
 \multicolumn{8}{l}{\textit{Percentage with College Degree}} \\
 \quad Low Capacity & 8.71 & 5.67 & 7.44 & 7.47 & 4.68 & 6.54 & \\
-\quad High Capacity & 39.03 & 29.95 & 30.89 & 33.66 & 38.25 & 34.71 & $<$0.05 \\
+\quad High Capacity & 39.03 & 29.95 & 30.89 & 33.66 & 38.25 & 34.71 \\
+\quad P-Value & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 & $<$0.001 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
 \begin{tablenotes}
 \small
-\item \textit{Note:} This table compares municipalities with low and high administrative capacity (below and above median percentage of employees with college degree) across different states during the period 2000-2019. The p-value column indicates whether the difference between low and high capacity is statistically significant across all states.
-\item $^{\dag}$ Not significant for PB and MA states.
+\item \textit{Note:} This table compares municipalities with low and high administrative capacity (below and above median percentage of employees with college degree) across different states during the period 2000-2019. The P-Value row shows the statistical significance of differences between low and high capacity municipalities within each state.
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
