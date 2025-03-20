@@ -1,0 +1,93 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{threeparttable}
+\usepackage{geometry}
+\usepackage{adjustbox}
+\usepackage{array}
+\begin{document}
+\begin{table}[H]
+\centering
+\label{tab:young_black_event_study_PE}
+\begin{tabular}{lcc}
+\toprule
+& \multicolumn{2}{c}{PE (2007)} \\
+\cmidrule(lr){2-3}
+\midrule
+$\beta_{-7}$ & $  2.320$ & - \\
+& $(  0.815)$ & - \\
+& $[  0.370]$ & - \\
+$\beta_{-6}$ & $  3.163$ & $  1.301$ \\
+& $(  0.628)$ & $(  3.476)$ \\
+& $[  0.240]$ & $[  0.370]$ \\
+$\beta_{-5}$ & $  2.038$ & $  0.639$ \\
+& $(  0.675)$ & $(  1.380)$ \\
+& $[  0.276]$ & $[  0.380]$ \\
+$\beta_{-4}$ & $  0.772$ & $ -0.165$ \\
+& $(  0.719)$ & $(  4.030)$ \\
+& $[  0.478]$ & $[  0.688]$ \\
+$\beta_{-3}$ & $  0.625$ & $ -0.184$ \\
+& $(  0.735)$ & $(  3.871)$ \\
+& $[  0.502]$ & $[  0.639]$ \\
+$\beta_{-2}$ & $  0.383$ & $ -0.138$ \\
+& $(  0.799)$ & $(  1.455)$ \\
+& $[  0.681]$ & $[  0.818]$ \\
+$\beta_{-1}$ & $  0.430$ & $  0.171$ \\
+& $(  0.626)$ & $(  0.786)$ \\
+& $[  0.589]$ & $[  0.804]$ \\
+$\beta_{1}$ & $ -2.989$ & $ -2.407$ \\
+& $(  0.959)$ & $(  3.730)$ \\
+& $[  0.240]$ & $[  0.226]$ \\
+$\beta_{2}$ & $ -6.034$ & $ -5.018$ \\
+& $(  1.330)$ & $(  3.995)$ \\
+& $[  0.132]$ & $[  0.037]$ \\
+$\beta_{3}$ & $ -9.867$ & $ -8.057$ \\
+& $(  1.945)$ & $(  4.412)$ \\
+& $[  0.098]$ & $[  0.065]$ \\
+$\beta_{4}$ & $-14.334$ & $-10.304$ \\
+& $(  1.142)$ & $(  5.801)$ \\
+& $[  0.046]$ & $[  0.093]$ \\
+$\beta_{5}$ & $-13.781$ & $-11.030$ \\
+& $(  2.465)$ & $(  5.350)$ \\
+& $[  0.080]$ & $[  0.027]$ \\
+$\beta_{6}$ & $-17.147$ & $-13.925$ \\
+& $(  2.353)$ & $(  6.010)$ \\
+& $[  0.053]$ & $[  0.008]$ \\
+$\beta_{7}$ & $-17.271$ & $-13.579$ \\
+& $(  1.989)$ & $(  6.432)$ \\
+& $[  0.036]$ & $[  0.016]$ \\
+$\beta_{8}$ & $-12.565$ & $-10.001$ \\
+& $(  1.616)$ & $(  8.896)$ \\
+& $[  0.049]$ & $[  0.118]$ \\
+$\beta_{9}$ & $-12.567$ & $ -9.329$ \\
+& $(  2.400)$ & $(  8.192)$ \\
+& $[  0.143]$ & $[  0.230]$ \\
+$\beta_{10}$ & $-10.316$ & $ -5.215$ \\
+& $(  3.637)$ & $(  8.965)$ \\
+& $[  0.242]$ & $[  0.376]$ \\
+$\beta_{11}$ & $-12.625$ & $ -7.056$ \\
+& $(  3.520)$ & $(  9.568)$ \\
+& $[  0.194]$ & $[  0.386]$ \\
+$\beta_{12}$ & $-12.954$ & $ -6.915$ \\
+& $(  2.496)$ & $( 11.013)$ \\
+& $[  0.094]$ & $[  0.394]$ \\
+\midrule
+Trends & No & Yes \\
+Observations & $   35,662$ & $   35,662$ \\
+\bottomrule
+\end{tabular}
+\begin{threeparttable}
+\begin{tablenotes}
+\small
+\item Note: The dependent variable is the homicide rate of young Black people. 
+Standard errors clustered at the state level in parentheses. 
+Wild bootstrap p-values (weighttype=webb) with 9999 replications in brackets. 
+All regressions include municipality and year fixed effects, and are weighted by municipality population in 2000. 
+Results are presented for Pernambuco, where the program was implemented in 2007. 
+The model with trend includes a cohort-specific linear trend. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}

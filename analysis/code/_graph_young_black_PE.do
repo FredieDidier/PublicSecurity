@@ -258,6 +258,155 @@ scalar f2007_trend = r(F)
 scalar f2007p_trend = r(p)
 
 ********************************************************************************
+* Criar Tabela LaTeX para Event Study - Homicídios de Jovens Negros PE (2007)
+********************************************************************************
+
+* Abrir arquivo para escrever
+cap file close f1
+file open f1 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/young_black_event_study_PE.tex", write replace
+
+* Escrever cabeçalho da tabela
+file write f1 "\documentclass[12pt]{article}" _n
+file write f1 "\usepackage{booktabs}" _n
+file write f1 "\usepackage{amsmath}" _n
+file write f1 "\usepackage{caption}" _n
+file write f1 "\usepackage{float}" _n
+file write f1 "\usepackage{threeparttable}" _n
+file write f1 "\usepackage{geometry}" _n
+file write f1 "\usepackage{adjustbox}" _n
+file write f1 "\usepackage{array}" _n
+file write f1 "\begin{document}" _n
+file write f1 "\begin{table}[H]" _n
+file write f1 "\centering" _n
+file write f1 "\label{tab:young_black_event_study_PE}" _n
+file write f1 "\begin{tabular}{lcc}" _n
+file write f1 "\toprule" _n
+file write f1 "& \multicolumn{2}{c}{PE (2007)} \\" _n
+file write f1 "\cmidrule(lr){2-3}" _n
+file write f1 "\midrule" _n
+
+* Períodos pré-tratamento
+* t-7 (apenas para o modelo sem tendência)
+file write f1 "$\beta_{-7}$ & $" %7.3f (betas2007[1,1]) "$ & - \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,1]) ")$ & - \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,1]) "]$ & - \\" _n
+
+* t-6
+file write f1 "$\beta_{-6}$ & $" %7.3f (betas2007[1,2]) "$ & $" %7.3f (betas2007_trend[1,2]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,2]) ")$ & $(" %7.3f (vars2007_trend[1,2]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,2]) "]$ & $[" %7.3f (pvalue2007_trend[1,2]) "]$ \\" _n
+
+* t-5
+file write f1 "$\beta_{-5}$ & $" %7.3f (betas2007[1,3]) "$ & $" %7.3f (betas2007_trend[1,3]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,3]) ")$ & $(" %7.3f (vars2007_trend[1,3]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,3]) "]$ & $[" %7.3f (pvalue2007_trend[1,3]) "]$ \\" _n
+
+* t-4
+file write f1 "$\beta_{-4}$ & $" %7.3f (betas2007[1,4]) "$ & $" %7.3f (betas2007_trend[1,4]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,4]) ")$ & $(" %7.3f (vars2007_trend[1,4]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,4]) "]$ & $[" %7.3f (pvalue2007_trend[1,4]) "]$ \\" _n
+
+* t-3
+file write f1 "$\beta_{-3}$ & $" %7.3f (betas2007[1,5]) "$ & $" %7.3f (betas2007_trend[1,5]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,5]) ")$ & $(" %7.3f (vars2007_trend[1,5]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,5]) "]$ & $[" %7.3f (pvalue2007_trend[1,5]) "]$ \\" _n
+
+* t-2
+file write f1 "$\beta_{-2}$ & $" %7.3f (betas2007[1,6]) "$ & $" %7.3f (betas2007_trend[1,6]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,6]) ")$ & $(" %7.3f (vars2007_trend[1,6]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,6]) "]$ & $[" %7.3f (pvalue2007_trend[1,6]) "]$ \\" _n
+
+* t-1
+file write f1 "$\beta_{-1}$ & $" %7.3f (betas2007[1,7]) "$ & $" %7.3f (betas2007_trend[1,7]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,7]) ")$ & $(" %7.3f (vars2007_trend[1,7]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,7]) "]$ & $[" %7.3f (pvalue2007_trend[1,7]) "]$ \\" _n
+
+* t+1
+file write f1 "$\beta_{1}$ & $" %7.3f (betas2007[1,8]) "$ & $" %7.3f (betas2007_trend[1,8]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,8]) ")$ & $(" %7.3f (vars2007_trend[1,8]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,8]) "]$ & $[" %7.3f (pvalue2007_trend[1,8]) "]$ \\" _n
+
+* t+2
+file write f1 "$\beta_{2}$ & $" %7.3f (betas2007[1,9]) "$ & $" %7.3f (betas2007_trend[1,9]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,9]) ")$ & $(" %7.3f (vars2007_trend[1,9]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,9]) "]$ & $[" %7.3f (pvalue2007_trend[1,9]) "]$ \\" _n
+
+* t+3
+file write f1 "$\beta_{3}$ & $" %7.3f (betas2007[1,10]) "$ & $" %7.3f (betas2007_trend[1,10]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,10]) ")$ & $(" %7.3f (vars2007_trend[1,10]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,10]) "]$ & $[" %7.3f (pvalue2007_trend[1,10]) "]$ \\" _n
+
+* t+4
+file write f1 "$\beta_{4}$ & $" %7.3f (betas2007[1,11]) "$ & $" %7.3f (betas2007_trend[1,11]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,11]) ")$ & $(" %7.3f (vars2007_trend[1,11]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,11]) "]$ & $[" %7.3f (pvalue2007_trend[1,11]) "]$ \\" _n
+
+* t+5
+file write f1 "$\beta_{5}$ & $" %7.3f (betas2007[1,12]) "$ & $" %7.3f (betas2007_trend[1,12]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,12]) ")$ & $(" %7.3f (vars2007_trend[1,12]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,12]) "]$ & $[" %7.3f (pvalue2007_trend[1,12]) "]$ \\" _n
+
+* t+6
+file write f1 "$\beta_{6}$ & $" %7.3f (betas2007[1,13]) "$ & $" %7.3f (betas2007_trend[1,13]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,13]) ")$ & $(" %7.3f (vars2007_trend[1,13]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,13]) "]$ & $[" %7.3f (pvalue2007_trend[1,13]) "]$ \\" _n
+
+* t+7
+file write f1 "$\beta_{7}$ & $" %7.3f (betas2007[1,14]) "$ & $" %7.3f (betas2007_trend[1,14]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,14]) ")$ & $(" %7.3f (vars2007_trend[1,14]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,14]) "]$ & $[" %7.3f (pvalue2007_trend[1,14]) "]$ \\" _n
+
+* t+8
+file write f1 "$\beta_{8}$ & $" %7.3f (betas2007[1,15]) "$ & $" %7.3f (betas2007_trend[1,15]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,15]) ")$ & $(" %7.3f (vars2007_trend[1,15]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,15]) "]$ & $[" %7.3f (pvalue2007_trend[1,15]) "]$ \\" _n
+
+* t+9
+file write f1 "$\beta_{9}$ & $" %7.3f (betas2007[1,16]) "$ & $" %7.3f (betas2007_trend[1,16]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,16]) ")$ & $(" %7.3f (vars2007_trend[1,16]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,16]) "]$ & $[" %7.3f (pvalue2007_trend[1,16]) "]$ \\" _n
+
+* t+10
+file write f1 "$\beta_{10}$ & $" %7.3f (betas2007[1,17]) "$ & $" %7.3f (betas2007_trend[1,17]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,17]) ")$ & $(" %7.3f (vars2007_trend[1,17]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,17]) "]$ & $[" %7.3f (pvalue2007_trend[1,17]) "]$ \\" _n
+
+* t+11
+file write f1 "$\beta_{11}$ & $" %7.3f (betas2007[1,18]) "$ & $" %7.3f (betas2007_trend[1,18]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,18]) ")$ & $(" %7.3f (vars2007_trend[1,18]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,18]) "]$ & $[" %7.3f (pvalue2007_trend[1,18]) "]$ \\" _n
+
+* t+12
+file write f1 "$\beta_{12}$ & $" %7.3f (betas2007[1,19]) "$ & $" %7.3f (betas2007_trend[1,19]) "$ \\" _n
+file write f1 "& $(" %7.3f (vars2007[1,19]) ")$ & $(" %7.3f (vars2007_trend[1,19]) ")$ \\" _n
+file write f1 "& $[" %7.3f (pvalue2007[1,19]) "]$ & $[" %7.3f (pvalue2007_trend[1,19]) "]$ \\" _n
+
+* Adicionar informações sobre tendências e observações
+file write f1 "\midrule" _n
+file write f1 "Trends & No & Yes \\" _n
+file write f1 "Observations & $" %9.0fc (nobs) "$ & $" %9.0fc (nobs_trend) "$ \\" _n
+file write f1 "\bottomrule" _n
+
+* Fechar tabela e adicionar notas
+file write f1 "\end{tabular}" _n
+file write f1 "\begin{threeparttable}" _n
+file write f1 "\begin{tablenotes}" _n
+file write f1 "\small" _n
+file write f1 "\item Note: The dependent variable is the homicide rate of young Black people. " _n
+file write f1 "Standard errors clustered at the state level in parentheses. " _n
+file write f1 "Wild bootstrap p-values (weighttype=webb) with 9999 replications in brackets. " _n
+file write f1 "All regressions include municipality and year fixed effects, and are weighted by municipality population in 2000. " _n
+file write f1 "Results are presented for Pernambuco, where the program was implemented in 2007. " _n
+file write f1 "The model with trend includes a cohort-specific linear trend. " _n
+file write f1 "\end{tablenotes}" _n
+file write f1 "\end{threeparttable}" _n
+file write f1 "\end{table}" _n
+file write f1 "\end{document}" _n
+
+* Fechar o arquivo
+file close f1
+
+********************************************************************************
 * Parte 2: Gráficos de Event Study para cada coorte
 ********************************************************************************
 

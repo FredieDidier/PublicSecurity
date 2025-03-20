@@ -1,11 +1,15 @@
 # Código para criar tabela comparativa de capacidade administrativa por estados
 # Comparando municípios de baixa (Low) e alta (High) capacidade administrativa
 # Para estados tratados (PE, BA, PB, CE, MA) e nunca tratados
-# Usando todos os anos disponíveis no dataset
+# Apenas para o ano de 2006
 
 library(dplyr)
 library(tidyr)
 library(xtable)
+
+# 0. Filtrar apenas para o ano de 2006
+main_data <- main_data %>%
+  filter(year == 2006)
 
 # 1. Calcular o número de funcionários per capita (por 1000 habitantes) para toda a base
 main_data <- main_data %>%
@@ -36,6 +40,10 @@ calculate_state_stats <- function(state_data) {
   high_cap <- filter(state_data, capacity == "High Capacity")
   low_cap <- filter(state_data, capacity == "Low Capacity")
   
+  # Calcular o número de municípios em cada grupo
+  n_high <- nrow(high_cap)
+  n_low <- nrow(low_cap)
+  
   # Lista de variáveis para analisar
   variables <- c(
     "total_vinculos_munic",
@@ -54,6 +62,8 @@ calculate_state_stats <- function(state_data) {
     high_mean = numeric(),
     p_value = numeric(),
     p_value_fmt = character(),
+    n_low = numeric(),
+    n_high = numeric(),
     stringsAsFactors = FALSE
   )
   
@@ -86,10 +96,24 @@ calculate_state_stats <- function(state_data) {
         high_mean = high_mean,
         p_value = p_value,
         p_value_fmt = p_value_fmt,
+        n_low = n_low,
+        n_high = n_high,
         stringsAsFactors = FALSE
       ))
     }
   }
+  
+  # Adicionar uma linha especial para o número de municípios
+  results <- rbind(results, data.frame(
+    variable = "n_municipalities",
+    low_mean = n_low,
+    high_mean = n_high,
+    p_value = NA,
+    p_value_fmt = NA,
+    n_low = n_low,
+    n_high = n_high,
+    stringsAsFactors = FALSE
+  ))
   
   return(results)
 }
@@ -118,7 +142,8 @@ variable_names <- c(
   "pop_density_municipality" = "Population Density", 
   "distancia_delegacia_km" = "Distance to Police Station (km)",
   "employees_per_1000" = "Public Employees per 1,000 inhabitants",
-  "perc_superior" = "Percentage with College Degree"
+  "perc_superior" = "Percentage with College Degree",
+  "n_municipalities" = "Number of Municipalities"
 )
 
 combined_results$variable_name <- variable_names[combined_results$variable]
@@ -134,6 +159,7 @@ combined_results <- combined_results %>%
       variable == "distancia_delegacia_km" ~ round(low_mean, 2),
       variable == "employees_per_1000" ~ round(low_mean, 2),
       variable == "perc_superior" ~ round(low_mean, 2),
+      variable == "n_municipalities" ~ round(low_mean, 0),
       TRUE ~ low_mean
     ),
     high_mean = case_when(
@@ -144,6 +170,7 @@ combined_results <- combined_results %>%
       variable == "distancia_delegacia_km" ~ round(high_mean, 2),
       variable == "employees_per_1000" ~ round(high_mean, 2),
       variable == "perc_superior" ~ round(high_mean, 2),
+      variable == "n_municipalities" ~ round(high_mean, 0),
       TRUE ~ high_mean
     )
   )
@@ -157,8 +184,8 @@ latex_data <- combined_results %>%
 # Gerar código LaTeX
 latex_code <- "\\begin{table}[htbp]
 \\centering
-\\caption{Administrative Capacity Comparison by State (All Years)}
-\\label{tab:capacity_comparison}
+\\caption{Administrative Capacity Comparison by State (2006)}
+\\label{tab:capacity_comparison_2006}
 \\begin{threeparttable}
 \\small
 \\begin{adjustbox}{max width=\\textwidth}
@@ -171,6 +198,7 @@ Variable & Low & High & Low & High & Low & High & Low & High & Low & High & Low 
 
 # Variáveis na ordem que queremos apresentar
 ordered_variables <- c(
+  "Number of Municipalities",
   "Formal Employment",
   "GDP per capita (log)",
   "Population",
@@ -192,12 +220,12 @@ for (var in ordered_variables) {
     state_var_data <- filter(var_data, state == state_name)
     
     if (nrow(state_var_data) > 0) {
-      low_val <- formatC(state_var_data$low_mean, format = "f", digits = ifelse(var == "Population", 0, 2))
-      high_val <- formatC(state_var_data$high_mean, format = "f", digits = ifelse(var == "Population", 0, 2))
+      low_val <- formatC(state_var_data$low_mean, format = "f", digits = ifelse(var %in% c("Population", "Number of Municipalities"), 0, 2))
+      high_val <- formatC(state_var_data$high_mean, format = "f", digits = ifelse(var %in% c("Population", "Number of Municipalities"), 0, 2))
       p_val <- state_var_data$p_value_fmt
       
-      # Adicionar asterisco se p < 0.05
-      high_val_fmt <- ifelse(p_val %in% c("<0.05", "<0.01", "<0.001"), 
+      # Adicionar asterisco se p < 0.05 (exceto para o número de municípios)
+      high_val_fmt <- ifelse(!is.na(p_val) && p_val %in% c("<0.05", "<0.01", "<0.001") && var != "Number of Municipalities", 
                              paste0(high_val, "$^{*}$"), 
                              high_val)
       
@@ -217,23 +245,14 @@ latex_code <- paste0(latex_code, "\\bottomrule
 \\end{adjustbox}
 \\begin{tablenotes}
 \\small
-\\item \\textit{Note:} This table compares municipalities with low and high administrative capacity (below and above median percentage of employees with college degree) across different states over all available years. 
+\\item \\textit{Note:} This table compares municipalities with low and high administrative capacity (below and above median percentage of employees with college degree) across different states for 2006. 
 \\item $^{*}$ indicates statistically significant difference (p $<$ 0.05) between low and high capacity municipalities.
 \\end{tablenotes}
 \\end{threeparttable}
 \\end{table}")
 
-# Obter o range de anos para adicionar à nota
-min_year <- min(main_data$year, na.rm = TRUE)
-max_year <- max(main_data$year, na.rm = TRUE)
-
-# Atualizar a nota com o período
-latex_code <- sub("over all available years", 
-                  paste0("during the period ", min_year, "-", max_year),
-                  latex_code)
-
 # Salvar a tabela em um arquivo .tex
-output_file <- paste0(GITHUB_PATH, "analysis/output/tables/administrative_capacity_by_state_all_years.tex")
+output_file <- paste0(GITHUB_PATH, "analysis/output/tables/administrative_capacity_by_state_2006.tex")
 writeLines(latex_code, output_file)
 
-cat("Tabela LaTeX de comparação de capacidade administrativa por estado (todos os anos) salva em:", output_file)
+cat("Tabela LaTeX de comparação de capacidade administrativa por estado (2006) salva em:", output_file)

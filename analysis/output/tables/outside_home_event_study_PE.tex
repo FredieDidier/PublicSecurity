@@ -1,0 +1,93 @@
+\documentclass[12pt]{article}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{threeparttable}
+\usepackage{geometry}
+\usepackage{adjustbox}
+\usepackage{array}
+\begin{document}
+\begin{table}[H]
+\centering
+\label{tab:outside_home_event_study_PE}
+\begin{tabular}{lcc}
+\toprule
+& \multicolumn{2}{c}{PE (2007)} \\
+\cmidrule(lr){2-3}
+\midrule
+$\beta_{-7}$ & $ 14.172$ & - \\
+& $(  3.202)$ & - \\
+& $[  0.299]$ & - \\
+$\beta_{-6}$ & $ 14.444$ & $  2.472$ \\
+& $(  2.987)$ & $(  3.476)$ \\
+& $[  0.283]$ & $[  0.230]$ \\
+$\beta_{-5}$ & $  9.058$ & $ -0.705$ \\
+& $(  2.758)$ & $(  1.380)$ \\
+& $[  0.347]$ & $[  0.333]$ \\
+$\beta_{-4}$ & $  7.872$ & $  0.317$ \\
+& $(  2.686)$ & $(  4.030)$ \\
+& $[  0.385]$ & $[  0.667]$ \\
+$\beta_{-3}$ & $  2.985$ & $ -2.915$ \\
+& $(  2.888)$ & $(  3.871)$ \\
+& $[  0.485]$ & $[  0.267]$ \\
+$\beta_{-2}$ & $  1.633$ & $ -2.196$ \\
+& $(  2.385)$ & $(  1.455)$ \\
+& $[  0.609]$ & $[  0.307]$ \\
+$\beta_{-1}$ & $  0.496$ & $ -1.417$ \\
+& $(  1.043)$ & $(  0.786)$ \\
+& $[  0.676]$ & $[  0.302]$ \\
+$\beta_{1}$ & $ -4.563$ & $ -1.023$ \\
+& $(  1.505)$ & $(  3.730)$ \\
+& $[  0.384]$ & $[  0.412]$ \\
+$\beta_{2}$ & $-10.705$ & $ -6.429$ \\
+& $(  1.934)$ & $(  3.995)$ \\
+& $[  0.101]$ & $[  0.264]$ \\
+$\beta_{3}$ & $-18.809$ & $-12.653$ \\
+& $(  2.918)$ & $(  4.412)$ \\
+& $[  0.064]$ & $[  0.106]$ \\
+$\beta_{4}$ & $-25.758$ & $-14.336$ \\
+& $(  2.494)$ & $(  5.801)$ \\
+& $[  0.110]$ & $[  0.168]$ \\
+$\beta_{5}$ & $-25.353$ & $-15.334$ \\
+& $(  2.550)$ & $(  5.350)$ \\
+& $[  0.012]$ & $[  0.167]$ \\
+$\beta_{6}$ & $-31.537$ & $-19.586$ \\
+& $(  3.461)$ & $(  6.010)$ \\
+& $[  0.015]$ & $[  0.186]$ \\
+$\beta_{7}$ & $-31.390$ & $-17.508$ \\
+& $(  3.937)$ & $(  6.432)$ \\
+& $[  0.022]$ & $[  0.233]$ \\
+$\beta_{8}$ & $-26.147$ & $-10.693$ \\
+& $(  4.544)$ & $(  8.896)$ \\
+& $[  0.157]$ & $[  0.360]$ \\
+$\beta_{9}$ & $-21.221$ & $ -3.821$ \\
+& $(  4.733)$ & $(  8.192)$ \\
+& $[  0.136]$ & $[  0.738]$ \\
+$\beta_{10}$ & $-12.770$ & $  6.905$ \\
+& $(  7.380)$ & $(  8.965)$ \\
+& $[  0.359]$ & $[  0.624]$ \\
+$\beta_{11}$ & $-19.285$ & $  2.318$ \\
+& $(  7.240)$ & $(  9.568)$ \\
+& $[  0.261]$ & $[  0.918]$ \\
+$\beta_{12}$ & $-19.539$ & $  3.994$ \\
+& $(  6.655)$ & $( 11.013)$ \\
+& $[  0.210]$ & $[  0.876]$ \\
+\midrule
+Trends & No & Yes \\
+Observations & $   35,662$ & $   35,662$ \\
+\bottomrule
+\end{tabular}
+\begin{threeparttable}
+\begin{tablenotes}
+\small
+\item Note: The dependent variable is the homicide rate outside home per 10k inhabitants. 
+Standard errors clustered at the state level in parentheses. 
+Wild bootstrap p-values (weighttype=webb) with 9999 replications in brackets. 
+All regressions include municipality and year fixed effects, and are weighted by municipality population in 2000. 
+Results are presented for Pernambuco, where the program was implemented in 2007. 
+The model with trend includes a cohort-specific linear trend. 
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+\end{document}
