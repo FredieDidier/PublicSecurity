@@ -541,13 +541,13 @@ twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <
        (scatter coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
        (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)12) ///
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007, replace)
 	   
-	 graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE.pdf", replace
+	 *graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE.pdf", replace
 
 * Gráfico para BA/PB (2011)
 gen coef_2011 = .
@@ -598,7 +598,7 @@ twoway (rcap ci_upper_2011 ci_lower_2011 rel_year if rel_year >= -7 & rel_year <
        (scatter coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
        (connect coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)8) ///
        title("Bahia/Paraíba (2011)") ///
@@ -645,7 +645,7 @@ twoway (rcap ci_upper_2015 ci_lower_2015 rel_year if rel_year >= -7 & rel_year <
        (scatter coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
        (connect coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relaive to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)4) ///
        title("Ceará (2015)") ///
@@ -690,7 +690,7 @@ twoway (rcap ci_upper_2016 ci_lower_2016 rel_year if rel_year >= -7 & rel_year <
        (scatter coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
        (connect coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)3) ///
        title("Maranhão (2016)") ///
@@ -772,13 +772,13 @@ twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 
        (scatter coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
        (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-6(1)12) ///
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007_trend, replace)
 	   
-	   graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE_trends.pdf", replace
+	   *graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE_trends.pdf", replace
 
 * Gráfico para BA/PB (2011) com tendência
 gen coef_2011_trend = .
@@ -829,7 +829,7 @@ twoway (rcap ci_upper_2011_trend ci_lower_2011_trend rel_year if rel_year >= -6 
        (scatter coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
        (connect coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-6(1)8) ///
        title("Bahia/Paraíba (2011)") ///
@@ -876,7 +876,7 @@ twoway (rcap ci_upper_2015_trend ci_lower_2015_trend rel_year if rel_year >= -6 
        (scatter coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
        (connect coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-6(1)4) ///
        title("Ceará (2015)") ///
@@ -921,7 +921,7 @@ twoway (rcap ci_upper_2016_trend ci_lower_2016_trend rel_year if rel_year >= -6 
        (scatter coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
        (connect coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Since Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-6(1)3) ///
        title("Maranhão (2016)") ///
