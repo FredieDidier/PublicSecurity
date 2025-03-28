@@ -8,8 +8,7 @@
 # 5. Gerar mapa de todos os municipios da amostra
 # 6. Gerar tabela descritiva
 # 7. Gerar mapa funcionários públicos
-# 8. Gerar tabela descritiva de funcionários públicos
-# 9. Gerar tabela descritiva de comparação de funcionários públicos em low e high states
+# 8. Gerar tabela descritiva de comparação de funcionários públicos em low e high states
 
 ###########
 #  Setup  #
@@ -103,17 +102,10 @@ source(paste0(GITHUB_PATH, "analysis/code/_table_descriptive_stats.R"))
 
 source(paste0(GITHUB_PATH, "analysis/code/_map_employees_municipality.R"))
 
-######################################################
-#                                         
-# 8) Gerar tabela descritiva de funcionários públicos #
-#                                         
-######################################################
-
-source(paste0(GITHUB_PATH, "analysis/code/_table_public_employees_stats.R"))
 
 ########################################################################################
 #                                         
-# 9) Gerar tabela descritiva de comparação de funcionários públicos em low e high states 
+# 8) Gerar tabela descritiva de comparação de funcionários públicos em low e high states 
 #                                         
 ########################################################################################
 
