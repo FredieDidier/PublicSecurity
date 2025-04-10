@@ -11,21 +11,38 @@ drop if municipality_code == 2300000 | municipality_code == 2600000
 ********************************************************************************
 * 2. Dummy baseada na proporção de funcionários com ensino superior (Variavel Dependente)
 ********************************************************************************
+* Preparar variável de capacidade por estado (high_cap)
 preserve
 keep if year == 2006
-* Calculando a porcentagem de funcionários com ensino superior em relação ao total
-gen porc_func_superior = (funcionarios_superior / total_func_pub_munic) * 100
-* Calculando a estatística descritiva para identificar a mediana
-sum porc_func_superior, detail
-* Criando a dummy high_cap_pc que é 1 se proporção > mediana, 0 caso contrário
-gen high_cap_pc = (porc_func_superior > r(p50))
-* Mantendo apenas as variáveis necessárias para o merge
-keep municipality_code high_cap_pc
-save "temp_high_cap_pc.dta", replace
+drop if perc_superior == .
+
+* Criando uma tabela temporária para armazenar as medianas por estado
+tempfile state_medians_cap
+tempname memhold
+postfile `memhold' str2 state double median_perc_superior using `state_medians_cap'
+
+* Calculando a mediana do perc_superior para cada estado separadamente
+levelsof state, local(states)
+foreach s of local states {
+    quietly sum perc_superior if state == "`s'", detail
+    post `memhold' ("`s'") (r(p50))
+}
+postclose `memhold'
+
+* Salvar apenas município e estado para uso posterior
+keep municipality_code state
+save "temp_muni_state.dta", replace
 restore
-* Fazendo o merge com o dataset principal
-merge m:1 municipality_code using "temp_high_cap_pc.dta", nogenerate
-erase "temp_high_cap_pc.dta"
+
+* Merge com a tabela de medianas por estado
+merge m:1 state using `state_medians_cap', nogenerate
+* Merge com a tabela de município-estado
+merge m:1 municipality_code using "temp_muni_state.dta", nogenerate
+erase "temp_muni_state.dta"
+
+* Agora criar a variável high_cap com base na mediana de cada estado
+gen high_cap_pc = (perc_superior > median_perc_superior) if perc_superior != .
+drop median_perc_superior
 
 
 ********************************************************************************
@@ -99,6 +116,6 @@ outreg2 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tab
     ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405) nocons
 	
 * Especificação 4: Todos os controles + média da proporção de funcionários com ensino superior 2004-2005
-reg high_cap_pc log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 mean_porc_func_superior_0405 if year == 2006, cluster(municipality_code)
+reg high_cap_pc log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 log_mean_porc_func_superior_0405 if year == 2006, cluster(municipality_code)
 outreg2 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/predictive_capacity.tex", tex append ///
-    ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 mean_porc_func_superior_0405) nocons
+    ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 log_mean_porc_func_superior_0405) nocons
