@@ -1,51 +1,90 @@
 ********************************************************************************
-* Event Study em uma Única Regressão (seguindo o código original)
+* Event Study
 ********************************************************************************
 
 * Load data
 use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
 drop if municipality_code == 2300000 | municipality_code == 2600000
 
-* Configurar o seed para bootstrap
+* Seed
 set seed 982638
 
-* Criar a variável de tratamento
-gen treated = 0
-replace treated = 1 if (state == "PE" & year >= 2007) |(state == "BA" & year >= 2011) | ///
-                      (state == "PB" & year >= 2011) | (state == "CE" & year >= 2015) | ///
-                      (state == "MA" & year >= 2016)
-* Criar a variável de ano de adoção (staggered treatment)
+
+* Creating year of treatment adoption variable (staggered treatment)
 gen treatment_year = 0
 replace treatment_year = 2011 if state == "BA" | state == "PB"
 replace treatment_year = 2015 if state == "CE"
 replace treatment_year = 2016 if state == "MA"
 replace treatment_year = 2007 if state == "PE"
-* Criar a variável de tempo relativo ao tratamento
+
+* Create relative year variable
 gen rel_year = year - treatment_year
 
+* Create log population variable
 gen log_pop = log(population_muni)
 
-* Definir ids para xtreg
+* Defining ids for xtreg
 xtset municipality_code year
 
-* Criar dummies para as coortes de tratamento
+* Creating dummies for treatment years
 gen t2007 = (treatment_year == 2007)  // PE
 gen t2011 = (treatment_year == 2011)  // BA, PB
 gen t2015 = (treatment_year == 2015)  // CE
 gen t2016 = (treatment_year == 2016)  // MA
-gen never = (treatment_year == 0)     // Nunca tratados
 
-* Criar dummies de ano
+* Creating dummies for years
 forvalues y = 2000/2019 {
     gen d`y' = (year == `y')
 }
 
+********************************************************************************
+* Cálculo da média da taxa de homicídios no período pré-tratamento por coorte
+********************************************************************************
+
+* Para PE (2007) - período pré-tratamento: 2000-2006
+preserve
+    keep if t2007 == 1 & year >= 2000 & year <= 2006
+    summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
+    scalar mean_pre_2007 = r(mean)
+    display "Média pré-tratamento para PE (2007): " mean_pre_2007
+restore
+
+* Para BA/PB (2011) - período pré-tratamento: 2000-2010
+preserve
+    keep if t2011 == 1 & year >= 2000 & year <= 2010
+    summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
+    scalar mean_pre_2011 = r(mean)
+    display "Média pré-tratamento para BA/PB (2011): " mean_pre_2011
+restore
+
+* Para CE (2015) - período pré-tratamento: 2000-2014
+preserve
+    keep if t2015 == 1 & year >= 2000 & year <= 2014
+    summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
+    scalar mean_pre_2015 = r(mean)
+    display "Média pré-tratamento para CE (2015): " mean_pre_2015
+restore
+
+* Para MA (2016) - período pré-tratamento: 2000-2015
+preserve
+    keep if t2016 == 1 & year >= 2000 & year <= 2015
+    summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
+    scalar mean_pre_2016 = r(mean)
+    display "Média pré-tratamento para MA (2016): " mean_pre_2016
+restore
+
+* Opcionalmente, salvar os resultados em uma tabela
+matrix media_pre = (mean_pre_2007 \ mean_pre_2011 \ mean_pre_2015 \ mean_pre_2016)
+matrix rownames media_pre = "PE (2007)" "BA/PB (2011)" "CE (2015)" "MA (2016)"
+matrix colnames media_pre = "Média pré-tratamento"
+matrix list media_pre
+
 ******************************************************************************
-* Criar dummies de evento para todas as coortes (seguindo formato original)
+* Creating event dummies for all cohorts
 ******************************************************************************
 
-* Para coorte 2007 (PE)
-* Pré-tratamento: definir até t-7 como no código original
+* For Cohort 2007 (PE)
+* Pre-treatment: 
 gen t_7_2007 = t2007 * d2000
 gen t_6_2007 = t2007 * d2001
 gen t_5_2007 = t2007 * d2002
@@ -53,8 +92,8 @@ gen t_4_2007 = t2007 * d2003
 gen t_3_2007 = t2007 * d2004
 gen t_2_2007 = t2007 * d2005
 gen t_1_2007 = t2007 * d2006
-* Omitir o ano do tratamento (2007)
-* Pós-tratamento
+
+* Post-treatment
 gen t1_2007 = t2007 * d2008
 gen t2_2007 = t2007 * d2009
 gen t3_2007 = t2007 * d2010
@@ -68,8 +107,8 @@ gen t10_2007 = t2007 * d2017
 gen t11_2007 = t2007 * d2018
 gen t12_2007 = t2007 * d2019
 
-* Para coorte 2011 (BA, PB)
-* Pré-tratamento
+* For Cohort 2011 (BA, PB)
+* Pre-treatment: 
 gen t_7_2011 = t2011 * d2004
 gen t_6_2011 = t2011 * d2005
 gen t_5_2011 = t2011 * d2006
@@ -77,8 +116,7 @@ gen t_4_2011 = t2011 * d2007
 gen t_3_2011 = t2011 * d2008
 gen t_2_2011 = t2011 * d2009
 gen t_1_2011 = t2011 * d2010
-* Omitir o ano do tratamento (2011)
-* Pós-tratamento
+* Post-treatment: 
 gen t1_2011 = t2011 * d2012
 gen t2_2011 = t2011 * d2013
 gen t3_2011 = t2011 * d2014
@@ -88,8 +126,8 @@ gen t6_2011 = t2011 * d2017
 gen t7_2011 = t2011 * d2018
 gen t8_2011 = t2011 * d2019
 
-* Para coorte 2015 (CE)
-* Pré-tratamento
+* For Cohort 2015 (CE)
+* Pre-treatment
 gen t_7_2015 = t2015 * d2008
 gen t_6_2015 = t2015 * d2009
 gen t_5_2015 = t2015 * d2010
@@ -97,15 +135,14 @@ gen t_4_2015 = t2015 * d2011
 gen t_3_2015 = t2015 * d2012
 gen t_2_2015 = t2015 * d2013
 gen t_1_2015 = t2015 * d2014
-* Omitir o ano do tratamento (2015)
-* Pós-tratamento
+* Post-treatment
 gen t1_2015 = t2015 * d2016
 gen t2_2015 = t2015 * d2017
 gen t3_2015 = t2015 * d2018
 gen t4_2015 = t2015 * d2019
 
-* Para coorte 2016 (MA)
-* Pré-tratamento
+* For Cohort 2016 (MA)
+* Pre-treatment
 gen t_7_2016 = t2016 * d2009
 gen t_6_2016 = t2016 * d2010
 gen t_5_2016 = t2016 * d2011
@@ -113,17 +150,15 @@ gen t_4_2016 = t2016 * d2012
 gen t_3_2016 = t2016 * d2013
 gen t_2_2016 = t2016 * d2014
 gen t_1_2016 = t2016 * d2015
-* Omitir o ano do tratamento (2016)
-* Pós-tratamento
+* Post-treatment
 gen t1_2016 = t2016 * d2017
 gen t2_2016 = t2016 * d2018
 gen t3_2016 = t2016 * d2019
 
 ********************************************************************************
-* Parte 1: Event Study em uma Única Regressão
+* Part 1: Event Study no trends
 ********************************************************************************
 
-* Modelo com todas as variáveis (similar ao código original)
 xtreg taxa_homicidios_total_por_100m_1 ///
     t_7_2007 t_6_2007 t_5_2007 t_4_2007 t_3_2007 t_2_2007 t_1_2007 ///
     t1_2007 t2_2007 t3_2007 t4_2007 t5_2007 t6_2007 t7_2007 t8_2007 t9_2007 t10_2007 t11_2007 t12_2007 ///
@@ -135,13 +170,13 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     t1_2016 t2_2016 t3_2016 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
 
-* Salvar o número de observações
+* Saving number of obs
 sca nobs = e(N)
 
-* Salvar os coeficientes completos
+* Saving coeficients
 matrix betas = e(b)
 
-* Extrair coeficientes para cada coorte
+* Extracting coefs for each cohort
 * Para PE (2007)
 matrix betas2007 = betas[1, 1..19]
 * Para BA/PB (2011)
@@ -151,21 +186,21 @@ matrix betas2015 = betas[1, 35..45]
 * Para MA (2016)
 matrix betas2016 = betas[1, 46..55]
 
-* Extrair erros padrão
+* Extracting sd errors
 mata st_matrix("A", sqrt(st_matrix("e(V)")))
 mata st_matrix("A", diagonal(st_matrix("A")))
 matrix A = A'
 
-* Para PE (2007)
+* For PE (2007)
 matrix vars2007 = A[1, 1..19]
-* Para BA/PB (2011)
+* For BA/PB (2011)
 matrix vars2011 = A[1, 20..34]
-* Para CE (2015)
+* For CE (2015)
 matrix vars2015 = A[1, 35..45]
-* Para MA (2016)
+* For MA (2016)
 matrix vars2016 = A[1, 46..55]
 
-* Calcular p-values usando boottest com Webb weights
+* Calculate p-values using boottest
 boottest {t_7_2007} {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
         {t1_2007} {t2_2007} {t3_2007} {t4_2007} {t5_2007} {t6_2007} {t7_2007} {t8_2007} {t9_2007} {t10_2007} {t11_2007} {t12_2007} ///
         {t_7_2011} {t_6_2011} {t_5_2011} {t_4_2011} {t_3_2011} {t_2_2011} {t_1_2011} ///
@@ -176,7 +211,7 @@ boottest {t_7_2007} {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_
         {t1_2016} {t2_2016} {t3_2016}, ///
         noci cluster(state_code) reps(999) weighttype(webb) seed(982638)
 
-* Guardar p-values para cada coorte
+* Storing p-values for each cohort
 matrix pvalue2007 = r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), r(p_7), ///
                    r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18), r(p_19)
 
