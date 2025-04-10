@@ -105,6 +105,43 @@ gen delcap2 = (delcap == 2)
 gen delcap3 = (delcap == 3)
 gen delcap4 = (delcap == 4)
 
+********************************************************************************
+* Cálculo da média da taxa de homicídios por categoria delcap para PE (2007)
+********************************************************************************
+
+* Para PE (2007) - período pré-tratamento: 2000-2006
+preserve
+    * Manter apenas a coorte de PE e o período pré-tratamento
+    keep if t2007 == 1 & year >= 2000 & year <= 2006
+
+    * Calcular média para cada categoria de delcap
+    * Categoria 1: low cap & low delegacia
+    quietly summarize taxa_homicidios_total_por_100m_1 if delcap == 1 [aw = population_2000_muni], detail
+    scalar mean_pre_2007_delcap1 = r(mean)
+    display "Média pré-tratamento para PE (2007) - delcap1 (low cap & low delegacia): " mean_pre_2007_delcap1
+    
+    * Categoria 2: low cap & high delegacia
+    quietly summarize taxa_homicidios_total_por_100m_1 if delcap == 2 [aw = population_2000_muni], detail
+    scalar mean_pre_2007_delcap2 = r(mean)
+    display "Média pré-tratamento para PE (2007) - delcap2 (low cap & high delegacia): " mean_pre_2007_delcap2
+    
+    * Categoria 3: high cap & low delegacia
+    quietly summarize taxa_homicidios_total_por_100m_1 if delcap == 3 [aw = population_2000_muni], detail
+    scalar mean_pre_2007_delcap3 = r(mean)
+    display "Média pré-tratamento para PE (2007) - delcap3 (high cap & low delegacia): " mean_pre_2007_delcap3
+    
+    * Categoria 4: high cap & high delegacia
+    quietly summarize taxa_homicidios_total_por_100m_1 if delcap == 4 [aw = population_2000_muni], detail
+    scalar mean_pre_2007_delcap4 = r(mean)
+    display "Média pré-tratamento para PE (2007) - delcap4 (high cap & high delegacia): " mean_pre_2007_delcap4
+
+    * Opcionalmente, exibir todas em uma matriz para comparação
+    matrix mean_pre_2007_delcap = (mean_pre_2007_delcap1 \ mean_pre_2007_delcap2 \ mean_pre_2007_delcap3 \ mean_pre_2007_delcap4)
+    matrix rownames mean_pre_2007_delcap = "Low cap & Low del" "Low cap & High del" "High cap & Low del" "High cap & High del"
+    matrix colnames mean_pre_2007_delcap = "Média pré-tratamento"
+    matrix list mean_pre_2007_delcap
+	restore
+
 ******************************************************************************
 * Criar dummies de evento para PE (2007) interagidas com as 4 categorias
 ******************************************************************************
