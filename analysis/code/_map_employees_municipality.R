@@ -22,33 +22,34 @@ map_data <- delegacias %>%
   filter(state %in% estados_nordeste) %>%  # Filtrar apenas estados do Nordeste
   mutate(
     # Fração de funcionários com ensino superior
-    fracao_superior = (funcionarios_superior / total_func_pub_munic) * 100
+    perc_superior = (funcionarios_superior / total_func_pub_munic) * 100
   )
 
-# Calcular a mediana da fração de funcionários com ensino superior
-mediana_superior <- median(map_data$fracao_superior, na.rm = TRUE)
-
-# Classificar estados em relação à mediana
+# Classificar municípios em intervalos
 map_data <- map_data %>%
   mutate(
-    categoria_mediana = case_when(
-      is.na(fracao_superior) ~ "Not Available",
-      fracao_superior >= mediana_superior ~ "Above Median",
-      TRUE ~ "Below Median"
+    categoria = case_when(
+      is.na(perc_superior) ~ "Not Available",
+      perc_superior > 60 ~ "Above 60%",
+      perc_superior > 40 ~ "41-60%",
+      perc_superior > 20 ~ "21-40%",
+      TRUE ~ "0-20%"
     )
   )
 
-# Definir cores para abaixo e acima da mediana - azul escuro menos intenso para as siglas em preto ficarem visíveis
+# Definir cores para os diferentes intervalos
 cores_categorias <- c(
-  "Below Median" = "#99CCFF",  # Azul Claro
-  "Above Median" = "#4D94FF",  # Azul Escuro (mais claro para contraste com as siglas pretas)
+  "0-20%" = "#E6F2FF",      # Azul muito claro
+  "21-40%" = "#99CCFF",     # Azul claro
+  "41-60%" = "#4D94FF",     # Azul médio
+  "Above 60%" = "#0066CC",  # Azul escuro
   "Not Available" = "#D3D3D3"  # Cinza para dados não disponíveis
 )
 
-# Garantir que a categoria_mediana seja um fator com níveis definidos
-map_data$categoria_mediana <- factor(
-  map_data$categoria_mediana, 
-  levels = c("Below Median", "Above Median", "Not Available")
+# Garantir que a categoria seja um fator com níveis definidos (ordem crescente)
+map_data$categoria <- factor(
+  map_data$categoria, 
+  levels = c("0-20%", "21-40%", "41-60%", "Above 60%", "Not Available")
 )
 
 # Criar dataframe com as posições manuais das siglas dos estados
@@ -65,11 +66,11 @@ estados_agregados <- map_data %>%
   summarise(geometry = st_union(geometry)) %>%
   ungroup()
 
-# Criar o mapa com categorias baseadas na mediana e siglas dos estados
+# Criar o mapa com categorias baseadas nos intervalos e siglas dos estados
 mapa_superior <- ggplot() +
-  # Camada base com a categoria (acima/abaixo da mediana)
+  # Camada base com as categorias por intervalo
   geom_sf(data = map_data,
-          aes(fill = categoria_mediana),
+          aes(fill = categoria),
           color = "white",
           size = 0.1) +
   # Adicionar bordas dos estados
@@ -104,7 +105,7 @@ ggsave(
   filename = paste0(GITHUB_PATH, "analysis/output/maps/map_public_employees_education_2006.png"),
   plot = mapa_superior,
   width = 12,  # Largura em polegadas
-  height = 8,  # Altura em polegadas
+  height = 8,   # Altura em polegadas
   dpi = 300,
   bg = "white"  # Alta resolução para publicação
 )

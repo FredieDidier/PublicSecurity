@@ -28,25 +28,25 @@ if("UF" %in% colnames(delegacias)) {
 delegacias <- delegacias %>%
   filter(!!sym(estado_coluna) %in% estados_nordeste)
 
-# Calcular a mediana da distância
-mediana_distancia <- median(delegacias$distancia_delegacia_km, na.rm = TRUE)
-
-# Criar variável categórica para as distâncias (abaixo e acima da mediana)
+# Criar variável categórica para as distâncias em intervalos específicos
 delegacias <- delegacias %>%
-  mutate(dist_categoria = ifelse(distancia_delegacia_km <= mediana_distancia, 
-                                 "Below Median", 
-                                 "Above Median"))
+  mutate(dist_categoria = case_when(
+    distancia_delegacia_km <= 15 ~ "0-15 km",
+    distancia_delegacia_km <= 30 ~ "15-30 km",
+    TRUE ~ "Above 30 km"
+  ))
 
 # Garantir que as categorias estejam na ordem desejada usando factor
 delegacias$dist_categoria <- factor(
   delegacias$dist_categoria,
-  levels = c("Below Median", "Above Median")
+  levels = c("0-15 km", "15-30 km", "Above 30 km")
 )
 
 # Definindo paleta de cores em tons de laranja para boa visibilidade das siglas em preto
 cores_categorias <- c(
-  "Below Median" = "#FFCC80",  # Laranja claro
-  "Above Median" = "#FF8A65"   # Laranja mais escuro
+  "0-15 km" = "#FFECB3",     # Laranja muito claro
+  "15-30 km" = "#FFB74D",    # Laranja médio
+  "Above 30 km" = "#E65100" # Laranja escuro
 )
 
 # Criar agregação por estado para adicionar bordas
@@ -64,7 +64,7 @@ state_labels <- data.frame(
 
 # Criar o mapa
 map = ggplot() +
-  # Camada base com a categoria (acima/abaixo da mediana)
+  # Camada base com a categoria de distância
   geom_sf(data = delegacias,
           aes(fill = dist_categoria),
           color = "white",
@@ -83,8 +83,7 @@ map = ggplot() +
   # Usando paleta de cores laranja
   scale_fill_manual(
     values = cores_categorias,
-    name = "Distance to Nearest Police Station (km)",
-    na.value = "#D3D3D3",
+    name = "Distance to Nearest\nPolice Station",
     drop = FALSE  # Garantir que todas as categorias apareçam na legenda mesmo se não tiverem dados
   ) +
   theme_void() +

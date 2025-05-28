@@ -574,7 +574,7 @@ gen ci_lower_2007 = coef_2007 - 1.96 * se_2007
 * Gráfico para PE (2007)
 twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
+       (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -631,7 +631,7 @@ gen ci_lower_2011 = coef_2011 - 1.96 * se_2011
 * Gráfico para BA/PB (2011)
 twoway (rcap ci_upper_2011 ci_lower_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy)) ///
+       (connect coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2011 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -678,9 +678,9 @@ gen ci_lower_2015 = coef_2015 - 1.96 * se_2015
 * Gráfico para CE (2015)
 twoway (rcap ci_upper_2015 ci_lower_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy)) ///
+       (connect coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2015 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Relaive to Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)4) ///
        title("Ceará (2015)") ///
@@ -723,17 +723,16 @@ gen ci_lower_2016 = coef_2016 - 1.96 * se_2016
 * Gráfico para MA (2016)
 twoway (rcap ci_upper_2016 ci_lower_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy)) ///
+       (connect coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2016 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
-       ytitle("Coefficient") xtitle("Years Relative Treatment") ///
+       ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
        xlabel(-7(1)3) ///
        title("Maranhão (2016)") ///
        legend(off) name(graph_2016, replace)
 
 * Combinar todos os gráficos
-graph combine graph_2007 graph_2011 graph_2015 graph_2016, ///
-    rows(2) cols(2)
+graph combine graph_2007 graph_2011 graph_2015 graph_2016, rows(2) cols(2)
 
 * Salvar o gráfico combinado
 graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/main_event_study.pdf", replace
@@ -805,7 +804,7 @@ gen ci_lower_2007_trend = coef_2007_trend - 1.96 * se_2007_trend
 * Gráfico para PE (2007) com tendência
 twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
+       (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -862,7 +861,7 @@ gen ci_lower_2011_trend = coef_2011_trend - 1.96 * se_2011_trend
 * Gráfico para BA/PB (2011) com tendência
 twoway (rcap ci_upper_2011_trend ci_lower_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy)) ///
+       (connect coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2011_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -909,7 +908,7 @@ gen ci_lower_2015_trend = coef_2015_trend - 1.96 * se_2015_trend
 * Gráfico para CE (2015) com tendência
 twoway (rcap ci_upper_2015_trend ci_lower_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy)) ///
+       (connect coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2015_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -954,7 +953,7 @@ gen ci_lower_2016_trend = coef_2016_trend - 1.96 * se_2016_trend
 * Gráfico para MA (2016) com tendência
 twoway (rcap ci_upper_2016_trend ci_lower_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy)) ///
+       (connect coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2016_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Relative to Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///

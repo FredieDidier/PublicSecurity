@@ -471,7 +471,7 @@ gen ci_lower_2007 = coef_2007 - 1.96 * se_2007
 * Gráfico para PE (2007)
 twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
+       (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Since Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
@@ -548,7 +548,7 @@ gen ci_lower_2007_trend = coef_2007_trend - 1.96 * se_2007_trend
 * Gráfico para PE (2007) com tendência
 twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
-       (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
+       (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year == 0, msymbol(diamond) mcolor(red) msize(large)), ///
        ytitle("Coefficient") xtitle("Years Since Treatment") ///
        xline(0, lpattern(dash) lcolor(red)) yline(0, lpattern(dash) lcolor(black)) ///
