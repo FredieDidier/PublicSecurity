@@ -1,29 +1,32 @@
-# Carregar pacotes necessários
+# Load necessary packages
 library(dplyr)
 library(sf)
 library(ggplot2)
 library(tidyr)
 library(janitor)
 
-# Filtrar códigos específicos
+# Loading Main Data
+load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
+
+# Filter specific codes
 main_data <- main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000)
 
-# Criar dataframe com informações do tratamento
+# Create dataframe with treatment information
 treatment_info <- data.frame(
   treatment_year = c(2007, 2011, 2011, 2015, 2016),
   state = c("PE", "BA", "PB", "CE", "MA")
 )
 
-# Ler dados das delegacias
+# Read police station data
 delegacias = st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp")) %>%
   select(CD_GEOC) %>%
   clean_names() %>%
   rename(municipality_code = cd_geoc) %>%
   mutate(municipality_code = as.integer(municipality_code))
 
-# Criar map_data
+# Create map_data
 map_data <- delegacias %>%
   left_join(main_data, by = "municipality_code") %>%
   left_join(treatment_info, by = "state") %>%
@@ -34,27 +37,27 @@ map_data <- delegacias %>%
     )
   )
 
-# Criar dataframe com as posições manuais das siglas dos estados
+# Create dataframe with manual positions for state abbreviations
 state_labels <- data.frame(
   state = c("MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA"),
   x = c(-44.5, -42.5, -40.0, -36.5, -36.5, -37.5, -36.5, -37.5, -41.0),
   y = c(-5.0, -7.0, -5.0, -5.5, -7.0, -8.5, -9.5, -10.5, -12.0)
 )
 
-# Criar agregação por estado para adicionar bordas
+# Create aggregation by state to add borders
 estados_agregados <- map_data %>%
   group_by(state) %>%
   summarise(geometry = st_union(geometry)) %>%
   ungroup()
 
-# Criar o mapa
+# Create the map
 map = ggplot() +
   # Base map layer
   geom_sf(data = map_data, 
           aes(fill = treatment_status), 
           color = "white", 
           size = 0.2) +
-  # Adicionar bordas dos estados
+  # Add state borders
   geom_sf(data = estados_agregados,
           fill = NA,
           color = "black",
@@ -63,7 +66,7 @@ map = ggplot() +
   geom_text(data = state_labels,
             aes(x = x, y = y, label = state),
             color = "black",
-            size = 6,  # Aumentei o tamanho para melhor legibilidade
+            size = 6,  # Increased size for better readability
             fontface = "bold") +
   # Customize colors
   scale_fill_manual(

@@ -1,7 +1,7 @@
 # Script to run codes that produce results
 # Structure:
 # 1) Code that cleans Delegacias data
-#
+# Delegacias = Police Stations in Portuguese
 
 
 ###########
@@ -19,11 +19,9 @@ GITHUB_PATH <- "/Users/Fredie/Documents/GitHub/PublicSecurity/"
 DROPBOX_PATH <- "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
 # Make sure to set all macro globals
-inpdir <- file.path(DROPBOX_PATH, "build", "delegacias", "input")
-outdir <- file.path(DROPBOX_PATH, "build", "delegacias", "output")
-codedir <- file.path(GITHUB_PATH, "build",  "delegacias", "code")
-workfile_dir <- file.path(GITHUB_PATH, "build",  "workfile")
-workfile_dir_out <- file.path(DROPBOX_PATH, "build",  "workfile", "output")
+outdir <- paste0(DROPBOX_PATH, "build/delegacias/output")
+codedir <- paste0(GITHUB_PATH, "build/delegacias/code")
+
 
 ##################################
 #                                #

@@ -1,13 +1,13 @@
 # I use OpenStreetMap in order to download most close police station in municipalities in Brazil
 
-# Carregar as bibliotecas necessárias
+# Loading required libraries
 library(sf)
 library(osmdata)
 library(tidyverse)
 library(units)
 library(janitor)
 
-# Carregar os dados dos municípios
+# Loading municipality data
 # Define the dictionary for UF codes and abbreviations
 uf_dict <- c("21" = "MA", "22" = "PI", "23" = "CE", 
              "24" = "RN", "25" = "PB", "26" = "PE", "27" = "AL", "28" = "SE", 
@@ -29,30 +29,30 @@ read_uf_shapefile <- function(uf_code, uf_abbr) {
 area <- uf_dict %>%
   imap_dfr(~ read_uf_shapefile(uf_code = .y, uf_abbr = .x))
 
-# Verificar e definir CRS se necessário
+# Veridying and defining CRS if necessary
 if (is.na(st_crs(area))) {
   warning("CRS dos municípios não definido. Assumindo EPSG:4326 (WGS84).")
   st_crs(area) <- 4326
 }
 
-# Obter a extensão (bounding box) dos municípios
+# Get bounding box from municipalities
 bbox <- st_bbox(area)
 
-# Baixar as estações de polícia do OpenStreetMap
+# Download police stations from OpenStreetMap
 delegacias <- opq(bbox) %>%
   add_osm_feature(key = "amenity", value = "police") %>%
   osmdata_sf()
 
-# Extrair os pontos das delegacias
+# Extract police stations points
 delegacias_pontos <- delegacias$osm_points
 
-# Garantir que os sistemas de coordenadas sejam os mesmos
+# Ensure coordinate system is the same
 if (!is.na(st_crs(delegacias_pontos)) && !is.na(st_crs(area))) {
   delegacias_pontos <- st_transform(delegacias_pontos, st_crs(area))
 } else {
   stop("Não foi possível definir o mesmo CRS para delegacias e municípios. Verifique os dados de entrada.")
 }
-# Função para encontrar a delegacia mais próxima e calcular a distância em km
+# Function to find nearest police station and calculate distance
 encontrar_delegacia_mais_proxima <- function(municipio_geom, delegacias) {
   if (is.null(delegacias) || nrow(delegacias) == 0) {
     return(c(id_delegacia = NA, distancia_km = NA))
@@ -65,7 +65,7 @@ encontrar_delegacia_mais_proxima <- function(municipio_geom, delegacias) {
     return(c(id_delegacia = NA, distancia_km = NA))
   }
   
-  # Converter a distância para km
+  # Convert distance to km
   distancia_km <- set_units(min(distances), "km")
   
   return(c(
@@ -74,7 +74,7 @@ encontrar_delegacia_mais_proxima <- function(municipio_geom, delegacias) {
   ))
 }
 
-# Aplicar a função a cada município
+# Apply function to all municipalities
 delegacias <- area %>%
   rowwise() %>%
   mutate(
@@ -88,7 +88,7 @@ delegacias <- area %>%
 
 delegacias$distancia_delegacia_km <- as.numeric(delegacias$distancia_delegacia_km)
 
-# Arredondar a distância para 2 casas decimais
+# Rounding diatnce to two decimal points
 delegacias$distancia_delegacia_km <- round(delegacias$distancia_delegacia_km, 2)
 
 # Save map version of the data
@@ -103,5 +103,5 @@ delegacias = delegacias %>%
   st_drop_geometry() %>%
   as.data.table()
 
-# Salvar os delegacias
+# Saving dataset
 save(delegacias, file = paste0(DROPBOX_PATH, "build/delegacias/output/delegacias.RData"))

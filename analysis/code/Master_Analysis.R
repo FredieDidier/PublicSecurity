@@ -1,24 +1,25 @@
-# Script para rodar os codigos que geram as bases prontas para produzir resultados
-# Estrutura:
+# Script to run codes that generate results
+# Structure:
 #
-# 1. Gerar gráficos de taxa de homicidio.
-# 2. Gerar mapa de proximidade a delegacias.
-# 3. Gerar Main Data em .dta
-# 4. Gerar gráficos de residuos de taxa de homicidio
-# 5. Gerar mapa de todos os municipios da amostra
-# 6. Gerar tabela descritiva
-# 7. Gerar mapa funcionários públicos
-# 8. Gerar tabela descritiva de comparação de funcionários públicos
+# 1. Generate Homicide Rate Graph.
+# 2. Generate Police Stations Map.
+# 3. Generate Main Data Dataset in .dta.
+# 4. Generate Residuals Homicide Rate Graph.
+# 5.  Generate All Municipalities Map.
+# 6. Generate Descriptive Statistics Table.
+# 7. Generate Public Employees Map.
+# 8. Generate Descriptive Statistics Table - Local Capacity and Police Acessibility.
+# 9. Generate Treated Municipalities Homicide Rate Map.
 
 ###########
 #  Setup  #
 ###########
 
-# Limpeza do environnment
+# Cleaning Environment
 
 rm(list = ls())
 
-# Carregar pacotes
+# Loading libraries
 library(dplyr)     
 library(stringr)   
 library(haven)    
@@ -43,28 +44,25 @@ DROPBOX_PATH <- "/Users/fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 codedir <- file.path(GITHUB_PATH, "analysis",  "code")
 outdir <- file.path(GITHUB_PATH, "analysis",  "output")
 
-# Loading Main Data
-load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
-
 ###########################################
 #                                         #
-# 1) Gerar Graficos de taxa de homicidio
+# 1) Generate Homicide Rate Graph
 #                                         #
 ###########################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_graph_homicide_rate.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure2a.R"))
 
 ###########################################
 #                                         #
-# 2) Gerar mapa de proximidade a delegacias
+# 2) Generate Police Stations Map
 #                                         #
 ###########################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_map_police_station_proximity.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure3b.R"))
 
 ###########################################
 #                                         #
-# 3) Gerar Main Data em .dta
+# 3) Generate Main Data Dataset in .dta
 #                                         #
 ###########################################
 
@@ -72,42 +70,49 @@ source(paste0(GITHUB_PATH, "analysis/code/_main_data_dta.R"))
 
 ######################################################
 #                                         
-# 4) Gerar gráficos de residuos de taxa de homicidio #
+# 4) Generate Residuals Homicide Rate Graph           #
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_graph_residuals_homicide_rate.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure2b.R"))
 
 ######################################################
 #                                         
-# 5) Gerar mapa de todos os municipios da amostra    #
+# 5) Generate All Municipalities Map                 #
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_map_all_municipalities.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure1b.R"))
 
 ######################################################
 #                                         
-# 6) Gerar tabela descritiva                         #
+# 6) Generate Descriptive Statistics Table           #
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_table_descriptive_stats.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_tableA.3.R"))
 
 ######################################################
 #                                         
-# 7) Gerar mapa de funcionários públicos              #
+# 7) Generate Public Employees Map                   #
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_map_employees_municipality.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure3a.R"))
 
 
 ########################################################################################
 #                                         
-# 8) Gerar tabela descritiva de comparação de funcionários públicos 
+# 8) Generate Descriptive Statistics Table - Local Capacity and Police Acessibility 
 #                                         
 ########################################################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_table_cap_del_comparison.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_tableA.2.R"))
 
+########################################################################################
+#                                         
+# 9) Generate Treated Municipalities Homicide Rate Map
+#                                         
+########################################################################################
+
+source(paste0(GITHUB_PATH, "analysis/code/_figureA.1.R"))

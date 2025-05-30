@@ -1,15 +1,15 @@
-# Código para criar uma tabela de distribuição das variáveis contínuas
-# Comparando estados tratados e não tratados
+# Code to create a distribution table of continuous variables
+# Comparing treated and non-treated states
 
 library(dplyr)
 library(tidyr)
 library(xtable)
 
-# 1. Filtrar apenas para o ano de 2006 (linha de base antes do tratamento)
+# 1. Filter only for year 2006 (baseline before treatment)
 balance_data <- main_data %>%
   filter(year == 2006)
 
-# 2. Criar variável de tratamento
+# 2. Create treatment variable
 balance_data <- balance_data %>%
   mutate(
     treatment_status = case_when(
@@ -22,13 +22,13 @@ balance_data <- balance_data %>%
     ever_treated = ifelse(state %in% c("PE", "BA", "PB", "CE", "MA"), "Treated", "Control")
   )
 
-# 3. Variáveis de interesse
+# 3. Variables of interest
 balance_vars <- c(
-  "perc_superior",                # Capacidade administrativa
-  "distancia_delegacia_km"        # Distância à delegacia
+  "perc_superior",                # Administrative capacity
+  "distancia_delegacia_km"        # Distance to police station
 )
 
-# 4. Função para calcular estatísticas descritivas detalhadas
+# 4. Function to calculate detailed descriptive statistics
 calculate_distribution_stats <- function(data, var_name, group_var = "ever_treated") {
   result <- data %>%
     group_by(across(all_of(group_var))) %>%
@@ -48,14 +48,14 @@ calculate_distribution_stats <- function(data, var_name, group_var = "ever_treat
       values_from = c(n, mean, sd, min, p25, median, p75, max)
     ) %>%
     mutate(
-      # Adicionar testes estatísticos
+      # Add statistical tests
       mean_diff = mean_Treated - mean_Control,
       mean_pvalue = t.test(
         data[[var_name]][data[[group_var]] == "Treated"],
         data[[var_name]][data[[group_var]] == "Control"]
       )$p.value,
       median_diff = median_Treated - median_Control,
-      # Teste de Wilcoxon para medianas
+      # Wilcoxon test for medians
       median_pvalue = wilcox.test(
         data[[var_name]][data[[group_var]] == "Treated"],
         data[[var_name]][data[[group_var]] == "Control"]
@@ -66,12 +66,12 @@ calculate_distribution_stats <- function(data, var_name, group_var = "ever_treat
   return(result)
 }
 
-# 5. Calcular estatísticas para cada variável
+# 5. Calculate statistics for each variable
 distribution_stats <- lapply(balance_vars, function(var) {
   calculate_distribution_stats(balance_data, var)
 }) %>% bind_rows()
 
-# 6. Adicionar estatísticas por estado (para mostrar a variação entre estados)
+# 6. Add statistics by state (to show variation between states)
 state_stats <- balance_data %>%
   group_by(state) %>%
   summarize(
@@ -82,7 +82,7 @@ state_stats <- balance_data %>%
            .names = "{.col}_{.fn}")
   )
 
-# 7. Formatar para LaTeX
+# 7. Format for LaTeX
 var_names <- c(
   "perc_superior" = "Percentage of Municipality Public Employees with Higher Education",
   "distancia_delegacia_km" = "Distance to Nearest Police Station (km)"
@@ -101,7 +101,7 @@ distribution_stats <- distribution_stats %>%
                                              as.character(round(median_pvalue, 3)))))
   )
 
-# 8. Gerar tabela LaTeX
+# 8. Generate LaTeX table
 latex_distribution <- "\\begin{table}[htbp]
 \\centering
 \\caption{Distribution of Key Variables Between Treatment and Control Groups (2006)}
@@ -114,7 +114,7 @@ latex_distribution <- "\\begin{table}[htbp]
 Variable & Treated & Control & Treated & Control & Treated & Control & Mean & Median \\\\
 \\midrule\n"
 
-# Adicionar cada variável
+# Add each variable
 for (i in 1:nrow(distribution_stats)) {
   row <- distribution_stats[i,]
   line <- paste0(
@@ -131,7 +131,7 @@ for (i in 1:nrow(distribution_stats)) {
   latex_distribution <- paste0(latex_distribution, line, "\n")
 }
 
-# Completar a tabela
+# Complete the table
 latex_distribution <- paste0(latex_distribution, "\\midrule
 Number of Municipalities & ", distribution_stats$n_Treated[1], " & ", distribution_stats$n_Control[1], " & & & & & & \\\\
 \\bottomrule
@@ -142,7 +142,7 @@ Number of Municipalities & ", distribution_stats$n_Treated[1], " & ", distributi
 }
 \\end{table}")
 
-# 9. Tabela adicional mostrando distribuições por estado
+# 9. Additional table showing distributions by state
 latex_state_distribution <- "\\begin{table}[htbp]
 \\centering
 \\caption{Distribution of Key Variables by State (2006)}
@@ -155,7 +155,7 @@ latex_state_distribution <- "\\begin{table}[htbp]
 State & Mean (SD) & Median & Mean (SD) & Median \\\\
 \\midrule\n"
 
-# Adicionar cada estado
+# Add each state
 for (i in 1:nrow(state_stats)) {
   row <- state_stats[i,]
   line <- paste0(
@@ -168,7 +168,7 @@ for (i in 1:nrow(state_stats)) {
   latex_state_distribution <- paste0(latex_state_distribution, line, "\n")
 }
 
-# Completar a tabela
+# Complete the table
 latex_state_distribution <- paste0(latex_state_distribution, "\\bottomrule
 \\end{tabular}
 \\parbox{\\textwidth}{
@@ -177,13 +177,13 @@ latex_state_distribution <- paste0(latex_state_distribution, "\\bottomrule
 }
 \\end{table}")
 
-# 10. Salvar tabelas
+# 10. Save tables
 output_dir <- paste0(GITHUB_PATH, "analysis/output/tables/")
 writeLines(latex_distribution, paste0(output_dir, "variables_distribution.tex"))
 writeLines(latex_state_distribution, paste0(output_dir, "state_distribution.tex"))
 
-# 11. Cálculo adicional: Percentual de sobreposição entre tratados e controles
-# Isso pode ajudar a justificar o uso de mediana por estado
+# 11. Additional calculation: Percentage of overlap between treated and controls
+# This can help justify the use of median by state
 overlap_stats <- data.frame(
   variable = character(),
   overlap_percent = numeric(),
@@ -191,27 +191,27 @@ overlap_stats <- data.frame(
 )
 
 for (var in balance_vars) {
-  # Calcular os ranges
+  # Calculate ranges
   treated_range <- range(balance_data[[var]][balance_data$ever_treated == "Treated"], na.rm = TRUE)
   control_range <- range(balance_data[[var]][balance_data$ever_treated == "Control"], na.rm = TRUE)
   
-  # Calcular sobreposição
+  # Calculate overlap
   overlap_min <- max(treated_range[1], control_range[1])
   overlap_max <- min(treated_range[2], control_range[2])
   
-  # Percentual do range total que se sobrepõe
+  # Percentage of total range that overlaps
   total_range <- max(treated_range[2], control_range[2]) - min(treated_range[1], control_range[1])
   overlap_range <- max(0, overlap_max - overlap_min)
   overlap_percent <- (overlap_range / total_range) * 100
   
-  # Adicionar resultados
+  # Add results
   overlap_stats <- rbind(overlap_stats, data.frame(
     variable = var,
     overlap_percent = overlap_percent
   ))
 }
 
-# Imprimir informação de sobreposição - útil para o texto
+# Print overlap information - useful for the text
 print(overlap_stats)
 
 cat("LaTeX tables saved to:", output_dir)

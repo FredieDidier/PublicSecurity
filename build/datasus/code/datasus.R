@@ -36,20 +36,20 @@ sim_do$sigla_uf_code_residencia <- as.numeric(substr(sim_do$id_municipio_residen
 sim_do = sim_do %>%
   relocate(ano, sigla_uf, sigla_uf_code_residencia)
 
-# Criar o dicionário de correspondência entre o código da UF e a sigla da UF
+# Matching state code to state abbreviation
 uf_dict <- c("21" = "MA", "22" = "PI", "23" = "CE", 
              "24" = "RN", "25" = "PB", "26" = "PE", "27" = "AL", "28" = "SE", 
              "29" = "BA")
 
 sim_do <- sim_do %>%
   mutate(
-    # Extrair os dois primeiros dígitos de 'id_municipio_ocorrencia'
+    # Extract first two digits of 'id_municipio_ocorrencia' (municipality that happened the homicide)
     code_ocorrencia = substr(id_municipio_ocorrencia, 1, 2),
-    # Verificar se o 'id_municipio_ocorrencia' é válido e diferente do código de residência
+    # Verify if 'id_municipio_ocorrencia' is valid and different from code of residency (municipality where the victim lived)
     sigla_uf_code_ocorrencia = ifelse(
       !is.na(id_municipio_ocorrencia), 
-      uf_dict[code_ocorrencia],  # Associar ao UF correto se existir código
-      NA_character_  # Manter como NA caso não exista
+      uf_dict[code_ocorrencia],  # Associate to correct state if code exists
+      NA_character_  # Maintain NA in case code does not exist
     )
   )
 
@@ -71,16 +71,16 @@ sim_do[, `:=`(
 
 # Create Panel
 painel_mortalidade = sim_do[, .(
-  homicidios_total = sum(homicidio, na.rm = TRUE),
-  homicidios_fora_casa = sum(homicidio_fora_casa, na.rm = TRUE), # Nova variável adicionada (apenas o total)
-  homicidios_negro = sum(homicidio * negro, na.rm = TRUE),
-  homicidios_negro_jovem = sum(homicidio * negro_jovem, na.rm = TRUE),
-  homicidios_branco = sum(homicidio * branco, na.rm = TRUE),
-  homicidios_branco_jovem = sum(homicidio * branco_jovem, na.rm = TRUE),
-  homicidios_mulher = sum(homicidio * mulher, na.rm = TRUE),
-  homicidios_mulher_jovem = sum(homicidio * mulher_jovem, na.rm = TRUE),
-  homicidios_homem = sum(homicidio * homem, na.rm = TRUE),
-  homicidios_homem_jovem = sum(homicidio * homem_jovem, na.rm = TRUE)
+  homicidios_total = sum(homicidio, na.rm = TRUE), # Total homicides
+  homicidios_fora_casa = sum(homicidio_fora_casa, na.rm = TRUE), # Outside of home homicides
+  homicidios_negro = sum(homicidio * negro, na.rm = TRUE), # Non-white people homicides
+  homicidios_negro_jovem = sum(homicidio * negro_jovem, na.rm = TRUE), # Young non-white people homicides
+  homicidios_branco = sum(homicidio * branco, na.rm = TRUE), # White people homicides
+  homicidios_branco_jovem = sum(homicidio * branco_jovem, na.rm = TRUE), # Young white people homicides
+  homicidios_mulher = sum(homicidio * mulher, na.rm = TRUE), # Women homicides
+  homicidios_mulher_jovem = sum(homicidio * mulher_jovem, na.rm = TRUE), # Young women homicides
+  homicidios_homem = sum(homicidio * homem, na.rm = TRUE), # Men homicides
+  homicidios_homem_jovem = sum(homicidio * homem_jovem, na.rm = TRUE) # Young men homicides
 ), by = .(ano, sigla_uf_code_ocorrencia, id_municipio_ocorrencia)]
 
 # Changing names

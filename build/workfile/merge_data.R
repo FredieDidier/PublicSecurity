@@ -3,6 +3,10 @@ rm(list = ls())
 GITHUB_PATH <- "/Users/fredie/Documents/GitHub/PublicSecurity/"
 DROPBOX_PATH <- "/Users/fredie/Library/CloudStorage/Dropbox/PublicSecurity/"
 
+# Make sure to set all macro globals
+outdir <- paste0(DROPBOX_PATH, "build/workfile/output")
+codedir <- paste0(GITHUB_PATH, "build/workfile")
+
 # Load necessary libraries
 library(data.table)
 library(dplyr)

@@ -3,12 +3,12 @@
 ********************************************************************************
 
 * Load data
-use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
+ use "$inpdir/main_data.dta", clear
+ * Remove mistaken municipality codes
 drop if municipality_code == 2300000 | municipality_code == 2600000
 
 * Seed
 set seed 982638
-
 
 * Creating year of treatment adoption variable (staggered treatment)
 gen treatment_year = 0
@@ -38,10 +38,10 @@ forvalues y = 2000/2019 {
 }
 
 ********************************************************************************
-* Cálculo da média da taxa de homicídios no período pré-tratamento por coorte
+* Calculate mean homicide rate from pre-treatment period by cohort
 ********************************************************************************
 
-* Para PE (2007) - período pré-tratamento: 2000-2006
+* PE (2007) - Pre-treatment period: 2000-2006
 preserve
     keep if t2007 == 1 & year >= 2000 & year <= 2006
     summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
@@ -49,7 +49,7 @@ preserve
     display "Média pré-tratamento para PE (2007): " mean_pre_2007
 restore
 
-* Para BA/PB (2011) - período pré-tratamento: 2000-2010
+* BA/PB (2011) - Pre-treatment period: 2000-2010
 preserve
     keep if t2011 == 1 & year >= 2000 & year <= 2010
     summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
@@ -57,7 +57,7 @@ preserve
     display "Média pré-tratamento para BA/PB (2011): " mean_pre_2011
 restore
 
-* Para CE (2015) - período pré-tratamento: 2000-2014
+* CE (2015) - Pre-treatment period: 2000-2014
 preserve
     keep if t2015 == 1 & year >= 2000 & year <= 2014
     summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
@@ -65,7 +65,7 @@ preserve
     display "Média pré-tratamento para CE (2015): " mean_pre_2015
 restore
 
-* Para MA (2016) - período pré-tratamento: 2000-2015
+* MA (2016) - Pre-treatment period: 2000-2015
 preserve
     keep if t2016 == 1 & year >= 2000 & year <= 2015
     summarize taxa_homicidios_total_por_100m_1 [aw = population_2000_muni], detail
@@ -173,7 +173,7 @@ xtreg taxa_homicidios_total_por_100m_1 ///
 * Saving number of obs
 sca nobs = e(N)
 
-* Saving coeficients
+* Saving coefficients
 matrix betas = e(b)
 
 * Extracting coefs for each cohort
@@ -224,45 +224,22 @@ matrix pvalue2015 = r(p_35), r(p_36), r(p_37), r(p_38), r(p_39), r(p_40), r(p_41
 matrix pvalue2016 = r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51), r(p_52), ///
                    r(p_53), r(p_54), r(p_55)
 
-* Testes de tendências paralelas (pré-tratamento)
-* Para PE (2007)
-test t_7_2007 t_6_2007 t_5_2007 t_4_2007 t_3_2007 t_2_2007 t_1_2007
-scalar f2007 = r(F)
-scalar f2007p = r(p)
-
-* Para BA/PB (2011)
-test t_7_2011 t_6_2011 t_5_2011 t_4_2011 t_3_2011 t_2_2011 t_1_2011
-scalar f2011 = r(F)
-scalar f2011p = r(p)
-
-* Para CE (2015)
-test t_7_2015 t_6_2015 t_5_2015 t_4_2015 t_3_2015 t_2_2015 t_1_2015
-scalar f2015 = r(F)
-scalar f2015p = r(p)
-
-* Para MA (2016)
-test t_7_2016 t_6_2016 t_5_2016 t_4_2016 t_3_2016 t_2_2016 t_1_2016
-scalar f2016 = r(F)
-scalar f2016p = r(p)
-
-
 ********************************************************************************
-* Criar tendência específica por coorte
+* Create treated-cohort specific linear trend
 ********************************************************************************
-gen trend = year - 2000 // Tendência linear começando em 2000
+gen trend = year - 2000 // 
 
-* Criar tendências específicas para cada coorte
 gen partrend2007 = trend * t2007
 gen partrend2011 = trend * t2011
 gen partrend2015 = trend * t2015
 gen partrend2016 = trend * t2016
 
 ********************************************************************************
-* Parte 2: Event Study com Tendências Lineares Específicas por Coorte
+* Parte 2: Event Study cwith trends
 ********************************************************************************
 
-* IMPORTANTE: Remover t_7 para cada coorte (seguindo a lógica do código original)
-* Modelo com todas as variáveis incluindo tendências lineares específicas por coorte
+* IMPORTANT: Remove t_7 for every cohort due to collinearity
+* Regression Model controlling for treated-cohort specific linear trends
 xtreg taxa_homicidios_total_por_100m_1 ///
     t_6_2007 t_5_2007 t_4_2007 t_3_2007 t_2_2007 t_1_2007 ///
     t1_2007 t2_2007 t3_2007 t4_2007 t5_2007 t6_2007 t7_2007 t8_2007 t9_2007 t10_2007 t11_2007 t12_2007 ///
@@ -278,37 +255,37 @@ xtreg taxa_homicidios_total_por_100m_1 ///
     partrend2016 ///
     log_pop i.year i.municipality_code [aw = population_2000_muni], fe vce(cluster state_code)
 
-* Salvar o número de observações
+* Saving number of observations
 sca nobs_trend = e(N)
 
-* Salvar os coeficientes completos
+* Saving coefficients
 matrix betas_trend = e(b)
 
-* Extrair coeficientes para cada coorte, incluindo as tendências
-* Para PE (2007) - notamos que não temos mais t_7, então começamos em t_6
+* Extracting coefficients for every cohort
+* PE (2007)
 matrix betas2007_trend = ., betas_trend[1, 1..18]
-* Para BA/PB (2011)
+* BA/PB (2011)
 matrix betas2011_trend = ., betas_trend[1, 20..33]
-* Para CE (2015)
+* CE (2015)
 matrix betas2015_trend = ., betas_trend[1, 35..44]
-* Para MA (2016)
+* MA (2016)
 matrix betas2016_trend = ., betas_trend[1, 46..54]
 
-* Extrair erros padrão
+* Extracting SD error
 mata st_matrix("A", sqrt(st_matrix("e(V)")))
 mata st_matrix("A", diagonal(st_matrix("A")))
 matrix A = A'
 
-* Para PE (2007)
+* PE (2007)
 matrix vars2007_trend = ., A[1, 1..18]
-* Para BA/PB (2011)
+* BA/PB (2011)
 matrix vars2011_trend = ., A[1, 20..33]
-* Para CE (2015)
+* CE (2015)
 matrix vars2015_trend = ., A[1, 35..44]
-* Para MA (2016)
+* MA (2016)
 matrix vars2016_trend = ., A[1, 46..54]
 
-* Calcular p-values usando boottest com Webb weights
+* Calculating p-values using boottest with Webb Weights
 boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
         {t1_2007} {t2_2007} {t3_2007} {t4_2007} {t5_2007} {t6_2007} {t7_2007} {t8_2007} {t9_2007} {t10_2007} {t11_2007} {t12_2007} ///
         {partrend2007} ///
@@ -323,8 +300,7 @@ boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
         {partrend2016}, ///
         noci cluster(state_code) reps(999) weighttype(webb) seed(982638)
 
-* Guardar p-values para cada coorte, incluindo as tendências
-* Por causa da remoção de t_7, ajustamos os índices
+* Saving p-values
 matrix pvalue2007_trend = ., r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), ///
                   r(p_7), r(p_8), r(p_9), r(p_10), r(p_11), r(p_12), r(p_13), r(p_14), r(p_15), r(p_16), r(p_17), r(p_18)
 
@@ -337,36 +313,16 @@ matrix pvalue2015_trend = ., r(p_35), r(p_36), r(p_37), r(p_38), r(p_39), r(p_40
 matrix pvalue2016_trend = ., r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51), ///
                   r(p_52), r(p_53), r(p_54)
 
-* Testes de tendências paralelas (pré-tratamento) - excluindo t_7 conforme especificação
-* Para PE (2007)
-test t_6_2007 t_5_2007 t_4_2007 t_3_2007 t_2_2007 t_1_2007
-scalar f2007_trend = r(F)
-scalar f2007p_trend = r(p)
-
-* Para BA/PB (2011)
-test t_6_2011 t_5_2011 t_4_2011 t_3_2011 t_2_2011 t_1_2011
-scalar f2011_trend = r(F)
-scalar f2011p_trend = r(p)
-
-* Para CE (2015)
-test t_6_2015 t_5_2015 t_4_2015 t_3_2015 t_2_2015 t_1_2015
-scalar f2015_trend = r(F)
-scalar f2015p_trend = r(p)
-
-* Para MA (2016)
-test t_6_2016 t_5_2016 t_4_2016 t_3_2016 t_2_2016 t_1_2016
-scalar f2016_trend = r(F)
-scalar f2016p_trend = r(p)
-
+				  
 ********************************************************************************
-* Criar Tabela LaTeX para Event Study por Coorte (Com e Sem Tendências Lineares)
+* Create Latex Table for Event Study by Cohort (with and without linear trends)
 ********************************************************************************
 
-* Abrir arquivo para escrever
+* Open file to write
 cap file close f1
-file open f1 using "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/event_study_completa.tex", write replace
+file open f1 using "${outdir}/tables/event_study_completa.tex", write replace
 
-* Escrever cabeçalho da tabela
+* Writing Table's header
 file write f1 "\begin{table}[h!]" _n
 file write f1 "\centering" _n
 file write f1 "\label{tab:event_study_completa}" _n
@@ -376,14 +332,14 @@ file write f1 "& \multicolumn{2}{c}{PE (2007)} & \multicolumn{2}{c}{BA/PB (2011)
 file write f1 "Trends & No & Yes & No & Yes & No & Yes & No & Yes \\" _n
 file write f1 "\hline" _n
 
-* Tendências específicas por coorte (apenas para modelo com tendência)
-file write f1 "Tendência & - & $" %7.3f (betas2007_trend[1,21]) "$ & - & $" %7.3f (betas2011_trend[1,18]) "$ & - & $" %7.3f (betas2015_trend[1,15]) "$ & - & $" %7.3f (betas2016_trend[1,15]) "$ \\" _n
+* Linear Trends
+file write f1 "Trends & - & $" %7.3f (betas2007_trend[1,21]) "$ & - & $" %7.3f (betas2011_trend[1,18]) "$ & - & $" %7.3f (betas2015_trend[1,15]) "$ & - & $" %7.3f (betas2016_trend[1,15]) "$ \\" _n
 file write f1 "& - & $(" %7.3f (vars2007_trend[1,21]) ")$ & - & $(" %7.3f (vars2011_trend[1,18]) ")$ & - & $(" %7.3f (vars2015_trend[1,15]) ")$ & - & $(" %7.3f (vars2016_trend[1,15]) ")$ \\" _n
 file write f1 "& - & $[" %7.3f (pvalue2007_trend[1,21]) "]$ & - & $[" %7.3f (pvalue2011_trend[1,18]) "]$ & - & $[" %7.3f (pvalue2015_trend[1,15]) "]$ & - & $[" %7.3f (pvalue2016_trend[1,15]) "]$ \\" _n
 file write f1 "\hline" _n
 
-* Parte 1: Períodos pré-tratamento
-* t-7 (apenas para o modelo sem tendência)
+* Part 1: Pre-treatment period
+* t-7 (only for no trends model)
 file write f1 "$t_{-7}$ & $" %7.3f (betas2007[1,1]) "$ & - & $" %7.3f (betas2011[1,1]) "$ & - & $" %7.3f (betas2015[1,1]) "$ & - & $" %7.3f (betas2016[1,1]) "$ & - \\" _n
 file write f1 "& $(" %7.3f (vars2007[1,1]) ")$ & - & $(" %7.3f (vars2011[1,1]) ")$ & - & $(" %7.3f (vars2015[1,1]) ")$ & - & $(" %7.3f (vars2016[1,1]) ")$ & - \\" _n
 file write f1 "& $[" %7.3f (pvalue2007[1,1]) "]$ & - & $[" %7.3f (pvalue2011[1,1]) "]$ & - & $[" %7.3f (pvalue2015[1,1]) "]$ & - & $[" %7.3f (pvalue2016[1,1]) "]$ & - \\" _n
@@ -425,11 +381,11 @@ file write f1 "& $(" %7.3f (vars2007[1,7]) ")$ & $(" %7.3f (vars2007_trend[1,7])
 file write f1 "& $[" %7.3f (pvalue2007[1,7]) "]$ & $[" %7.3f (pvalue2007_trend[1,7]) "]$ & $[" %7.3f (pvalue2011[1,7]) "]$ & $[" %7.3f (pvalue2011_trend[1,7]) "]$ & $[" %7.3f (pvalue2015[1,7]) "]$ & $[" %7.3f (pvalue2015_trend[1,7]) "]$ & $[" %7.3f (pvalue2016[1,7]) "]$ & $[" %7.3f (pvalue2016_trend[1,7]) "]$ \\" _n
 file write f1 "\hline" _n
 
-* Escrever linha para indicar que t0 é omitido
+* Write line to indicate t0 is ommitted
 file write f1 "$t_{0}$ & \multicolumn{8}{c}{(omitido - ano do tratamento)} \\" _n
 file write f1 "\hline" _n
 
-* Parte 2: Períodos pós-tratamento
+* Part 2: Post-Treatment Periods
 * t+1
 file write f1 "$t_{+1}$ & $" %7.3f (betas2007[1,8]) "$ & $" %7.3f (betas2007_trend[1,8]) "$ & $" %7.3f (betas2011[1,8]) "$ & $" %7.3f (betas2011_trend[1,8]) "$ & $" %7.3f (betas2015[1,8]) "$ & $" %7.3f (betas2015_trend[1,8]) "$ & $" %7.3f (betas2016[1,8]) "$ & $" %7.3f (betas2016_trend[1,8]) "$ \\" _n
 file write f1 "& $(" %7.3f (vars2007[1,8]) ")$ & $(" %7.3f (vars2007_trend[1,8]) ")$ & $(" %7.3f (vars2011[1,8]) ")$ & $(" %7.3f (vars2011_trend[1,8]) ")$ & $(" %7.3f (vars2015[1,8]) ")$ & $(" %7.3f (vars2015_trend[1,8]) ")$ & $(" %7.3f (vars2016[1,8]) ")$ & $(" %7.3f (vars2016_trend[1,8]) ")$ \\" _n
@@ -502,28 +458,28 @@ file write f1 "& $(" %7.3f (vars2007[1,19]) ")$ & $(" %7.3f (vars2007_trend[1,19
 file write f1 "& $[" %7.3f (pvalue2007[1,19]) "]$ & $[" %7.3f (pvalue2007_trend[1,19]) "]$ & - & - & - & - & - & - \\" _n
 file write f1 "\hline" _n
 
-* Fechar a tabela
+* Close table
 file write f1 "\end{tabular}" _n
 file write f1 "\end{table}" _n
 
-* Fechar o arquivo
+* Close file
 file close f1
 
 ********************************************************************************
-* Parte 2: Gráficos de Event Study para cada coorte
+* Part 2: Event Study graphs for every cohort
 ********************************************************************************
 
-* Converter matrizes para datasets para facilitar a plotagem
+* Convert matrces to datasets
 clear
 set obs 20
-gen rel_year = _n - 8   // Cria valores de -7 a 12
+gen rel_year = _n - 8   // Create values from -7 to 12
 
-* Gráfico para PE (2007)
+* PE graph (2007)
 gen coef_2007 = .
 gen se_2007 = .
 gen pvalue_2007 = .
 
-* Preenchendo valores para a coorte 2007 (PE)
+* Filling values for 2007 cohort (PE)
 replace coef_2007 = betas2007[1,1] if rel_year == -7
 replace coef_2007 = betas2007[1,2] if rel_year == -6
 replace coef_2007 = betas2007[1,3] if rel_year == -5
@@ -531,7 +487,7 @@ replace coef_2007 = betas2007[1,4] if rel_year == -4
 replace coef_2007 = betas2007[1,5] if rel_year == -3
 replace coef_2007 = betas2007[1,6] if rel_year == -2
 replace coef_2007 = betas2007[1,7] if rel_year == -1
-replace coef_2007 = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2007 = 0 if rel_year == 0  // Base year (ommitted)
 replace coef_2007 = betas2007[1,8] if rel_year == 1
 replace coef_2007 = betas2007[1,9] if rel_year == 2
 replace coef_2007 = betas2007[1,10] if rel_year == 3
@@ -545,7 +501,7 @@ replace coef_2007 = betas2007[1,17] if rel_year == 10
 replace coef_2007 = betas2007[1,18] if rel_year == 11
 replace coef_2007 = betas2007[1,19] if rel_year == 12
 
-* Preenchendo erros padrão para a coorte 2007
+* Filling SD errors for 2007 cohort
 replace se_2007 = vars2007[1,1] if rel_year == -7
 replace se_2007 = vars2007[1,2] if rel_year == -6
 replace se_2007 = vars2007[1,3] if rel_year == -5
@@ -553,7 +509,7 @@ replace se_2007 = vars2007[1,4] if rel_year == -4
 replace se_2007 = vars2007[1,5] if rel_year == -3
 replace se_2007 = vars2007[1,6] if rel_year == -2
 replace se_2007 = vars2007[1,7] if rel_year == -1
-replace se_2007 = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2007 = 0 if rel_year == 0  // Base year (ommitted)
 replace se_2007 = vars2007[1,8] if rel_year == 1
 replace se_2007 = vars2007[1,9] if rel_year == 2
 replace se_2007 = vars2007[1,10] if rel_year == 3
@@ -567,11 +523,11 @@ replace se_2007 = vars2007[1,17] if rel_year == 10
 replace se_2007 = vars2007[1,18] if rel_year == 11
 replace se_2007 = vars2007[1,19] if rel_year == 12
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2007 = coef_2007 + 1.96 * se_2007
 gen ci_lower_2007 = coef_2007 - 1.96 * se_2007
 
-* Gráfico para PE (2007)
+* PE Graph (2007)
 twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
        (connect coef_2007 rel_year if rel_year >= -7 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
@@ -582,13 +538,11 @@ twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007, replace)
 	   
-	 *graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE.pdf", replace
-
-* Gráfico para BA/PB (2011)
+* BA/PB graph (2011)
 gen coef_2011 = .
 gen se_2011 = .
 
-* Preenchendo valores para a coorte 2011 (BA/PB)
+* * Filling values for 2011 chort (BA/PB)
 replace coef_2011 = betas2011[1,1] if rel_year == -7
 replace coef_2011 = betas2011[1,2] if rel_year == -6
 replace coef_2011 = betas2011[1,3] if rel_year == -5
@@ -596,7 +550,7 @@ replace coef_2011 = betas2011[1,4] if rel_year == -4
 replace coef_2011 = betas2011[1,5] if rel_year == -3
 replace coef_2011 = betas2011[1,6] if rel_year == -2
 replace coef_2011 = betas2011[1,7] if rel_year == -1
-replace coef_2011 = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2011 = 0 if rel_year == 0  // Base year (ommitted)
 replace coef_2011 = betas2011[1,8] if rel_year == 1
 replace coef_2011 = betas2011[1,9] if rel_year == 2
 replace coef_2011 = betas2011[1,10] if rel_year == 3
@@ -606,7 +560,7 @@ replace coef_2011 = betas2011[1,13] if rel_year == 6
 replace coef_2011 = betas2011[1,14] if rel_year == 7
 replace coef_2011 = betas2011[1,15] if rel_year == 8
 
-* Preenchendo erros padrão para a coorte 2011
+* Filling SD errors for 2011 cohort
 replace se_2011 = vars2011[1,1] if rel_year == -7
 replace se_2011 = vars2011[1,2] if rel_year == -6
 replace se_2011 = vars2011[1,3] if rel_year == -5
@@ -614,7 +568,7 @@ replace se_2011 = vars2011[1,4] if rel_year == -4
 replace se_2011 = vars2011[1,5] if rel_year == -3
 replace se_2011 = vars2011[1,6] if rel_year == -2
 replace se_2011 = vars2011[1,7] if rel_year == -1
-replace se_2011 = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2011 = 0 if rel_year == 0  // Base year (ommitted)
 replace se_2011 = vars2011[1,8] if rel_year == 1
 replace se_2011 = vars2011[1,9] if rel_year == 2
 replace se_2011 = vars2011[1,10] if rel_year == 3
@@ -624,11 +578,11 @@ replace se_2011 = vars2011[1,13] if rel_year == 6
 replace se_2011 = vars2011[1,14] if rel_year == 7
 replace se_2011 = vars2011[1,15] if rel_year == 8
 
-* Calculando intervalos de confiança (95%)
+* Calcularing CI (95%)
 gen ci_upper_2011 = coef_2011 + 1.96 * se_2011
 gen ci_lower_2011 = coef_2011 - 1.96 * se_2011
 
-* Gráfico para BA/PB (2011)
+* BA/PB graph (2011)
 twoway (rcap ci_upper_2011 ci_lower_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
        (connect coef_2011 rel_year if rel_year >= -7 & rel_year <= 8, lcolor(navy) mcolor(navy)) ///
@@ -639,11 +593,11 @@ twoway (rcap ci_upper_2011 ci_lower_2011 rel_year if rel_year >= -7 & rel_year <
        title("Bahia/Paraíba (2011)") ///
        legend(off) name(graph_2011, replace)
 
-* Gráfico para CE (2015)
+* CE graph (2015)
 gen coef_2015 = .
 gen se_2015 = .
 
-* Preenchendo valores para a coorte 2015 (CE)
+* Filling values for 2015 cohort (CE)
 replace coef_2015 = betas2015[1,1] if rel_year == -7
 replace coef_2015 = betas2015[1,2] if rel_year == -6
 replace coef_2015 = betas2015[1,3] if rel_year == -5
@@ -651,13 +605,13 @@ replace coef_2015 = betas2015[1,4] if rel_year == -4
 replace coef_2015 = betas2015[1,5] if rel_year == -3
 replace coef_2015 = betas2015[1,6] if rel_year == -2
 replace coef_2015 = betas2015[1,7] if rel_year == -1
-replace coef_2015 = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2015 = 0 if rel_year == 0  // Base Year (ommitted)
 replace coef_2015 = betas2015[1,8] if rel_year == 1
 replace coef_2015 = betas2015[1,9] if rel_year == 2
 replace coef_2015 = betas2015[1,10] if rel_year == 3
 replace coef_2015 = betas2015[1,11] if rel_year == 4
 
-* Preenchendo erros padrão para a coorte 2015
+* Filling SD errors for 2015 cohort
 replace se_2015 = vars2015[1,1] if rel_year == -7
 replace se_2015 = vars2015[1,2] if rel_year == -6
 replace se_2015 = vars2015[1,3] if rel_year == -5
@@ -665,17 +619,17 @@ replace se_2015 = vars2015[1,4] if rel_year == -4
 replace se_2015 = vars2015[1,5] if rel_year == -3
 replace se_2015 = vars2015[1,6] if rel_year == -2
 replace se_2015 = vars2015[1,7] if rel_year == -1
-replace se_2015 = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2015 = 0 if rel_year == 0  // Base Year (ommitted)
 replace se_2015 = vars2015[1,8] if rel_year == 1
 replace se_2015 = vars2015[1,9] if rel_year == 2
 replace se_2015 = vars2015[1,10] if rel_year == 3
 replace se_2015 = vars2015[1,11] if rel_year == 4
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2015 = coef_2015 + 1.96 * se_2015
 gen ci_lower_2015 = coef_2015 - 1.96 * se_2015
 
-* Gráfico para CE (2015)
+* CE Graph (2015)
 twoway (rcap ci_upper_2015 ci_lower_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
        (connect coef_2015 rel_year if rel_year >= -7 & rel_year <= 4, lcolor(navy) mcolor(navy)) ///
@@ -686,11 +640,11 @@ twoway (rcap ci_upper_2015 ci_lower_2015 rel_year if rel_year >= -7 & rel_year <
        title("Ceará (2015)") ///
        legend(off) name(graph_2015, replace)
 
-* Gráfico para MA (2016)
+* MA Graph (2016)
 gen coef_2016 = .
 gen se_2016 = .
 
-* Preenchendo valores para a coorte 2016 (MA)
+* Filling values for 2016 cohort (MA)
 replace coef_2016 = betas2016[1,1] if rel_year == -7
 replace coef_2016 = betas2016[1,2] if rel_year == -6
 replace coef_2016 = betas2016[1,3] if rel_year == -5
@@ -698,12 +652,12 @@ replace coef_2016 = betas2016[1,4] if rel_year == -4
 replace coef_2016 = betas2016[1,5] if rel_year == -3
 replace coef_2016 = betas2016[1,6] if rel_year == -2
 replace coef_2016 = betas2016[1,7] if rel_year == -1
-replace coef_2016 = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2016 = 0 if rel_year == 0  // Base Year (ommitted)
 replace coef_2016 = betas2016[1,8] if rel_year == 1
 replace coef_2016 = betas2016[1,9] if rel_year == 2
 replace coef_2016 = betas2016[1,10] if rel_year == 3
 
-* Preenchendo erros padrão para a coorte 2016
+* Filling SD errors for 2016 cohort
 replace se_2016 = vars2016[1,1] if rel_year == -7
 replace se_2016 = vars2016[1,2] if rel_year == -6
 replace se_2016 = vars2016[1,3] if rel_year == -5
@@ -711,16 +665,16 @@ replace se_2016 = vars2016[1,4] if rel_year == -4
 replace se_2016 = vars2016[1,5] if rel_year == -3
 replace se_2016 = vars2016[1,6] if rel_year == -2
 replace se_2016 = vars2016[1,7] if rel_year == -1
-replace se_2016 = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2016 = 0 if rel_year == 0  // Base Year (ommitted)
 replace se_2016 = vars2016[1,8] if rel_year == 1
 replace se_2016 = vars2016[1,9] if rel_year == 2
 replace se_2016 = vars2016[1,10] if rel_year == 3
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2016 = coef_2016 + 1.96 * se_2016
 gen ci_lower_2016 = coef_2016 - 1.96 * se_2016
 
-* Gráfico para MA (2016)
+* MA Graph (2016)
 twoway (rcap ci_upper_2016 ci_lower_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
        (connect coef_2016 rel_year if rel_year >= -7 & rel_year <= 3, lcolor(navy) mcolor(navy)) ///
@@ -735,25 +689,23 @@ twoway (rcap ci_upper_2016 ci_lower_2016 rel_year if rel_year >= -7 & rel_year <
 graph combine graph_2007 graph_2011 graph_2015 graph_2016, rows(2) cols(2)
 
 * Salvar o gráfico combinado
-graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/main_event_study.pdf", replace
+graph export "${outdir}/graphs/main_event_study.pdf", replace
 
 
 ********************************************************************************
-* Graficos de Event Study com Tendências Específicas por Coorte
+* Event Study Graph by Cohort with Trends
 ********************************************************************************
 
-* Similar ao código original, mas agora para as estimativas com tendências lineares
-* Primeiro vamos limpar o workspace para o novo dataset
+* Convert Matrices to Dataset
 clear
 set obs 20
-gen rel_year = _n - 8   // Cria valores de -7 a 12
+gen rel_year = _n - 8   // Create values from -7 to 12
 
-* Gráfico para PE (2007) com tendência
+* PE Graph (2007)
 gen coef_2007_trend = .
 gen se_2007_trend = .
 
-* Preenchendo valores para a coorte 2007 (PE) com tendência
-* Note que não temos mais o coeficiente para t-7 devido à especificação sem ele
+* Filling Values for 2007 cohort (PE)
 replace coef_2007_trend = . if rel_year == -7
 replace coef_2007_trend = betas2007_trend[1,2] if rel_year == -6
 replace coef_2007_trend = betas2007_trend[1,3] if rel_year == -5
@@ -761,7 +713,7 @@ replace coef_2007_trend = betas2007_trend[1,4] if rel_year == -4
 replace coef_2007_trend = betas2007_trend[1,5] if rel_year == -3
 replace coef_2007_trend = betas2007_trend[1,6] if rel_year == -2
 replace coef_2007_trend = betas2007_trend[1,7] if rel_year == -1
-replace coef_2007_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2007_trend = 0 if rel_year == 0  // Base Year (Ommited)
 replace coef_2007_trend = betas2007_trend[1,8] if rel_year == 1
 replace coef_2007_trend = betas2007_trend[1,9] if rel_year == 2
 replace coef_2007_trend = betas2007_trend[1,10] if rel_year == 3
@@ -775,7 +727,7 @@ replace coef_2007_trend = betas2007_trend[1,17] if rel_year == 10
 replace coef_2007_trend = betas2007_trend[1,18] if rel_year == 11
 replace coef_2007_trend = betas2007_trend[1,19] if rel_year == 12
 
-* Preenchendo erros padrão para a coorte 2007 com tendência
+* Filling SD Errors for 2007 cohort
 replace se_2007_trend = . if rel_year == -7
 replace se_2007_trend = vars2007_trend[1,2] if rel_year == -6
 replace se_2007_trend = vars2007_trend[1,3] if rel_year == -5
@@ -783,7 +735,7 @@ replace se_2007_trend = vars2007_trend[1,4] if rel_year == -4
 replace se_2007_trend = vars2007_trend[1,5] if rel_year == -3
 replace se_2007_trend = vars2007_trend[1,6] if rel_year == -2
 replace se_2007_trend = vars2007_trend[1,7] if rel_year == -1
-replace se_2007_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2007_trend = 0 if rel_year == 0  // Base Year (Ommited)
 replace se_2007_trend = vars2007_trend[1,8] if rel_year == 1
 replace se_2007_trend = vars2007_trend[1,9] if rel_year == 2
 replace se_2007_trend = vars2007_trend[1,10] if rel_year == 3
@@ -797,11 +749,11 @@ replace se_2007_trend = vars2007_trend[1,17] if rel_year == 10
 replace se_2007_trend = vars2007_trend[1,18] if rel_year == 11
 replace se_2007_trend = vars2007_trend[1,19] if rel_year == 12
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2007_trend = coef_2007_trend + 1.96 * se_2007_trend
 gen ci_lower_2007_trend = coef_2007_trend - 1.96 * se_2007_trend
 
-* Gráfico para PE (2007) com tendência
+* PE Graoh (2007)
 twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy)) ///
        (scatter coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, mcolor(navy) msymbol(circle)) ///
        (connect coef_2007_trend rel_year if rel_year >= -6 & rel_year <= 12, lcolor(navy) mcolor(navy)) ///
@@ -812,13 +764,11 @@ twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007_trend, replace)
 	   
-	   *graph export "/Users/Fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/event_study_PE_trends.pdf", replace
-
-* Gráfico para BA/PB (2011) com tendência
+* BA/PB  graph (2011)
 gen coef_2011_trend = .
 gen se_2011_trend = .
 
-* Preenchendo valores para a coorte 2011 (BA/PB) com tendência
+* Filling values for 2011 cohort
 replace coef_2011_trend = . if rel_year == -7
 replace coef_2011_trend = betas2011_trend[1,2] if rel_year == -6
 replace coef_2011_trend = betas2011_trend[1,3] if rel_year == -5
@@ -826,7 +776,7 @@ replace coef_2011_trend = betas2011_trend[1,4] if rel_year == -4
 replace coef_2011_trend = betas2011_trend[1,5] if rel_year == -3
 replace coef_2011_trend = betas2011_trend[1,6] if rel_year == -2
 replace coef_2011_trend = betas2011_trend[1,7] if rel_year == -1
-replace coef_2011_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2011_trend = 0 if rel_year == 0  // Base Year (ommited)
 replace coef_2011_trend = betas2011_trend[1,8] if rel_year == 1
 replace coef_2011_trend = betas2011_trend[1,9] if rel_year == 2
 replace coef_2011_trend = betas2011_trend[1,10] if rel_year == 3
@@ -836,7 +786,7 @@ replace coef_2011_trend = betas2011_trend[1,13] if rel_year == 6
 replace coef_2011_trend = betas2011_trend[1,14] if rel_year == 7
 replace coef_2011_trend = betas2011_trend[1,15] if rel_year == 8
 
-* Preenchendo erros padrão para a coorte 2011 com tendência
+* Filling SD errors for 2011 cohort
 replace se_2011_trend = . if rel_year == -7
 replace se_2011_trend = vars2011_trend[1,2] if rel_year == -6
 replace se_2011_trend = vars2011_trend[1,3] if rel_year == -5
@@ -844,7 +794,7 @@ replace se_2011_trend = vars2011_trend[1,4] if rel_year == -4
 replace se_2011_trend = vars2011_trend[1,5] if rel_year == -3
 replace se_2011_trend = vars2011_trend[1,6] if rel_year == -2
 replace se_2011_trend = vars2011_trend[1,7] if rel_year == -1
-replace se_2011_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2011_trend = 0 if rel_year == 0  // Base Year (ommited)
 replace se_2011_trend = vars2011_trend[1,8] if rel_year == 1
 replace se_2011_trend = vars2011_trend[1,9] if rel_year == 2
 replace se_2011_trend = vars2011_trend[1,10] if rel_year == 3
@@ -854,11 +804,11 @@ replace se_2011_trend = vars2011_trend[1,13] if rel_year == 6
 replace se_2011_trend = vars2011_trend[1,14] if rel_year == 7
 replace se_2011_trend = vars2011_trend[1,15] if rel_year == 8
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2011_trend = coef_2011_trend + 1.96 * se_2011_trend
 gen ci_lower_2011_trend = coef_2011_trend - 1.96 * se_2011_trend
 
-* Gráfico para BA/PB (2011) com tendência
+* BA/PB (2011) graph
 twoway (rcap ci_upper_2011_trend ci_lower_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy)) ///
        (scatter coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, mcolor(navy) msymbol(circle)) ///
        (connect coef_2011_trend rel_year if rel_year >= -6 & rel_year <= 8, lcolor(navy) mcolor(navy)) ///
@@ -869,11 +819,11 @@ twoway (rcap ci_upper_2011_trend ci_lower_2011_trend rel_year if rel_year >= -6 
        title("Bahia/Paraíba (2011)") ///
        legend(off) name(graph_2011_trend, replace)
 
-* Gráfico para CE (2015) com tendência
+* CE graph (2015)
 gen coef_2015_trend = .
 gen se_2015_trend = .
 
-* Preenchendo valores para a coorte 2015 (CE) com tendência
+* Filling Values for 2015 (CE) cohort
 replace coef_2015_trend = . if rel_year == -7
 replace coef_2015_trend = betas2015_trend[1,2] if rel_year == -6
 replace coef_2015_trend = betas2015_trend[1,3] if rel_year == -5
@@ -881,13 +831,13 @@ replace coef_2015_trend = betas2015_trend[1,4] if rel_year == -4
 replace coef_2015_trend = betas2015_trend[1,5] if rel_year == -3
 replace coef_2015_trend = betas2015_trend[1,6] if rel_year == -2
 replace coef_2015_trend = betas2015_trend[1,7] if rel_year == -1
-replace coef_2015_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2015_trend = 0 if rel_year == 0  // Base Year (ommitted)
 replace coef_2015_trend = betas2015_trend[1,8] if rel_year == 1
 replace coef_2015_trend = betas2015_trend[1,9] if rel_year == 2
 replace coef_2015_trend = betas2015_trend[1,10] if rel_year == 3
 replace coef_2015_trend = betas2015_trend[1,11] if rel_year == 4
 
-* Preenchendo erros padrão para a coorte 2015 com tendência
+* Filling SD error for 2015 cohort
 replace se_2015_trend = . if rel_year == -7
 replace se_2015_trend = vars2015_trend[1,2] if rel_year == -6
 replace se_2015_trend = vars2015_trend[1,3] if rel_year == -5
@@ -895,17 +845,17 @@ replace se_2015_trend = vars2015_trend[1,4] if rel_year == -4
 replace se_2015_trend = vars2015_trend[1,5] if rel_year == -3
 replace se_2015_trend = vars2015_trend[1,6] if rel_year == -2
 replace se_2015_trend = vars2015_trend[1,7] if rel_year == -1
-replace se_2015_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2015_trend = 0 if rel_year == 0  //Base Year (ommitted)
 replace se_2015_trend = vars2015_trend[1,8] if rel_year == 1
 replace se_2015_trend = vars2015_trend[1,9] if rel_year == 2
 replace se_2015_trend = vars2015_trend[1,10] if rel_year == 3
 replace se_2015_trend = vars2015_trend[1,11] if rel_year == 4
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2015_trend = coef_2015_trend + 1.96 * se_2015_trend
 gen ci_lower_2015_trend = coef_2015_trend - 1.96 * se_2015_trend
 
-* Gráfico para CE (2015) com tendência
+* CE graph (2015)
 twoway (rcap ci_upper_2015_trend ci_lower_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy)) ///
        (scatter coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, mcolor(navy) msymbol(circle)) ///
        (connect coef_2015_trend rel_year if rel_year >= -6 & rel_year <= 4, lcolor(navy) mcolor(navy)) ///
@@ -916,11 +866,11 @@ twoway (rcap ci_upper_2015_trend ci_lower_2015_trend rel_year if rel_year >= -6 
        title("Ceará (2015)") ///
        legend(off) name(graph_2015_trend, replace)
 
-* Gráfico para MA (2016) com tendência
+* MA graph (2016)
 gen coef_2016_trend = .
 gen se_2016_trend = .
 
-* Preenchendo valores para a coorte 2016 (MA) com tendência
+* Filling values for 2016 (MA) cohort
 replace coef_2016_trend = . if rel_year == -7
 replace coef_2016_trend = betas2016_trend[1,2] if rel_year == -6
 replace coef_2016_trend = betas2016_trend[1,3] if rel_year == -5
@@ -928,12 +878,12 @@ replace coef_2016_trend = betas2016_trend[1,4] if rel_year == -4
 replace coef_2016_trend = betas2016_trend[1,5] if rel_year == -3
 replace coef_2016_trend = betas2016_trend[1,6] if rel_year == -2
 replace coef_2016_trend = betas2016_trend[1,7] if rel_year == -1
-replace coef_2016_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2016_trend = 0 if rel_year == 0  // Base Year (ommitted)
 replace coef_2016_trend = betas2016_trend[1,8] if rel_year == 1
 replace coef_2016_trend = betas2016_trend[1,9] if rel_year == 2
 replace coef_2016_trend = betas2016_trend[1,10] if rel_year == 3
 
-* Preenchendo erros padrão para a coorte 2016 com tendência
+* Filling SD errors for 2016 cohort
 replace se_2016_trend = . if rel_year == -7
 replace se_2016_trend = vars2016_trend[1,2] if rel_year == -6
 replace se_2016_trend = vars2016_trend[1,3] if rel_year == -5
@@ -941,16 +891,16 @@ replace se_2016_trend = vars2016_trend[1,4] if rel_year == -4
 replace se_2016_trend = vars2016_trend[1,5] if rel_year == -3
 replace se_2016_trend = vars2016_trend[1,6] if rel_year == -2
 replace se_2016_trend = vars2016_trend[1,7] if rel_year == -1
-replace se_2016_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2016_trend = 0 if rel_year == 0  // Base Year (ommitted)
 replace se_2016_trend = vars2016_trend[1,8] if rel_year == 1
 replace se_2016_trend = vars2016_trend[1,9] if rel_year == 2
 replace se_2016_trend = vars2016_trend[1,10] if rel_year == 3
 
-* Calculando intervalos de confiança (95%)
+* Calculating CI (95%)
 gen ci_upper_2016_trend = coef_2016_trend + 1.96 * se_2016_trend
 gen ci_lower_2016_trend = coef_2016_trend - 1.96 * se_2016_trend
 
-* Gráfico para MA (2016) com tendência
+* MA (2016) graph
 twoway (rcap ci_upper_2016_trend ci_lower_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy)) ///
        (scatter coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, mcolor(navy) msymbol(circle)) ///
        (connect coef_2016_trend rel_year if rel_year >= -6 & rel_year <= 3, lcolor(navy) mcolor(navy)) ///
@@ -961,9 +911,9 @@ twoway (rcap ci_upper_2016_trend ci_lower_2016_trend rel_year if rel_year >= -6 
        title("Maranhão (2016)") ///
        legend(off) name(graph_2016_trend, replace)
 
-* Combinar todos os gráficos com tendência
+* Combining all graphs
 graph combine graph_2007_trend graph_2011_trend graph_2015_trend graph_2016_trend, ///
     rows(2) cols(2)
 
-* Salvar o gráfico combinado
-graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/main_event_study_trends.pdf", replace
+* Saving combined trends graphs
+graph export "${outdir}/graphs/main_event_study_trends.pdf", replace

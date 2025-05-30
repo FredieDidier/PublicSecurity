@@ -4,6 +4,9 @@ library(tidyr)
 library(scales)
 library(fixest)
 
+# Loading Main Data
+load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
+
 create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
   target_states <- c("BA", "PE", "PB", "MA", "CE")
   cols <- c(paste0("taxa_homicidios_", category, "_por_100mil_", target_states),
@@ -119,7 +122,7 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
   return(graph)
 }
 
-# Exemplo de uso
+# Example Usage
 categories <- c("total", "homem", "mulher", "negro", "branco", 
                 "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
 

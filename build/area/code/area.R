@@ -6,12 +6,12 @@ library(purrr)
 library(janitor)
 library(units)
 
-# Define o dicionário para códigos UF e abreviações
+# Dictionary for states
 uf_dict <- c("21" = "MA", "22" = "PI", "23" = "CE", 
              "24" = "RN", "25" = "PB", "26" = "PE", 
              "27" = "AL", "28" = "SE", "29" = "BA")
 
-# Função para ler um único shapefile
+# Function to read a single shapefile
 read_uf_shapefile <- function(uf_code, uf_abbr) {
   file_path <- file.path(paste0(DROPBOX_PATH, "build/area/input"), 
                          uf_abbr, 
@@ -25,54 +25,54 @@ read_uf_shapefile <- function(uf_code, uf_abbr) {
   })
 }
 
-# Ler todos os shapefiles e combiná-los
+# Read all shapefiles and combine them
 area <- uf_dict %>%
   imap_dfr(~ read_uf_shapefile(uf_code = .y, uf_abbr = .x))
 
-# Limpar nomes e selecionar colunas
+# Cleaning and selecting columns
 area <- area %>% 
   clean_names() %>%
   select(cd_geocodm) %>%
   rename(municipality_code = cd_geocodm)
 
-# Converter código do município para inteiro
+# Turning Municipality code into numeric format
 area$municipality_code <- as.integer(area$municipality_code)
 
-# Calculando área, longitude e latitude
+# Calculating area, lat and lon
 area <- area %>%
   mutate(
     area_km2 = as.numeric(units::set_units(st_area(.), km^2))
   )
 
-# Extraindo centroides para lat/long
+# Extracting centroids
 centroides <- st_centroid(area)
 coords_centroides <- st_coordinates(centroides)
 
-# Adicionando lat/long à base
+# Adding lat and lon to dataset
 area <- area %>%
   mutate(
     longitude = coords_centroides[, 1],
     latitude = coords_centroides[, 2]
   )
 
-# Ler a base de estados
+# Read states dataset
 s <- st_read(paste0(DROPBOX_PATH,"build/area/input/BR_UF_2022/BR_UF_2022.shp"))
 
-# Verificar e padronizar CRS
+# Verifying and harmonizing CRS
 if (st_crs(area) != st_crs(s)) {
   area <- st_transform(area, st_crs(s))
 }
 
-# Criar o polígono dos estados tratados
+# Create treated states polygon
 treated_states <- s %>%
   filter(CD_UF %in% c("21", "23", "25", "26", "29")) %>%
   st_union() %>%
   st_make_valid()
 
-# Criar o contorno (borda) dos estados tratados
+# Create treated states border
 treated_border <- st_boundary(treated_states)
 
-# Função para calcular distância para cada estado
+# Function to calculate distance to every state
 calculate_state_distance <- function(data, state_data, cd_uf) {
   state_border <- state_data %>%
     filter(CD_UF == cd_uf) %>%
@@ -88,7 +88,7 @@ calculate_state_distance <- function(data, state_data, cd_uf) {
     )
 }
 
-# Calcular a distância inicial aos estados tratados
+# Calculate distance to treated states
 area_final <- area %>%
   mutate(
     centroid = st_centroid(geometry),
@@ -96,7 +96,7 @@ area_final <- area %>%
     centroid = NULL
   )
 
-# Calcular distância para cada estado individual
+# Calculate individually distance to every treated state
 area_final <- area_final %>%
   calculate_state_distance(s, "26") %>%  # PE
   calculate_state_distance(s, "29") %>%  # BA
@@ -104,7 +104,7 @@ area_final <- area_final %>%
   calculate_state_distance(s, "23") %>%  # CE
   calculate_state_distance(s, "21")      # MA
 
-# Selecionar e ordenar as colunas finais
+# Selecting columns
 area_final <- area_final %>%
   select(municipality_code, geometry, area_km2, longitude, latitude, 
          dist_treated, dist_PE, dist_BA, dist_PB, dist_CE, dist_MA)

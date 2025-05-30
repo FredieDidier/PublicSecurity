@@ -1,4 +1,4 @@
-# Carregar pacotes necessários
+# Load necessary packages
 library(dplyr)
 library(sf)
 library(ggplot2)
@@ -8,32 +8,32 @@ library(patchwork)
 library(cowplot)
 library(gridExtra)
 
-# Carregar e preparar dados principais
+# Load and prepare main data
 main_data <- main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000)
 
-# Definir os anos de tratamento e os estados correspondentes
+# Define treatment years and corresponding states
 treatment_info <- data.frame(
   treatment_year = c(2007, 2011, 2011, 2015, 2016),
   state = c("PE", "BA", "PB", "CE", "MA")
 )
 
-# Ler dados das delegacias e preparar para merge
+# Read police station data and prepare for merge
 delegacias <- st_read(paste0(DROPBOX_PATH, "build/delegacias/output/map_delegacias.shp")) %>%
   select(CD_GEOC) %>%
   clean_names() %>%
   rename(municipality_code = cd_geoc) %>%
   mutate(municipality_code = as.integer(municipality_code))
 
-# Integrar dados de homicídio com dados geográficos e informações de tratamento
+# Integrate homicide data with geographic data and treatment information
 map_data <- delegacias %>%
   left_join(main_data, by = "municipality_code") %>%
   left_join(treatment_info, by = "state")
 
-# Definir a paleta de cores específica do mapa
+# Define the specific color palette for the map
 cores_homicidios <- c(
-  "#FFFFFF",  # Sem Informações (branco)
+  "#FFFFFF",  # No Information (white)
   "#FFE5E5",  # ≤ 15
   "#FF9999",  # ≤ 30
   "#FF4D4D",  # ≤ 45
@@ -41,11 +41,11 @@ cores_homicidios <- c(
   "#800000"   # ≥ 60
 )
 
-# Definir os breaks e labels
+# Define breaks and labels
 breaks_homicidios <- c(-Inf, 15, 30, 45, 60, Inf)
 labels_homicidios <- c("≤ 15", "≤ 30", "≤ 45", "≤ 60", "> 60")
 
-# Configuração dos mapas por estado com títulos
+# Map configuration by state with titles
 mapas_estados <- list(
   "PE" = list(ano = 2006, titulo = "Pernambuco 2006"),
   "BA" = list(ano = 2010, titulo = "Bahia 2010"),
@@ -54,7 +54,7 @@ mapas_estados <- list(
   "MA" = list(ano = 2015, titulo = "Maranhão 2015")
 )
 
-# Função atualizada para criar mapa
+# Updated function to create map
 criar_mapa <- function(dados, ano, titulo = NULL, mostrar_legenda = TRUE) {
   p <- ggplot() +
     geom_sf(data = dados %>% filter(year == ano),
@@ -89,7 +89,7 @@ criar_mapa <- function(dados, ano, titulo = NULL, mostrar_legenda = TRUE) {
   return(p)
 }
 
-# Criar os mapas individuais dos estados (sem legenda individual)
+# Create individual state maps (without individual legend)
 mapas_individuais <- list()
 for (estado in names(mapas_estados)) {
   info <- mapas_estados[[estado]]
@@ -105,20 +105,20 @@ for (estado in names(mapas_estados)) {
   )
 }
 
-# Criar legenda separada
+# Create separate legend
 legenda <- criar_mapa(map_data, 2006) +
   theme(legend.position = "right")
 legenda_grob <- cowplot::get_legend(legenda)
 
-# Criar um layout de 2 colunas x 3 linhas
-# Os primeiros 5 elementos são os mapas e o último é a legenda
+# Create a 2 columns x 3 rows layout
+# The first 5 elements are the maps and the last one is the legend
 layout_matrix <- rbind(
-  c(1, 2),    # Primeira linha: PE e BA
-  c(3, 4),    # Segunda linha: PB e CE
-  c(5, 6)     # Terceira linha: MA e legenda
+  c(1, 2),    # First row: PE and BA
+  c(3, 4),    # Second row: PB and CE
+  c(5, 6)     # Third row: MA and legend
 )
 
-# Combinar os mapas usando o novo layout
+# Combine maps using the new layout
 combined_states_plot <- gridExtra::grid.arrange(
   mapas_individuais$PE,  # 1
   mapas_individuais$BA,  # 2
@@ -127,15 +127,15 @@ combined_states_plot <- gridExtra::grid.arrange(
   mapas_individuais$MA,  # 5
   legenda_grob,         # 6
   layout_matrix = layout_matrix,
-  widths = c(1, 1),     # Duas colunas de igual largura
-  heights = c(1, 1, 1)  # Três linhas de igual altura
+  widths = c(1, 1),     # Two columns of equal width
+  heights = c(1, 1, 1)  # Three rows of equal height
 )
 
-# Salvar o plot combinado com dimensões ajustadas para o novo layout
+# Save the combined plot with adjusted dimensions for the new layout
 ggsave(
   filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_states.png"),
   plot = combined_states_plot,
-  width = 12,  # Ajustado para o novo layout
-  height = 15, # Mais alto para acomodar 3 linhas
+  width = 12,  # Adjusted for the new layout
+  height = 15, # Taller to accommodate 3 rows
   dpi = 400
 )

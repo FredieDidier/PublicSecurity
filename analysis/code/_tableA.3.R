@@ -1,32 +1,32 @@
-# Carregar pacotes necessários
+# Load necessary packages
 library(dplyr)
 library(xtable)
 library(knitr)
 
-# Remover municípios específicos
+# Remove specific municipalities
 main_data <- main_data[!(main_data$municipality_code == 2300000 | 
                            main_data$municipality_code == 2600000), ]
 
-# Criar variável de tratamento
+# Create treatment variable
 treated_states <- c("PE", "BA", "PB", "CE", "MA")
 main_data$treated <- main_data$state %in% treated_states
 
-# Criar as novas variáveis
+# Create new variables
 main_data <- main_data %>%
   mutate(
-    # Porcentagem de funcionários públicos municipais com ensino superior em relação ao total
+    # Percentage of municipal public employees with higher education relative to total
     func_pub_superior_percent_2006 = ifelse(year == 2006, (funcionarios_superior/total_func_pub_munic)*100, NA),
     
-    # Escolas e estabelecimentos de saúde em 2006
+    # Schools and health facilities in 2006
     schools_2006 = ifelse(year == 2006, total_estabelecimentos_educ, NA),
     health_2006 = ifelse(year == 2006, total_estabelecimentos_saude, NA))
 
-# Criar função para formatar números
+# Create function to format numbers
 format_num <- function(x) {
   format(round(x, 2), big.mark = ",", scientific = FALSE)
 }
 
-# Lista de variáveis para análise
+# List of variables for analysis
 vars_list <- list(
   # Dependent Variables
   "Homicide Rate per 100,000 inhabitants" = "taxa_homicidios_total_por_100mil_munic",
@@ -44,7 +44,7 @@ vars_list <- list(
   "Number of Health Facilities (2006)" = "health_2006"
 )
 
-# Função para calcular estatísticas por grupo
+# Function to calculate statistics by group
 calc_stats <- function(data, var_name) {
   var <- data[[var_name]]
   c(
@@ -54,7 +54,7 @@ calc_stats <- function(data, var_name) {
   )
 }
 
-# Criar data frame com estatísticas para todos os grupos
+# Create data frame with statistics for all groups
 stats_df <- data.frame(
   Variable = names(vars_list),
   # All
@@ -71,7 +71,7 @@ stats_df <- data.frame(
   SD_Never = NA
 )
 
-# Preencher estatísticas
+# Fill statistics
 for(i in 1:length(vars_list)) {
   # All
   stats_all <- calc_stats(main_data, vars_list[[i]])
@@ -86,12 +86,12 @@ for(i in 1:length(vars_list)) {
   stats_df[i, c("Mean_Never", "Median_Never", "SD_Never")] <- stats_never
 }
 
-# Calcular número de municípios únicos por grupo
+# Calculate number of unique municipalities by group
 n_munic_all <- length(unique(main_data$municipality_code))
 n_munic_treated <- length(unique(filter(main_data, treated)$municipality_code))
 n_munic_never <- length(unique(filter(main_data, !treated)$municipality_code))
 
-# Criar arquivo LaTeX
+# Create LaTeX file
 latex_output <- "
 \\begin{table}[!htbp]
 \\centering
@@ -105,7 +105,7 @@ Variable & Mean & Median & SD & Mean & Median & SD & Mean & Median & SD \\\\
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel A: Dependent Variables}} \\\\"
 
-# Adicionar Dependent Variables (índice 1)
+# Add Dependent Variables (index 1)
 latex_output <- paste0(latex_output, "\n",
                        stats_df$Variable[1], " & ",
                        stats_df$Mean_All[1], " & ",
@@ -118,7 +118,7 @@ latex_output <- paste0(latex_output, "\n",
                        stats_df$Median_Never[1], " & ",
                        stats_df$SD_Never[1], " \\\\")
 
-# Adicionar Local Capacity (índice 2)
+# Add Local Capacity (index 2)
 latex_output <- paste0(latex_output, "
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel B: Local Capacity Variables}} \\\\")
@@ -135,7 +135,7 @@ latex_output <- paste0(latex_output, "\n",
                        stats_df$Median_Never[2], " & ",
                        stats_df$SD_Never[2], " \\\\")
 
-# Adicionar Police Station Variable (índice 3)
+# Add Police Station Variable (index 3)
 latex_output <- paste0(latex_output, "\n",
                        stats_df$Variable[3], " & ",
                        stats_df$Mean_All[3], " & ",
@@ -148,7 +148,7 @@ latex_output <- paste0(latex_output, "\n",
                        stats_df$Median_Never[3], " & ",
                        stats_df$SD_Never[3], " \\\\")
 
-# Adicionar Time-Varying Controls (índices 4-7)
+# Add Time-Varying Controls (indices 4-7)
 latex_output <- paste0(latex_output, "
 \\midrule
 \\multicolumn{10}{l}{\\textit{Panel C: Time-Varying Variables}} \\\\")
@@ -167,7 +167,7 @@ for(i in 4:7) {
                          stats_df$SD_Never[i], " \\\\")
 }
 
-# Adicionar número de municípios
+# Add number of municipalities
 latex_output <- paste0(latex_output, "
 \\midrule
 Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolumn{3}{c}{", n_munic_treated, "} & \\multicolumn{3}{c}{", n_munic_never, "} \\\\
@@ -180,105 +180,5 @@ Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolum
 \\end{tablenotes}
 \\end{table}")
 
-# Salvar a tabela em um arquivo .tex
+# Save the table to a .tex file
 writeLines(latex_output, "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/descriptive_statistics_table.tex")
-
-
-###
-library(stargazer)
-
-# Criar estatísticas básicas
-total_stats <- main_data %>%
-  summarise(
-    n_estados = n_distinct(state),
-    n_municipios = n_distinct(municipality_code)
-  )
-
-# Criar dataframe com informações do tratamento
-treatment_info <- data.frame(
-  treatment_year = c(2007, 2011, 2011, 2015, 2016),
-  state = c("PE", "BA", "PB", "CE", "MA")
-)
-
-# Estatísticas por ano de tratamento
-yearly_stats <- main_data %>%
-  left_join(treatment_info, by = "state") %>%
-  group_by(treatment_year) %>%
-  summarise(
-    treated_states = n_distinct(state),
-    treated_munic = n_distinct(municipality_code)
-  ) %>%
-  arrange(treatment_year) %>%
-  filter(!is.na(treatment_year))
-
-# Estatísticas totais de tratados vs não tratados
-total_treat_stats <- main_data %>%
-  left_join(treatment_info, by = "state") %>%
-  summarise(
-    treated_states = n_distinct(state[!is.na(treatment_year)]),
-    nontreated_states = n_distinct(state[is.na(treatment_year)]),
-    treated_munic = n_distinct(municipality_code[!is.na(treatment_year)]),
-    nontreated_munic = n_distinct(municipality_code[is.na(treatment_year)])
-  )
-
-# Criar dataframe para a tabela final
-table_data <- data.frame(
-  Category = c(
-    "Total",
-    "Treated since 2007",
-    "Treated since 2011",
-    "Treated since 2015",
-    "Treated since 2016",
-    "Total Treated",
-    "Total Not Treated"
-  ),
-  States = c(
-    total_stats$n_estados,
-    yearly_stats$treated_states[yearly_stats$treatment_year == 2007],
-    yearly_stats$treated_states[yearly_stats$treatment_year == 2011],
-    yearly_stats$treated_states[yearly_stats$treatment_year == 2015],
-    yearly_stats$treated_states[yearly_stats$treatment_year == 2016],
-    total_treat_stats$treated_states,
-    total_treat_stats$nontreated_states
-  ),
-  Municipalities = c(
-    total_stats$n_municipios,
-    yearly_stats$treated_munic[yearly_stats$treatment_year == 2007],
-    yearly_stats$treated_munic[yearly_stats$treatment_year == 2011],
-    yearly_stats$treated_munic[yearly_stats$treatment_year == 2015],
-    yearly_stats$treated_munic[yearly_stats$treatment_year == 2016],
-    total_treat_stats$treated_munic,
-    total_treat_stats$nontreated_munic
-  )
-)
-
-sink("/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/summary_stats.tex")
-
-cat("\\documentclass{article}
-
-% Pacotes necessários
-\\usepackage[utf8]{inputenc}
-\\usepackage{booktabs}
-\\usepackage{dcolumn}
-\\usepackage{float}
-\\usepackage[margin=1in]{geometry}
-\\usepackage{caption}
-
-\\begin{document}
-")
-
-stargazer(table_data,
-          type = "latex",
-          title = "Distribution of Treatment",
-          summary = FALSE,
-          rownames = FALSE,
-          header = FALSE,
-          digits = 0,
-          float = TRUE,
-          font.size = "normalsize",
-          covariate.labels = c("Category", "States", "Municipalities"),
-          table.placement = "!htbp",
-          style = "aer")
-
-cat("\\end{document}")
-sink()

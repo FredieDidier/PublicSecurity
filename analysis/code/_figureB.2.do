@@ -1,61 +1,58 @@
-* Carregar os dados
-use "/Users/Fredie/Library/CloudStorage/Dropbox/PublicSecurity/build/workfile/output/main_data.dta", clear
-
-* Limpeza inicial
+* Load Data
+ use "$inpdir/main_data.dta", clear
 drop if municipality_code == 2300000 | municipality_code == 2600000
 
-* Remover Pernambuco (estado focal) da análise
+* Removing Pernambuco (PE) from analysis (PE was treated in 2007)
 drop if state == "PE"
 
-* Definir anos de tratamento para diferentes estados
+* Defining treatment year for other states
 gen treatment_year = 0
 replace treatment_year = 2007 if inlist(state, "AL", "PI", "RN", "SE")
 replace treatment_year = 2011 if inlist(state, "BA", "PB")
 replace treatment_year = 2015 if state == "CE"
 replace treatment_year = 2016 if state == "MA"
 
-* Gerar variáveis para a análise
+* Create variables for analysis
 gen t2007 = (treatment_year == 2007)
-gen trend = year - 2000 // Tendência linear começando em 2000
+gen trend = year - 2000 
 gen partrend2007 = trend * t2007
 gen post = 1 if year >= 2007
 replace post = 0 if year < 2007
 
-* Criar variáveis para limitar a amostra por período de tratamento (mesmo filtro da tabela)
+* Create variable to limit tje sample by period of treatment
 gen sample_state = 1
 replace sample_state = 0 if inlist(state, "BA", "PB") & year > 2010
 replace sample_state = 0 if state == "CE" & year > 2014
 replace sample_state = 0 if state == "MA" & year > 2015
 
-* Variáveis necessárias
+* Necessary Variables
 gen log_pop = log(population_muni)
 gen spillover50 = (dist_PE < 50)
 
-* Configurar painel
+* Panel configuration
 xtset municipality_code year
 
-* Abordagem 1: Gráfico de resíduos após controlar por efeitos fixos
+* Graph of residuals after controlling for fixed effects
 preserve
 keep if sample_state == 1
 
-* Estimar modelo com efeitos fixos para extrair resíduos
-* Apenas removendo os efeitos fixos de município e ano (sem incluir as variáveis de interesse)
-areg taxa_homicidios_total_por_100m_1 i.year [aw=population_2000_muni], absorb(municipality_code) vce(cluster state_code)
+* Model
+areg taxa_homicidios_total_por_100m_1 i.year log_pop partrend2007 [aw=population_2000_muni], absorb(municipality_code) vce(cluster state_code)
 
-* Predizer resíduos
+* Predict Residuals
 predict residuals, residuals
 
-* Calcular médias dos resíduos por ano e por status de spillover50
+* Calculate means of residuals by year and spillover50 status
 collapse (mean) residuals [aw=population_2000_muni], by(year spillover50)
 
-* Reorganizar os dados para formato amplo
+* Reshape data
 reshape wide residuals, i(year) j(spillover50)
 
-* Renomear variáveis para maior clareza
+* Rename variables for clarity
 rename residuals0 residuals_no_spillover
 rename residuals1 residuals_spillover
 
-* Gerar gráfico com pontos
+* Create Graph
 twoway (line residuals_spillover year, lcolor(red) lwidth(medthick)) ///
        (scatter residuals_spillover year, mcolor(red) msymbol(circle) msize(medium)) ///
        (line residuals_no_spillover year, lcolor(blue) lwidth(medthick)) ///
@@ -68,8 +65,8 @@ twoway (line residuals_spillover year, lcolor(red) lwidth(medthick)) ///
                     4 "Distance to PE's border (> 50km)") rows(2) size(small)) ///
        scheme(s1color)
 	   
-* Salvar o gráfico
-graph export "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/graphs/spillover_residuals_50km.pdf", replace
+* Save graph
+graph export "${outdir}/graphs/spillover_residuals_50km.pdf", replace
 
 restore
 

@@ -3,6 +3,9 @@ library(dplyr)
 library(tidyr)
 library(scales)
 
+# Loading Main Data
+load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
+
 create_homicide_graph <- function(data, category, GITHUB_PATH) library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -43,8 +46,8 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
     theme_minimal() +
     theme(
       text = element_text(size = 20),
-      axis.title.x = element_text(face = "bold", size = 22),  # Mantém negrito apenas no título do eixo x
-      axis.title.y = element_text(size = 22),  # Remove o negrito do título do eixo y
+      axis.title.x = element_text(face = "bold", size = 22),  
+      axis.title.y = element_text(size = 22),
       axis.text = element_text(size = 20),
       axis.text.x = element_text(angle = 45, hjust = 1),
       legend.text = element_text(size = 18),
