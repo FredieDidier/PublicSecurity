@@ -8,7 +8,13 @@ You will be able to download the research data (raw and cleaned files) at Zenodo
 
 The code in this replication package constructs the cleaned datasets, figures, tables and maps using data from DATASUS-SIM ("DATASUS Mortality System"), RAIS ("Annual Report of Social Information"), IBGE (Brazilian Institute of Geography and Statistics), OpenStreetMap and ATLAS ("Human Development Atlas") using R and Stata 18.
 
-All data are publicly available, and to download DATASUS-SIM, RAIS, and ATLAS data you just need to follow the steps provided in **[Base dos Dados](https://basedosdados.org)**.
+All data are publicly available, and to download DATASUS-SIM, RAIS, and ATLAS data you just need to follow the steps provided in **[Base dos Dados](https://basedosdados.org)**. They will explain how to set up their bigquery in your Google Account and how to properly download data. Notice that you will have to change the billing_project_id parameter from my code in order to be able to download because it is specific from my Google Account. Below I show an example:
+
+```r
+query <- "SELECT * FROM `basedosdados.br_ms_sim.microdados`"
+sim_do <- download(query, path = paste0(DROPBOX_PATH, "build/datasus/input/sim.do.csv"),
+                   billing_project_id = "sodium-surf-307721")
+```
 
 ## Build
 
