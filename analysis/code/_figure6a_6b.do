@@ -39,15 +39,14 @@ gen t2007 = (treatment_year == 2007)  // PE
 gen t2011 = (treatment_year == 2011)  // BA, PB
 gen t2015 = (treatment_year == 2015)  // CE
 gen t2016 = (treatment_year == 2016)  // MA
-gen never = (treatment_year == 0)     // Nunca tratados
 
-* Criar dummies de ano
+* Creating dummies for years
 forvalues y = 2000/2019 {
     gen d`y' = (year == `y')
 }
 
 ******************************************************************************
-* Criar dummies de evento para todas as coortes (seguindo formato original)
+* Creating event dummies for all cohorts
 ******************************************************************************
 
 * Creating dummies for years
@@ -228,6 +227,14 @@ matrix betas_trend = e(b)
 * Extracting coefs for each cohort
 * PE (2007)
 matrix betas2007_trend = ., betas_trend[1, 1..18], ., betas_trend[1, 19]
+
+* Extracting SD error
+mata st_matrix("A", sqrt(st_matrix("e(V)")))
+mata st_matrix("A", diagonal(st_matrix("A")))
+matrix A = A'
+
+* PE (2007)
+matrix vars2007_trend = ., A[1, 1..18]
 
 * Calculate p-values using boottest
 boottest {t_6_2007} {t_5_2007} {t_4_2007} {t_3_2007} {t_2_2007} {t_1_2007} ///
@@ -464,7 +471,7 @@ twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <
 
 
 ********************************************************************************
-* Event Study graoh with Trends
+* Event Study graph with Trends
 ********************************************************************************
 
 * Convert Matrices to dataset
@@ -484,7 +491,7 @@ replace coef_2007_trend = betas2007_trend[1,4] if rel_year == -4
 replace coef_2007_trend = betas2007_trend[1,5] if rel_year == -3
 replace coef_2007_trend = betas2007_trend[1,6] if rel_year == -2
 replace coef_2007_trend = betas2007_trend[1,7] if rel_year == -1
-replace coef_2007_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace coef_2007_trend = 0 if rel_year == 0  // Base Year (ommitted)
 replace coef_2007_trend = betas2007_trend[1,8] if rel_year == 1
 replace coef_2007_trend = betas2007_trend[1,9] if rel_year == 2
 replace coef_2007_trend = betas2007_trend[1,10] if rel_year == 3
@@ -506,7 +513,7 @@ replace se_2007_trend = vars2007_trend[1,4] if rel_year == -4
 replace se_2007_trend = vars2007_trend[1,5] if rel_year == -3
 replace se_2007_trend = vars2007_trend[1,6] if rel_year == -2
 replace se_2007_trend = vars2007_trend[1,7] if rel_year == -1
-replace se_2007_trend = 0 if rel_year == 0  // Ano base (omitido)
+replace se_2007_trend = 0 if rel_year == 0  // Base Year (ommitted)
 replace se_2007_trend = vars2007_trend[1,8] if rel_year == 1
 replace se_2007_trend = vars2007_trend[1,9] if rel_year == 2
 replace se_2007_trend = vars2007_trend[1,10] if rel_year == 3

@@ -8,7 +8,7 @@ library(janitor)
 # Loading Main Data
 load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
 
-# Filter specific codes
+# Filter specific codes (these are wrong codes - represent states rather than municipalities. Don't know why they are in the dataset)
 main_data <- main_data %>%
   filter(municipality_code != 2300000) %>%
   filter(municipality_code != 2600000)

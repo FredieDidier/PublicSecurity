@@ -28,16 +28,32 @@ capture mkdir "${outdir}/tables/"
 *****************************
 
 * Main Regression
-do "${codedir}\_figure4a_4b.do"
+do "${codedir}/_figure4a_4b.do" // also includes table B.1 code
 
 * Heterogenity by Local Capacity and Police Acessibility Regression
-do "${codedir}\_figure5a_5b.do"
+do "${codedir}/_figure5a_5b.do" // also includes table B.2 code
 
 * Young Non-White Regression
-do "${codedir}\_figure6a_6b.do"
+do "${codedir}/_figure6a_6b.do" // also includes table B.8 code
 
 * Determinants of local capacity
-do "${codedir}\_tableA.1.do"
+do "${codedir}/_tableA.1.do"
 
 * Spillover Analysis
-do "${codedir}\_figureB.2.do"
+do "${codedir}/_figureB.1.do"
+
+* Robustness Checks (Restricting Sample to cities less than 50km from PE's border)
+do "${codedir}/_table_B.3.do"
+
+* Robustness Checks (Removing Spillovers municipalities from Sample)
+do "${codedir}/_table_B.4.do"
+
+* Robustness Checks (Removing SE state from Sample)
+do "${codedir}/_table_B.5.do"
+
+* Robustness Checks (Removing MA and PI states from Sample)
+do "${codedir}/_table_B.6.do"
+
+* Robustness Checks (Removing BA and MA states from Sample)
+do "${codedir}/_table_B.7.do"
+

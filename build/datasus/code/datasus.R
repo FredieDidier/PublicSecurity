@@ -18,8 +18,8 @@ sim_do = sim_do[sigla_uf %in% c("BA", "MA", "PI", "CE", "RN", "AL", "SE", "PB", 
 # Selecting years
 sim_do = sim_do[ano %in% c(2000:2019)]
 
-# Create sequences of codes for different categories
-codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9), "Y35", "Y36")
+# Create sequences of codes for different categories of homicides based on CID-10 codes
+codigos_homicidio <- c(paste0("X", 85:99), paste0("Y0", 0:9), "Y35", "Y36") # Aggressions + Legal Intervention + War Operations
 
 # Create column to identify homicides and outside of home homicides
 sim_do[, `:=`(
