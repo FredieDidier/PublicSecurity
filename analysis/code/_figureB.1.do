@@ -57,7 +57,7 @@ twoway (line residuals_spillover year, lcolor(red) lwidth(medthick)) ///
        (scatter residuals_spillover year, mcolor(red) msymbol(circle) msize(medium)) ///
        (line residuals_no_spillover year, lcolor(blue) lwidth(medthick)) ///
        (scatter residuals_no_spillover year, mcolor(blue) msymbol(circle) msize(medium)), ///
-       ytitle("Homicide Rate") ///
+       ytitle("Homicide Rate") xtitle("Year") ///
        xlabel(2000(2)2019, angle(45)) ///
        xline(2007, lpattern(dash) lcolor(black)) ///
        yline(0, lpattern(dash) lcolor(black)) ///
