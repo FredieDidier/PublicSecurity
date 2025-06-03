@@ -1,0 +1,21 @@
+variable_name,description_en
+year,Year of observation
+municipality_code,Municipality code (IBGE standard)
+municipality,Name of the municipality
+state,State abbreviation
+taxa_homicidios_total_por_100mil_state,"Total homicide rate per 100,000 inhabitants at the state level"
+taxa_homicidios_total_por_100mil_munic,"Total homicide rate per 100,000 inhabitants at the municipality level (* named 'taxa_homicidios_total_por_100m_1' in the .dta dataset)"
+funcionarios_superior,Number of municipal public employees with higher education
+total_func_pub_munic,Total number of municipal public employees
+perc_superior,Percentage of municipal public employees with higher education
+pib_municipal_per_capita,Municipal GDP per capita (in BRL)
+log_pib_municipal_per_capita,Logarithm of municipal GDP per capita
+population_2000_muni,Municipality population in the year 2000
+population,Municipality population (current)
+distancia_delegacia_km,Distance to the nearest police station (in km)
+taxa_homicidios_negro_jovem_por_100mil_munic,"Homicide rate of young non-white individuals per 100,000 in the municipality (* named 'taxa_homicidios_negro_jovem_por_' in the .dta dataset)"
+idhm,Municipal Human Development Index (MHDI)
+dist_PE,Distance to the border of the state of Pernambuco (in km)
+state_code,State code (numeric)
+total_estabelecimentos_educ,Total number of educational establishments in the municipality
+total_estabelecimentos_saude,Total number of health establishments in the municipality
