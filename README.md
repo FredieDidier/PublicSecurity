@@ -84,9 +84,11 @@ library(osmdata)
 library(janitor)
    ```
 2. *Configure Paths*
+   
 Update path variables in each Master_Build_*.R script to match your local directory structure.
 
-3. *Run Data Processing*
+4. *Run Data Processing*
+   
 Execute master scripts in any order (each is independent):
 
 ```r
