@@ -4,7 +4,7 @@
 
 ## Overview
 
-You will be able to download the research data (raw and cleaned files) at Zenodo soon.
+You will be able to download the research data (raw and cleaned files) from my Zenodo repository soon: [DOI will be added upon publication].
 
 The code in this replication package constructs the cleaned datasets, figures, tables and maps using data from DATASUS-SIM ("DATASUS Mortality System"), RAIS ("Annual Report of Social Information"), IBGE (Brazilian Institute of Geography and Statistics), OpenStreetMap and ATLAS ("Human Development Atlas") using R and Stata 18.
 
