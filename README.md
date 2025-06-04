@@ -123,7 +123,8 @@ To replicate the results that require R, please follow these steps:
 2. Clone this Github repository into your computer device.
 3. Open the code file (`Master_Analysis.R`) located in the folder (`./analysis/code`) using RStudio.
 4. Change the path to the Github repository folder and the replication package folder at lines 40 and 41 respectively in the code file to the directory where the Github repository and the replication package are located in your computer device.
-5. Run the `Master_Analysis.R` to generate the results. The `main_data.dta` file will be saved automatically in the folder (`./workfile/output`). The output files (both in PNG and TeX format) will be saved automatically in the folder (`./analysis/output`).
+5. Make sure you have followed **[Base dos Dados](https://basedosdados.org)** instructions to set up their bigquery and make sure you change the billing_project_id parameter from my code in order to be able to download. Check the **Overview** section above to see an example.
+6. Run the `Master_Analysis.R` to generate the results. The `main_data.dta` file will be saved automatically in the folder (`./workfile/output`). The output files (both in PNG and TeX format) will be saved automatically in the folder (`./analysis/output`).
 
 ### Code and Corresponding Results (R)
 
