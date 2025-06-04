@@ -56,7 +56,7 @@ The data construction in the `build` folder follows a modular approach with sepa
 
 Each dataset has its own processing pipeline:
 
-**Master_Build_[dataset].R → [dataset].R → clean_[dataset].RData**
+**Master_Build_[dataset].R → [dataset].R → clean_[dataset].RData**. The exceptions are *delegacias* which has the cleaned data file named **delegacias.RData** and *pib municipal* which has the cleaned data file named **clean_pib_munic.RData**.
 
 All Master_Build_[dataset].R and [dataset].R code files are located within the appropriate [dataset/code] folder.
 
