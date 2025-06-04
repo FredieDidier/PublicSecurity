@@ -1,81 +1,81 @@
-# Função para encurtar os nomes das variáveis
+# Function to shorten variable names
 encurtar_nome <- function(nome, sufixo = "") {
-  # Limitar o nome a 32 caracteres (Stata) já contando com o sufixo
+  # Limit the name to 32 characters (Stata) already counting the suffix
   limite <- 32 - nchar(sufixo)
   nome <- substr(nome, 1, limite)
-  # Concatenar o sufixo, se houver
+  # Concatenate the suffix, if any
   nome <- paste0(nome, sufixo)
   return(nome)
 }
 
-# Função para transformar os nomes em válidos para Stata
+# Function to transform names into valid ones for Stata
 ajustar_nomes_stata <- function(nome, sufixo = "") {
-  # Substituir caracteres não permitidos por underscores
+  # Replace non-allowed characters with underscores
   nome <- str_replace_all(nome, "[^a-zA-Z0-9_]", "_")
   
-  # Garantir que o nome comece com uma letra (Stata exige isso)
+  # Ensure the name starts with a letter (Stata requires this)
   if (!grepl("^[a-zA-Z]", nome)) {
-    nome <- paste0("v_", nome)  # Prefixo 'v_' caso o nome comece com número ou símbolo
+    nome <- paste0("v_", nome)  # Prefix 'v_' if the name starts with a number or symbol
   }
   
-  # Encurtar o nome para 32 caracteres incluindo o sufixo
+  # Shorten the name to 32 characters including the suffix
   nome <- encurtar_nome(nome, sufixo)
   
   return(nome)
 }
 
-# Função para garantir que os nomes sejam únicos
+# Function to ensure names are unique
 garantir_nomes_unicos <- function(nomes) {
-  # Criar vetor para armazenar os novos nomes únicos
+  # Create vector to store the new unique names
   nomes_unicos <- character(length(nomes))
   
-  # Contador para adicionar sufixos numéricos
+  # Counter to add numeric suffixes
   contador <- integer(length(nomes))
   
   for (i in seq_along(nomes)) {
     nome_atual <- nomes[i]
     sufixo <- ""
     
-    # Garantir que o nome seja único
+    # Ensure the name is unique
     while (nome_atual %in% nomes_unicos) {
       contador[i] <- contador[i] + 1
       sufixo <- paste0("_", contador[i])
       nome_atual <- ajustar_nomes_stata(nomes[i], sufixo)
     }
     
-    # Atribuir o nome único ajustado ao vetor de nomes
+    # Assign the adjusted unique name to the names vector
     nomes_unicos[i] <- nome_atual
   }
   
   return(nomes_unicos)
 }
 
-# Função para identificar e ajustar os nomes das colunas problemáticas
+# Function to identify and adjust problematic column names
 ajustar_colunas <- function(df) {
-  # Gerar novos nomes aplicando a função ajustar_nomes_stata a cada nome de coluna
+  # Generate new names by applying the ajustar_nomes_stata function to each column name
   novos_nomes <- names(df) %>%
     sapply(ajustar_nomes_stata, USE.NAMES = FALSE)
   
-  # Garantir que os nomes sejam únicos, adicionando sufixos numéricos se necessário
+  # Ensure names are unique, adding numeric suffixes if necessary
   novos_nomes <- garantir_nomes_unicos(novos_nomes)
   
-  # Verificar quais nomes foram modificados
+  # Check which names were modified
   colunas_modificadas <- names(df) != novos_nomes
   
-  # Exibir colunas que foram renomeadas
+  # Display columns that were renamed
   if (any(colunas_modificadas)) {
-    cat("Colunas renomeadas:\n")
-    print(data.frame(Antigo = names(df)[colunas_modificadas], Novo = novos_nomes[colunas_modificadas]))
+    cat("Renamed columns:\n")
+    print(data.frame(Old = names(df)[colunas_modificadas], New = novos_nomes[colunas_modificadas]))
   }
   
-  # Substituir os nomes antigos pelos novos no dataframe
+  # Replace old names with new ones in the dataframe
   names(df) <- novos_nomes
   
   return(df)
 }
 
-# Exemplo de uso com o seu dataframe chamado "data"
+# Example usage with your dataframe called "data"
 main_data_stata <- ajustar_colunas(main_data)
 
-# Agora você pode salvar o dataframe no formato .dta (Stata)
+# Now you can save the dataframe in .dta format (Stata)
 write_dta(main_data_stata, paste0(DROPBOX_PATH, "build/workfile/output/main_data.dta"))

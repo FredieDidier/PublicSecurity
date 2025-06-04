@@ -82,7 +82,7 @@ source(paste0(GITHUB_PATH, "analysis/code/_figure2b.R"))
 #                                         
 ######################################################
 
-source(paste0(GITHUB_PATH, "analysis/code/_figure1b.R"))
+source(paste0(GITHUB_PATH, "analysis/code/_figure1.R"))
 
 ######################################################
 #                                         
