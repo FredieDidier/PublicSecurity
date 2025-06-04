@@ -29,7 +29,7 @@ read_uf_shapefile <- function(uf_code, uf_abbr) {
 area <- uf_dict %>%
   imap_dfr(~ read_uf_shapefile(uf_code = .y, uf_abbr = .x))
 
-# Veridying and defining CRS if necessary
+# Verifying and defining CRS if necessary
 if (is.na(st_crs(area))) {
   warning("CRS dos municípios não definido. Assumindo EPSG:4326 (WGS84).")
   st_crs(area) <- 4326
