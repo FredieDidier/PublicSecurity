@@ -154,6 +154,9 @@ Here is a detailed explanation of the codes within `Master_Analysis.R` and the r
 **Appendix Table A.3:** Summary Statistics
 - `./analysis/code/_tableA.3.R`
 
+**Save Stata .dta dataset:**
+- `./analysis/code/_main_data_dta.R`
+
 To replicate the results that require Stata, please follow these steps:
 
 1. Open the code file (`Master_Analysis.do`) located in the folder (`./analysis/code`) using your preferred Stata software.
