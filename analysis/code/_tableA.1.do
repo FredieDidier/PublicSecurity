@@ -103,20 +103,20 @@ erase "temp_additional_controls.dta"
 ********************************************************************************
 * Specification 1: Just population
 reg high_cap_pc log_pop_0405 if year == 2006, cluster(municipality_code)
-outreg2 using "${outdir}/tables/predictive_capacity.tex", tex replace ///
+outreg2 using "${outdir}/tables/table_A.1.tex", tex replace ///
     ctitle("High Capacity (% Higher Education)") keep(log_pop_0405) nocons
 
 * Specification 2: Population and GDP
 reg high_cap_pc log_pop_0405 log_pib_pc_0405 if year == 2006, cluster(municipality_code)
-outreg2 using "${outdir}/tables/predictive_capacity.tex", tex append ///
+outreg2 using "${outdir}/tables/table_A.1.tex", tex append ///
     ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405) nocons
 
 * Specification 3: All controls except mean of proportion of public employees with higher education in 2004-2005
 reg high_cap_pc log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 if year == 2006, cluster(municipality_code)
-outreg2 using "${outdir}/tables/predictive_capacity.tex", tex append ///
+outreg2 using "${outdir}/tables/table_A.1.tex", tex append ///
     ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405) nocons
 	
 * Specification 4: All controls
 reg high_cap_pc log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 log_mean_porc_func_superior_0405 if year == 2006, cluster(municipality_code)
-outreg2 using "${outdir}/tables/predictive_capacity.tex", tex append ///
+outreg2 using "${outdir}/tables/table_A.1.tex", tex append ///
     ctitle("High Capacity (% Higher Education)") keep(log_pop_0405 log_pib_pc_0405 log_schools_0405 log_health_0405 log_mean_porc_func_superior_0405) nocons

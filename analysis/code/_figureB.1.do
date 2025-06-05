@@ -66,7 +66,7 @@ twoway (line residuals_spillover year, lcolor(red) lwidth(medthick)) ///
        scheme(s1color)
 	   
 * Save graph
-graph export "${outdir}/graphs/spillover_residuals_50km.pdf", replace
+graph export "${outdir}/graphs/figure_B1.pdf", replace
 
 restore
 

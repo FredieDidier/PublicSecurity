@@ -105,7 +105,7 @@ mapa_superior <- ggplot() +
 
 # Save the map
 ggsave(
-  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_public_employees_education_2006.png"),
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/figure_3a.png"),
   plot = mapa_superior,
   width = 12,  # Width in inches
   height = 8,   # Height in inches

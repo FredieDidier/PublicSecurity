@@ -262,7 +262,7 @@ matrix pvalue2007_trend = ., r(p_1), r(p_2), r(p_3), r(p_4), r(p_5), r(p_6), ///
 
 * Open file to write
 cap file close f1
-file open f1 using "${outdir}/tables/young_black_event_study_PE.tex", write replace
+file open f1 using "${outdir}/tables/table_B.8.tex", write replace
 
 * Writing Table's header
 file write f1 "\documentclass[12pt]{article}" _n
@@ -467,7 +467,7 @@ twoway (rcap ci_upper_2007 ci_lower_2007 rel_year if rel_year >= -7 & rel_year <
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007, replace)
 	   
-	 graph export "${outdir}/graphs/young_black_event_study_PE.pdf", replace
+	 graph export "${outdir}/graphs/figure_6a.pdf", replace
 
 
 ********************************************************************************
@@ -542,4 +542,4 @@ twoway (rcap ci_upper_2007_trend ci_lower_2007_trend rel_year if rel_year >= -6 
        title("Pernambuco (2007)") ///
        legend(off) name(graph_2007_trend, replace)
 	   
-	   graph export "${outdir}/graphs/young_black_event_study_PE_trends.pdf", replace
+	   graph export "${outdir}/graphs/figure_6b.pdf", replace

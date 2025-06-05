@@ -6,22 +6,17 @@ library(scales)
 # Loading Main Data
 load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
 
-create_homicide_graph <- function(data, category, GITHUB_PATH) library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(scales)
-
-create_homicide_graph <- function(data, category, GITHUB_PATH) {
+create_homicide_total_graph <- function(data, GITHUB_PATH) {
   target_states <- c("BA", "PE", "PB", "MA", "CE")
-  cols <- c(paste0("taxa_homicidios_", category, "_por_100mil_", target_states),
-            paste0("taxa_homicidios_", category, "_por_100mil_other_states"))
+  cols <- c(paste0("taxa_homicidios_total_por_100mil_", target_states),
+            "taxa_homicidios_total_por_100mil_other_states")
   
   graph_data <- data %>%
     select(year, all_of(cols)) %>%
     pivot_longer(cols = all_of(cols),
                  names_to = "state",
                  values_to = "rate") %>%
-    mutate(state = sub("taxa_homicidios_.*_por_100mil_", "", state))
+    mutate(state = sub("taxa_homicidios_total_por_100mil_", "", state))
   
   color_palette <- c(
     "PE" = "#1f77b4",
@@ -86,21 +81,9 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
                  color = "black",
                  size = 1)
   
-  dir.create(file.path(GITHUB_PATH, "analysis/output/graphs"), recursive = TRUE, showWarnings = FALSE)
   
-  filename <- file.path(GITHUB_PATH, "analysis/output/graphs", 
-                        paste0("homicide_",
-                               switch(category,
-                                      "total" = "total",
-                                      "homem" = "male",
-                                      "mulher" = "female",
-                                      "negro" = "non_white",
-                                      "branco" = "white",
-                                      "homem_jovem" = "young_male",
-                                      "mulher_jovem" = "young_female",
-                                      "negro_jovem" = "young_non_white",
-                                      "branco_jovem" = "young_white"),
-                               ".png"))
+  # Save
+  filename <- file.path(GITHUB_PATH, "analysis/output/graphs", "figure_2a.png")
   
   ggsave(filename = filename,
          plot = graph, 
@@ -111,11 +94,6 @@ create_homicide_graph <- function(data, category, GITHUB_PATH) {
   return(graph)
 }
 
-# Example usage
-categories <- c("total", "homem", "mulher", "negro", "branco", 
-                "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
-
-for (category in categories) {
-  graph <- create_homicide_graph(main_data, category, GITHUB_PATH)
-  print(paste("Created graph for category:", category))
-}
+# Generate and save graph
+graph_total <- create_homicide_total_graph(main_data, GITHUB_PATH)
+print("Created graph: figure_2a.png")

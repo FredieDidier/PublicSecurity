@@ -7,17 +7,17 @@ library(fixest)
 # Loading Main Data
 load(paste0(DROPBOX_PATH, "build/workfile/output/main_data.RData"))
 
-create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
+create_residuals_homicide_total_graph <- function(data, GITHUB_PATH) {
   target_states <- c("BA", "PE", "PB", "MA", "CE")
-  cols <- c(paste0("taxa_homicidios_", category, "_por_100mil_", target_states),
-            paste0("taxa_homicidios_", category, "_por_100mil_other_states"))
+  cols <- c(paste0("taxa_homicidios_total_por_100mil_", target_states),
+            "taxa_homicidios_total_por_100mil_other_states")
   
   graph_data <- data %>%
     select(year, state, all_of(cols)) %>%
     pivot_longer(cols = all_of(cols),
                  names_to = "state_col",
                  values_to = "rate") %>%
-    mutate(state = sub("taxa_homicidios_.*_por_100mil_", "", state_col))
+    mutate(state = sub("taxa_homicidios_total_por_100mil_", "", state_col))
   
   fe_model <- feols(rate ~ 1 | state + year, data = graph_data)
   graph_data$residuals <- residuals(fe_model)
@@ -46,8 +46,9 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
     theme_minimal() +
     theme(
       text = element_text(size = 20),
-      axis.title.x = element_text(face = "bold", size = 22),  # Mantém negrito apenas no título do eixo x
-      axis.title.y = element_text(size = 22),  # Remove o negrito do título do eixo y    
+      axis.title.x = element_text(face = "bold", size = 22),
+      axis.title.y = element_text(size = 22),
+      axis.text = element_text(size = 20),
       axis.text.x = element_text(angle = 45, hjust = 1),
       legend.text = element_text(size = 18),
       legend.position = "bottom",
@@ -89,25 +90,10 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
                  color = "black",
                  size = 1)
   
-  # Garantir que o diretório existe
-  dir.create(file.path(GITHUB_PATH, "analysis/output/graphs"), recursive = TRUE, showWarnings = FALSE)
+  # Save
+  filename <- file.path(GITHUB_PATH, "analysis/output/graphs", "figura_2b.png")
   
-  # Nome do arquivo corrigido para corresponder ao padrão do LaTeX
-  filename <- file.path(GITHUB_PATH, "analysis/output/graphs", 
-                        paste0("residuals_homicide_",
-                               switch(category,
-                                      "total" = "total",
-                                      "homem" = "male",
-                                      "mulher" = "female",
-                                      "negro" = "non_white",
-                                      "branco" = "white",
-                                      "homem_jovem" = "young_male",
-                                      "mulher_jovem" = "young_female",
-                                      "negro_jovem" = "young_non_white",
-                                      "branco_jovem" = "young_white"),
-                               ".png"))
-  
-  # Tentativa de salvar com mensagem de debug
+  # Save
   tryCatch({
     ggsave(filename = filename,
            plot = graph, 
@@ -122,12 +108,7 @@ create_homicide_graph_fe <- function(data, category, GITHUB_PATH) {
   return(graph)
 }
 
-# Example Usage
-categories <- c("total", "homem", "mulher", "negro", "branco", 
-                "homem_jovem", "mulher_jovem", "negro_jovem", "branco_jovem")
-
-for (category in categories) {
-  print(paste("Processing category:", category))
-  graph <- create_homicide_graph_fe(main_data, category, GITHUB_PATH)
-  print(paste("Completed processing for category:", category))
-}
+# Generate and save graph
+print("Processing residuals for total homicides")
+graph_residuals_total <- create_residuals_homicide_total_graph(main_data, GITHUB_PATH)
+print("Created graph: figure_2b.png")

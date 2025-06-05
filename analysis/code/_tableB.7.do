@@ -940,7 +940,7 @@ graph export "${outdir}/graphs/robustness_delcap_event_study_trends_PE_noBAMA.pd
 ********************************************************************************
 * Open File to Write
 cap file close f1
-file open f1 using "${outdir}/tables/robutness_event_study_PE_heterogeneity_noBAMA.tex", write replace
+file open f1 using "${outdir}/tables/table_B.7.tex", write replace
 * Write header
 file write f1 "\begin{table}[h!]" _n
 file write f1 "\centering" _n

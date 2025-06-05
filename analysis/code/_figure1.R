@@ -103,7 +103,7 @@ map = ggplot() +
 
 # Save the map as PNG with high resolution
 ggsave(
-  paste0(GITHUB_PATH, "analysis/output/maps/map_all_municipalities_treated_not_treated.png"), 
+  paste0(GITHUB_PATH, "analysis/output/maps/figure_1.png"), 
   map, 
   width = 12, 
   height = 8, 

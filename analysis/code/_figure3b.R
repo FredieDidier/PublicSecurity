@@ -100,7 +100,7 @@ map = ggplot() +
 
 # Save the map as a PNG file with high resolution
 ggsave(
-  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_police_station_proximity.png"),
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/figure_3b.png"),
   plot = map,
   width = 12,  # Width in inches
   height = 8,  # Height in inches

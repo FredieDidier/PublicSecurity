@@ -181,4 +181,4 @@ Number of Municipalities & \\multicolumn{3}{c}{", n_munic_all, "} & \\multicolum
 \\end{table}")
 
 # Save the table to a .tex file
-writeLines(latex_output, "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/descriptive_statistics_table.tex")
+writeLines(latex_output, "/Users/fredie/Documents/GitHub/PublicSecurity/analysis/output/tables/table_A.3.tex")

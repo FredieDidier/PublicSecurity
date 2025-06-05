@@ -918,7 +918,7 @@ twoway (rcap ci_upper_2007_cat1 ci_lower_2007_cat1 rel_year if rel_year >= -7 & 
        name(pe_sem_tendencia, replace) scheme(s1mono)
        
 * Salvar gráfico
-graph export "${outdir}/graphs/delcap_event_study_PE.pdf", replace
+graph export "${outdir}/graphs/figure_5a.pdf", replace
 
 * PART 2: GRAPH WITH TRENDS
 
@@ -1054,7 +1054,7 @@ twoway (rcap ci_upper_2007_cat1_trend ci_lower_2007_cat1_trend rel_year if rel_y
        name(pe_com_tendencia, replace) scheme(s1mono)
 
 * Salvar gráfico
-graph export "${outdir}/graphs/delcap_event_study_trends_PE.pdf", replace
+graph export "${outdir}/graphs/figure_5b.pdf", replace
 
 
 ********************************************************************************
@@ -1062,7 +1062,7 @@ graph export "${outdir}/graphs/delcap_event_study_trends_PE.pdf", replace
 ********************************************************************************
 * Open file to write
 cap file close f1
-file open f1 using "${outdir}/tables/event_study_PE_heterogeneity.tex", write replace
+file open f1 using "${outdir}/tables/table_B.2.tex", write replace
 * Writing Table's header
 file write f1 "\begin{table}[h!]" _n
 file write f1 "\centering" _n

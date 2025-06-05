@@ -1063,7 +1063,7 @@ graph export "${outdir}/graphs/robustness_event_study_PE_trends_noSE.pdf", repla
 ********************************************************************************
 * Open File to Write
 cap file close f1
-file open f1 using "${outdir}/tables/robustness_event_study_PE_noSE.tex", write replace
+file open f1 using "${outdir}/tables/table_B.5.tex", write replace
 * Write header
 file write f1 "\begin{table}[h!]" _n
 file write f1 "\centering" _n

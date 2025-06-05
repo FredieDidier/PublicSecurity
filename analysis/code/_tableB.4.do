@@ -311,7 +311,7 @@ matrix pvalue2016_trend = ., r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51
 
 * Open file for writing
 cap file close f1
-file open f1 using "${outdir}/tables/event_study_robustness_PE_nospillovers50km.tex", write replace
+file open f1 using "${outdir}/tables/table_B.4.tex", write replace
 
 * Write table header
 file write f1 "\begin{table}[h!]" _n

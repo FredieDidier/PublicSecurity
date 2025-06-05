@@ -320,7 +320,7 @@ matrix pvalue2016_trend = ., r(p_46), r(p_47), r(p_48), r(p_49), r(p_50), r(p_51
 
 * Open file to write
 cap file close f1
-file open f1 using "${outdir}/tables/event_study_completa.tex", write replace
+file open f1 using "${outdir}/tables/table_B.1.tex", write replace
 
 * Writing Table's header
 file write f1 "\begin{table}[h!]" _n
@@ -689,7 +689,7 @@ twoway (rcap ci_upper_2016 ci_lower_2016 rel_year if rel_year >= -7 & rel_year <
 graph combine graph_2007 graph_2011 graph_2015 graph_2016, rows(2) cols(2)
 
 * Salvar o gráfico combinado
-graph export "${outdir}/graphs/main_event_study.pdf", replace
+graph export "${outdir}/graphs/figure_4a.pdf", replace
 
 
 ********************************************************************************
@@ -916,4 +916,4 @@ graph combine graph_2007_trend graph_2011_trend graph_2015_trend graph_2016_tren
     rows(2) cols(2)
 
 * Saving combined trends graphs
-graph export "${outdir}/graphs/main_event_study_trends.pdf", replace
+graph export "${outdir}/graphs/figure_4b.pdf", replace

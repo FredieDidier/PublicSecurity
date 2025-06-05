@@ -934,7 +934,7 @@ graph export "${outdir}/graphs/robustness_delcap_event_study_trends_PE_noMAPI.pd
 ********************************************************************************
 * Open File to Write
 cap file close f1
-file open f1 using "${outdir}/tables/robustness_event_study_PE_heterogeneity_noMAPI.tex", write replace
+file open f1 using "${outdir}/tables/table_B.6.tex", write replace
 * Write header
 file write f1 "\begin{table}[h!]" _n
 file write f1 "\centering" _n

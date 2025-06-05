@@ -133,7 +133,7 @@ combined_states_plot <- gridExtra::grid.arrange(
 
 # Save the combined plot with adjusted dimensions for the new layout
 ggsave(
-  filename = paste0(GITHUB_PATH, "analysis/output/maps/map_combined_homicide_states.png"),
+  filename = paste0(GITHUB_PATH, "analysis/output/maps/figure_A1.png"),
   plot = combined_states_plot,
   width = 12,  # Adjusted for the new layout
   height = 15, # Taller to accommodate 3 rows

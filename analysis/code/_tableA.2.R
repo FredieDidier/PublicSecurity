@@ -180,7 +180,7 @@ latex_state_distribution <- paste0(latex_state_distribution, "\\bottomrule
 # 10. Save tables
 output_dir <- paste0(GITHUB_PATH, "analysis/output/tables/")
 writeLines(latex_distribution, paste0(output_dir, "variables_distribution.tex"))
-writeLines(latex_state_distribution, paste0(output_dir, "state_distribution.tex"))
+writeLines(latex_state_distribution, paste0(output_dir, "table_A.2.tex"))
 
 # 11. Additional calculation: Percentage of overlap between treated and controls
 # This can help justify the use of median by state
